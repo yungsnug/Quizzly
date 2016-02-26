@@ -25,7 +25,9 @@ IMPORTANT: to run steps 6-9 need to start SQL server
 <h1>1. First create a MySQL database.</h1>
 
 A. Install MySQL:
--Download and install MySQL community from: http://dev.mysql.com/downloads/mysql/. Make sure to save temporary password
+-Download and install MySQL community from: http://dev.mysql.com/downloads/mysql/
+-Make sure to download the DMG, not the TAR!
+-Make sure to save temporary password
 -I like having sql in path.  See: http://coolestguidesontheplanet.com/add-shell-path-osx/
 
 B. Turn on MySQL:
@@ -34,7 +36,7 @@ or
 -From command line: sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
 
 C. Login to mysql:
--type (replace [temppwd] with temporary password): <code>mysql -uroot -p[temppwd]</code>
+-type (replace [temppwd] with temporary password): <code>mysql -uroot -p [temppwd]</code>
 
 D. Change temp mysql password:
 -Now terminal should appear with: mysql>
@@ -54,12 +56,12 @@ E. Fix 2002 Socket Bug (note: check errors section if it happens at a later date
 F. Create database to use for project (note: replace testdb with db name you want):
 -Login to mysql: <code>mysql -uroot -p[newpwd]</code> (if not working, go back to step D. and make sure using correct temppwd)
 -From the mysql environment: mysql>
--Type: <code>CREATE database testdb</code>;
+-Type: <code>CREATE database testdb;</code>;
 or
 -From command line (replace [newpwd] with your newpwd):
 -Type: <code>mysql -u root -p[newpwd] -e "create database testdb"</code>;
 
-<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2> 
+<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2>
 
 G. Make sure mysql is running
 -Go to system preferences -> mysql
@@ -74,9 +76,9 @@ H. Checkout different ways to run (from command line)
 
 
 <h1>2. Install nodejs.</h1>
-<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2> 
+<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2>
 
-A. Download and install nodejs from https://nodejs.org/en/.  Mature and Dependable works. 
+A. Download and install nodejs from https://nodejs.org/en/.  Mature and Dependable works.
 B. Check node is in your path by typing: <code>node -v</code>. This should return the version number.
 C. If not, add it to path. See: http://coolestguidesontheplanet.com/add-shell-path-osx/
 
@@ -107,18 +109,18 @@ From within Sails App folder
 A. Install Waterline ORM:
 -Type: <code>npm install waterline</code>
 
-B. Install sails-mysql: 
+B. Install sails-mysql:
 -Type: <code>npm install sails-mysql</code>
 
 (Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)
 
 <h1>6. Connecting waterline/sails-mysql to mysql database created in step 1.</h1>
-From within Sails App folder -> 
+From within Sails App folder ->
 A. Navigate/Open config/connections.js
 
 B. Create new mysql connection in connections.js for sails-mysql
 -inside <code>module.exports.connections = {</code>
--type (make sure to input password for mysql and database for mysql you created in step 1 in for xxxxxxxx and testdb): 
+-type (make sure to input password for mysql and database for mysql you created in step 1 in for xxxxxxxx and testdb):
 <code>
 	mysql: {
     adapter    : 'sails-mysql',
@@ -139,12 +141,12 @@ B. Create new mysql connection in connections.js for sails-mysql
 </code>
 
 C. Connect to database
--Navigate/Open config/models.js 
+-Navigate/Open config/models.js
 -Inside: <code>module.exports.models = {</code>
 -Type: <code>connection: 'mysql'</code>
 
 D. Test Connection is working
--Type: <code>sails lift</code> 
+-Type: <code>sails lift</code>
 -If prompted to input 1, 2, or 3. Input <code>2</code>
 -If no errors you're good to go!
 
@@ -193,7 +195,7 @@ A. Add route
   	</code>
 
 B. Test route/create function
--Type: <code>sails lift</code> 
+-Type: <code>sails lift</code>
 -If prompted to input 1, 2, or 3. Input <code>2</code>
 -Visit http://localhost:1337/ to see default home page
 
@@ -215,7 +217,7 @@ A-3. To check if mysql is running on a different port use: <code>ps ax | grep my
 -Change the port number (check result first).
 -Edit /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
 
--Change <code><string>--port=3307</string></code> to <code><string>--port=3306</string></code> 
+-Change <code><string>--port=3307</string></code> to <code><string>--port=3306</string></code>
 
 -Then restart mysql:
 -To stop: <code>sudo launchctl unload -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code>
@@ -280,4 +282,3 @@ A-4. To uninstall:
 -http://jumpstartsails.blogspot.in/2015/09/introduction-to-waterline-orm-and-sails.html
 -http://coolestguidesontheplanet.com/start-stop-mysql-from-the-command-line-terminal-osx-linux/
 -http://coolestguidesontheplanet.com/get-apache-mysql-php-and-phpmyadmin-working-on-osx-10-11-el-capitan/
-
