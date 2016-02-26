@@ -1,0 +1,295 @@
+@import 'vars.less';
+
+#quizzlyEntrance {
+  width: 100vw;
+  height: 100vh;
+  .greenBlueGradient;
+  .white;
+  .alignC;
+
+  .title {
+    font-family: @mont;
+    font-weight: 700;
+    font-size: 32px;
+    .white;
+    letter-spacing: 1.77px;
+    line-height: 39px;
+  }
+
+  .subtitle {
+    /* The scholastic envir: */
+    font-family: @roboto;
+    .italic;
+    font-weight: 300;
+    font-size: 20px;
+    .white;
+    line-height: 24px;
+  }
+
+  .logo {
+    width: 68px;
+    height: auto;
+  }
+
+  .entranceInput {
+    .centerBlock;
+    .alignC;
+    border-bottom: 2px solid white;
+    max-width: 430px;
+    background: none;
+    background-color: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    width: 100%;
+    font-family: @roboto;
+    font-weight: 100;
+    font-size: 32px;
+    .white;
+    letter-spacing: 1.77px;
+    line-height: 38px;
+
+    .placeholder(white);
+  }
+
+  .placeholder(@white);
+
+  .signInButton {
+    font-family: @mont;
+    font-weight: 700;
+    font-size: 20px;
+    .white;
+    letter-spacing: 1.11px;
+    line-height: 24px;
+    background: none;
+    background-color: none;
+    border: none;
+  }
+
+  .subsubtitle {
+    /* Or switch to sign up: */
+    font-family: @roboto;
+    font-weight: 300;
+    .white;
+    line-height: 19px;
+  }
+
+  a {
+    font-family: @roboto;
+    font-weight: 300;
+    line-height: 19px;
+    .white;
+    text-decoration: underline;
+    &:hover {
+      .white;
+      text-decoration: none;
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 10px;
+    transform: translateX(-50%);
+  }
+}
+
+.quizzlyContent {
+  overflow-x: auto;
+  .p20;
+  white-space: nowrap;
+  height: calc(~"100vh - 98px");
+  margin-left: 192px;
+}
+
+.addEntityButton {
+  .pointer;
+  .outerShadow;
+  width: 240px;
+  .lightBlueBackground;
+  .p;
+  font-weight: 500;
+  .round;
+  vertical-align: top;
+  display: inline-block;
+  .p10;
+  .alignC;
+  &:hover {
+    background-color: darken(@lightBlue, 5%);
+  }
+}
+
+.mainPanel {
+  .outerShadow;
+  width: 240px;
+  .whiteBackground;
+  .p;
+  .mr20;
+  .round;
+  vertical-align: top;
+  display: inline-block;
+  // max-height: 100%;
+
+  .scrollRegion {
+    // overflow-y: scroll;
+    // max-height: calc(~"100vh - 57px");
+  }
+
+  .header {
+    .roundTop;
+    .lightBlueBackground;
+    .h6;
+    .p10;
+    .borderBottom;
+  }
+
+  .body {
+
+  }
+
+  .item {
+    .p10;
+    .borderBottom;
+    &:hover {
+      .lightestGrayBackground;
+      .pointer;
+    }
+  }
+
+  .footer {
+    margin-top: -1px;
+    .roundBottom;
+    .borderTop;
+    .lightGreenBackground;
+    .p10;
+  }
+}
+
+.footerButton {
+  .alignC;
+  .pointer;
+  margin-top: -1px;
+  .roundBottom;
+  .borderTop;
+  .lightGreenBackground;
+  .p10;
+  font-weight: 500;
+  &:hover {
+    background-color: darken(@lightGreen, 5%);
+  }
+}
+
+.avatar {
+  background-image: url("http://i1197.photobucket.com/albums/aa429/mommyssweetthings/Ellie%20Jane/profile-picture-gold5.png~original");
+  background-position: center;
+  background-size: 120% auto;
+  width: 44px;
+  height: 44px;
+}
+
+.dropdown {
+  background-color: white;
+  height: 39px;
+  .p;
+}
+
+.mainDropdown {
+  .dropdown;
+  position: absolute;
+  top: 9px;
+  width: 160px;
+}
+
+.semesterDropdown {
+  .dropdown;
+  position: absolute;
+  top: 9px;
+  margin-left: 170px;
+  width: 160px;
+}
+
+#modalContainer {
+  position: absolute;
+  background-color: rgba(0,0,0,0.4);
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  overflow: scroll;
+
+  #modal {
+    max-width: 700px;
+    .round;
+    background-color: @white;
+    .outerShadow;
+    .p;
+    .centerBlock;
+    position: relative;
+    .width100;
+    margin-top:40px;
+    margin-bottom:40px;
+  }
+
+  #header {
+    .roundTop;
+    .lightBlueBackground;
+    .h6;
+    .p10;
+    .borderBottom;
+  }
+
+  #body {
+
+  }
+
+  #footer {
+    margin-top: -1px;
+    .roundBottom;
+    .borderTop;
+    .lightGreenBackground;
+    .p10;
+    .alignC;
+  }
+}
+
+.addCourseInput {
+  background-color: @lightestGray;
+  border: none;
+  .round;
+  .p;
+  padding-left: 15px; padding-top: 13px; padding-bottom: 13px;
+  .innerShadow;
+  width: 100%;
+}
+
+.modalButton {
+  .width100;
+  .greenBlueGradient;
+  color: white;
+  .mont;
+  .pt15; .pb15;
+  .alignC;
+  .pointer;
+  .round;
+  .outerShadow;
+  font-weight: 700;
+  border: none;
+}
+
+.greenButton {
+  .alignC;
+  .pointer;
+  .round;
+  .border;
+  .borderTop;
+  .lightGreenBackground;
+  .p10;
+  flex-shrink: 0;
+  &:hover {
+    background-color: darken(@lightGreen, 5%);
+  }
+}
+
+.plusButton {
+  .greenButton;
+  font-weight: 500;
+  width: 26px;
+}
