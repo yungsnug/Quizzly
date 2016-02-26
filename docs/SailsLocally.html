@@ -1,0 +1,163 @@
+readme3.md
+
+<h1>Getting Sails, Waterline on Mac OS X.</h1>
+<h2>For other OS's having any trouble follow: http://sailsjs.org/get-started#?getting-started-installation</h2>
+<hr>
+(Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)
+(Extra Note: 10. checkout common errors before hitting me up)
+Overview:
+1. Install nodejs - sails runs on nodejs (whenever you call npm).
+2. Install Sails - sails provides an api model that is easy to navigate on top of nodejs
+3. Create a sails project
+4. Install Waterline and sails-memory - waterline ORM provides sails with the ability to write server side code and alter said code using sails and use an adapter to transfer server side code to different databases using adapters.  Sails-memory provides local memory to be used for development.
+5. Connecting waterline/sails-memory
+6. Create Sails API (controller/model)
+7. Code for API
+8. Create path within API (Don't need to do this because of Blueprints?)
+9. Common Errors
+10. Getting Started/Checkout More/Using Sails and Waterline
+11. References
+
+<hr>
+
+
+<h1>1. Install nodejs.</h1>
+<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2> 
+
+A. Download and install nodejs from https://nodejs.org/en/.  Mature and Dependable works. 
+B. Check node is in your path by typing: <code>node -v</code>. This should return the version number.
+C. If not, add it to path. See: http://coolestguidesontheplanet.com/add-shell-path-osx/
+
+<h1>2. Install Sails </h1>
+
+A. Install sails by typing: <code>sudo npm install sails -g</code>
+
+<h1>3. Create a sails project</h1>
+
+A. Create a folder for sails project:
+-From command-line type: <code>mkdir projectName</code>
+
+B. Enter projectName folder:
+-Type: <code>cd projectName</code>
+
+C. Create Sails App folder (replace testProject with name of folder wanted):
+-Type: <code>sails new testProject</code>
+
+D. Navigate into Sails App folder:
+-Type: <code>cd testProject</code>
+
+E. Test sails works:
+-Type: <code>sails lift</code> and visit http://localhost:1337/ to see default home page
+
+<h1>4. Install Waterline and sails-memory</h1>
+From within Sails App folder
+
+A. Install Waterline ORM:
+-Type: <code>npm install waterline</code>
+
+B. Install sails-memory: 
+-Type: <code>npm install sails-memory</code>
+
+(Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)
+
+<h1>5. Connecting waterline/sails-memory</h1>
+From within Sails App folder -> 
+A. Navigate/Open config/connections.js
+
+B. Create new mysql connection in connections.js for sails-mysql
+-Comment out/delete everything inside <code>module.exports.connections = {</code>
+-Type inside <code>module.exports.connections = {</code>:
+<code>
+	localDiskDb: {
+    adapter: 'sails-disk'
+  },
+  memory: {
+    adapter: 'sails-memory'
+  }
+</code>
+
+C. Connect to database/memory
+-Navigate/Open config/models.js 
+-Inside: <code>module.exports.models = {</code>
+-Type: <code>connection: 'memory'</code>
+
+D. Test Connection is working
+-Type: <code>sails lift</code> 
+-If prompted to input 1, 2, or 3. Input <code>2</code>
+-If no errors you're good to go!
+
+<h1>6. Create a Sails API (controller/model)</h1>
+
+A. Create an API
+-Type: <code>sails generate api Employee</code>
+
+This creates a controller called EmployeeController.js under the api/controller folder and creates a model called Employee.js under the api/model folder.
+
+B. Create an API model and controller separately
+-Type: <code>sails generate model User name:string email:string password:string</code>
+-Type: <code>sails generate controller User create show edit delete</code>
+
+This creates a controller called UserController.js under the api/controller folder and creates a model called User.js under the api/model folder.
+
+
+<h1>7. Code for API</h1>
+
+A. Fill code in for Create function in UserController
+-Navigate/Open api/controller/UserController.js
+-Type/create function should appear like:
+	<code>
+		create: function(req, res){
+ 			var params = req.params.all()
+ 			User.create({name: params.name}).exec(function createCB(err,created){
+   				return res.json({
+     				notice: 'Created user with name ' + created.name
+   				});
+ 			});
+		},
+	</code>
+
+
+<h1>8. Create path within API (Don't need to do this because of Blueprints?)</h1>
+Checkout Blueprints: http://sailsjs.org/documentation/reference/blueprint-api
+
+A. Add route
+-Navigate/Open config/routes.js
+-Inside <code>module.exports.routes = {</code>
+-Type/code within should appear like:
+	<code>
+		'/': {
+    		view: 'homepage',
+    		'post /User': 'UserController.create'
+  		}
+  	</code>
+
+B. Test route/create function
+-Type: <code>sails lift</code> 
+-If prompted to input 1, 2, or 3. Input <code>2</code>
+-Visit http://localhost:1337/ to see default home page
+
+
+<h1>9. Common Errors</h1>
+
+<h2>A. Add errors that pop up - we will solve them together</h2>
+
+
+
+<h1>10. Getting Started/Checkout More/Using Sails and Waterline</h1>
+-Great reference for how the API Sails works: http://sailsjs.org/documentation/concepts/
+-Blueprint API: http://sailsjs.org/documentation/reference/blueprint-api
+-Github for sails: https://github.com/balderdashy/sails
+-Github for Waterline ORM: https://github.com/balderdashy/waterline
+
+
+
+
+<h1>11. References</h1>
+-Website from Conner?
+-Stackoverflow
+-http://sailsjs.org/get-started#?getting-started-installation
+-http://coolestguidesontheplanet.com/add-shell-path-osx/
+-http://jumpstartsails.blogspot.in/2015/09/introduction-to-waterline-orm-and-sails.html
+-http://coolestguidesontheplanet.com/start-stop-mysql-from-the-command-line-terminal-osx-linux/
+-http://coolestguidesontheplanet.com/get-apache-mysql-php-and-phpmyadmin-working-on-osx-10-11-el-capitan/
+
