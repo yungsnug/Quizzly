@@ -22,7 +22,8 @@ module.exports = {
       model: 'quiz'
     },
     answers: {
-      collection: 'answer'
+      collection: 'answer',
+      via: 'question'
     }
 
     // Methods
