@@ -111,17 +111,14 @@ var Courses = function (_React$Component) {
     value: function componentDidMount() {
       var me = this;
 
-      $.when($.post("/course/find", { course: 1 }), $.post("/section/find", {
-        professor: 1,
-        course: 1
-      })).then(function (course, sections) {
+      $.when($.post("/course/find", { id: 3 }), $.post("/section/find", { course: 3 })).then(function (course, sections) {
         console.log("course", course[0]);
         console.log("sections", sections[0]);
 
-        if (course[0].length == 0) return; // if there are no courses, then there are no sections
+        if (course == undefined) return; // if there are no courses, then there are no sections
         me.setState({
-          course: course,
-          sections: sections
+          course: course[0],
+          sections: sections[0]
         });
       });
     }
