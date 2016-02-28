@@ -7,7 +7,7 @@ module.exports.connections = {
 	 host : 'localhost',
 	 port : 3306,
 	 user : 'root',
-	 password : 'buzz22',
+	 password : 'password',
 	 database : 'testdb',
 
 	 // OR (explicit sets take precedence)

@@ -11,5 +11,6 @@
 
 module.exports.models = {
   connection: 'mysql',
+  //connection: 'memory'
   migrate: 'alter'
 };
