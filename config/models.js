@@ -10,7 +10,9 @@
  */
 
 module.exports.models = {
-  connection: 'mysql',
-  //connection: 'memory'
+  /*need to run npm install sails-mysql and have sql installed (follow guide)*/
+  //connection: 'mysql',
+  /*need to run npm install sails-memory (follow guide)*/
+  connection: 'memory',
   migrate: 'alter'
 };
