@@ -1,0 +1,10 @@
+email,password,facultyId,firstName,lastName,school,id,createdAt,updatedAt
+crowley@usc.edu,test,NULL,Michael,Crowley,University of Southern California,1,2016-02-26 15:18:08,2016-02-26 15:18:58
+miller@usc.edu,test,NULL,Jeffrey,Miller,University of Southern California,2,2016-02-26 15:18:08,2016-02-26 15:18:58
+dent@usc.edu,test,NULL,Patrick,Dent,University of Southern California,3,2016-02-26 15:18:08,2016-02-26 15:18:08
+gregory@usc.edu,test,NULL,Trina,Gregory,University of Southern California,4,2016-02-26 15:18:08,2016-02-26 15:18:58
+bo@usc.edu,test,NULL,Yan,Bo,University of Southern California,5,2016-02-26 15:18:08,2016-02-26 15:18:58
+schindler@usc.edu,test,NULL,Michael,Schindler,University of Southern California,6,2016-02-26 15:18:08,2016-02-26 15:18:58
+atrash@usc.edu,test,NULL,Amin,Atrash,University of Southern California,7,2016-02-26 15:18:08,2016-02-26 15:18:58
+stephen@usc.edu,test,NULL,Edgar,Stephen,University of Southern California,8,2016-02-26 15:18:08,2016-02-26 15:18:58
+rosh@usc.edu,test,NULL,Jasmine,Rosh,University of Southern California,9,2016-02-26 15:18:08,2016-02-26 15:18:58

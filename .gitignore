@@ -40,10 +40,8 @@
 ################################################
 
 config/local.js
-
-
-
-
+config/connections.js
+config/models.js
 
 ################################################
 # Dependencies

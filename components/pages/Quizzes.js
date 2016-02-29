@@ -4,101 +4,12 @@ import React from 'react'
 import Quiz from '../partials/Quiz.js'
 import Modal from '../partials/Modal.js'
 
-var quizzes201 = [
-  {
-    title: "Threading",
-    questions: [
-      {title: "What is threading?"},
-      {title: "What is a lock?"},
-      {title: "What is a CV?"},
-      {title: "What is a mutex?"}
-    ]
-  },
-  {
-    title: "OO Programming",
-    questions: [
-      {title: "What is inheritance?"},
-      {title: "What is OO?"},
-      {title: "What is a class?"},
-      {title: "What is an interface?"},
-      {title: "What is Java OO?"},
-      {title: "What is C++ OO?"}
-    ]
-  },
-  {
-    title: "Programming Languages",
-    questions: [
-      {title: "What is Python?"},
-      {title: "What is a Java?"},
-      {title: "What is a C++"},
-      {title: "What is a Ada"},
-      {title: "What is a Cobol"},
-      {title: "What is a Lisp"},
-      {title: "What is a Prolog"}
-    ]
-  },
-  {
-    title: "Javascript",
-    questions: [
-      {title: "What is AJAX?"},
-      {title: "What does AJAX stand for?"},
-      {title: "What is synchronous?"},
-      {title: "What is var?"},
-      {title: "What is == vs ===?"}
-    ]
-  }
-];
-
-var quizzes104 = [
-  {
-    title: "OO Programming",
-    questions: [
-      {title: "What is inheritance?"},
-      {title: "What is OO?"},
-      {title: "What is a class?"},
-      {title: "What is an interface?"},
-      {title: "What is Java OO?"},
-      {title: "What is C++ OO?"}
-    ]
-  },
-  {
-    title: "Programming Languages",
-    questions: [
-      {title: "What is Python?"},
-      {title: "What is a Java?"},
-      {title: "What is a C++"},
-      {title: "What is a Ada"},
-      {title: "What is a Cobol"},
-      {title: "What is a Lisp"},
-      {title: "What is a Prolog"}
-    ]
-  },
-  {
-    title: "Javascript",
-    questions: [
-      {title: "What is AJAX?"},
-      {title: "What does AJAX stand for?"},
-      {title: "What is synchronous?"},
-      {title: "What is var?"},
-      {title: "What is == vs ===?"}
-    ]
-  },
-  {
-    title: "Threading",
-    questions: [
-      {title: "What is threading?"},
-      {title: "What is a lock?"},
-      {title: "What is a CV?"},
-      {title: "What is a mutex?"}
-    ]
-  }
-];
-
 export default class Quizzes extends React.Component {
   constructor(props) {
     super(props);
     var data = this.selectCourse(props);
     this.state = {
+      course: props.course,
       quizzes: data.quizzes,
       showModal: false,
       modalInfo: {
@@ -107,6 +18,31 @@ export default class Quizzes extends React.Component {
         index: -1
       }
     };
+  }
+
+  componentDidMount() {
+    this.getQuizzesFromCourseId(this.props.course.id);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.getQuizzesFromCourseId(newProps.course.id);
+  }
+
+  getQuizzesFromCourseId(courseId) {
+    var me = this;
+    console.log("componentDidMount");
+    $.when(
+      $.post("/quiz/find",
+        { course: courseId }
+      )
+    ).then(function(quizzes) {
+      console.log("quizzes", quizzes);
+
+      if(quizzes == undefined) return; // if there are no courses, then there are no sections
+      me.setState({
+        quizzes: quizzes
+      });
+    });
   }
 
   handleClick(num) {
@@ -139,7 +75,7 @@ export default class Quizzes extends React.Component {
   }
 
   addQuizToCourse(quiz) {
-    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseTitle);
+    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseId);
     var quizzes = this.state.quizzes;
     var quiz = {
       title: quiz.title,
@@ -151,12 +87,12 @@ export default class Quizzes extends React.Component {
   }
 
   addQuestionToQuiz(question, quizIndex) {
-    if(question.title.trim().length == 0) return;
+    if(question.text.trim().length == 0) return;
 
-    console.log("Adding question '" +  question.title + "' in quiz " + this.state.quizzes[quizIndex].title);
+    console.log("Adding question '" +  question.text + "' in quiz " + this.state.quizzes[quizIndex].title);
     var quizzes = this.state.quizzes;
     var question = {
-      title: question.title
+      text: question.text
     };
     quizzes[quizIndex].questions.push(question);
     this.setState({quizzes: quizzes});
@@ -165,22 +101,15 @@ export default class Quizzes extends React.Component {
 
   selectCourse(props) {
     var data = {};
-    switch(props.courseTitle) {
-      case "CSCI 201":
+    switch(props.course.id) {
+      case 1:
         data.quizzes = quizzes201;
         break;
-      case "CSCI 104":
+      case 2:
         data.quizzes = quizzes104;
         break;
     }
     return data;
-  }
-
-  componentWillReceiveProps(newProps) {
-    var data = this.selectCourse(newProps);
-    this.setState({
-      quizzes: data.quizzes
-    });
   }
 
   render() {
@@ -199,7 +128,7 @@ export default class Quizzes extends React.Component {
             return (
               <Modal
                 modalInfo={this.state.modalInfo}
-                course={this.props.courseTitle}
+                course={this.props.courseId}
                 quizzes={this.state.quizzes}
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}

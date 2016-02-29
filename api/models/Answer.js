@@ -6,24 +6,25 @@
 */
 
 module.exports = {
-  // Primitives
-  text: {
-    type: 'string',
-    required: true
-  },
-  correct: {
-    type: 'boolean'
-  },
-  option: {
-    type: 'string',
-    enum: ['A', 'B', 'C', 'D', 'E'],
-    defaultsTo: 'A'
-  },
+  attributes: {
+    // Primitives
+    text: {
+      type: 'string',
+      required: true
+    },
+    correct: {
+      type: 'boolean'
+    },
+    option: {
+      type: 'string',
+      enum: ['A', 'B', 'C', 'D', 'E']
+    },
 
-  // Associations
-  question: {
-    model: 'question'
+    // Associations
+    question: {
+      model: 'question'
+    }
+
+    // Methods
   }
-
-  // Methods
 };

@@ -1,41 +1,5 @@
 // "use strict";
 
-var course201 = {
-  title: "CSCI 201",
-  quizzes: [
-    {title: "Week 1"},
-    {title: "Week 2"},
-    {title: "Week 3"},
-    {title: "Week 4"},
-    {title: "Week 5"},
-    {title: "Week 6"},
-    {title: "Week 7"},
-    {title: "Week 8"}
-  ]
-};
-
-var sections201 = [
-  { title: "67558" },
-  { title: "49939" },
-  { title: "12283" }
-];
-
-var course104 = {
-  title: "CSCI 104",
-  quizzes: [
-    {title: "Week 1"},
-    {title: "Week 2"},
-    {title: "Week 3"},
-    {title: "Week 4"}
-  ]
-};
-
-var sections104 = [
-  { title: "98857" },
-  { title: "79988" },
-  { title: "09932" }
-];
-
 import React from 'react'
 import Course from '../partials/Course.js'
 import Modal from '../partials/Modal.js'
@@ -47,7 +11,7 @@ export default class Courses extends React.Component {
     var data = this.selectCourse(props);
 
     this.state = {
-      course: data.course,
+      course: props.course,
       sections: data.sections,
       showModal: false,
       showMetricModal: false,
@@ -59,26 +23,31 @@ export default class Courses extends React.Component {
   }
 
   componentDidMount() {
+    this.getCoursesAndSections(this.state.course.id);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.getCoursesAndSections(newProps.course.id);
+  }
+
+  getCoursesAndSections(courseId) {
     var me = this;
 
     $.when(
       $.post("/course/find",
-        { course: 1 }
+        { id: courseId }
       ),
       $.post("/section/find",
-        {
-          professor: 1,
-          course: 1
-        }
+        { course: courseId }
       )
     ).then(function(course, sections) {
       console.log("course", course[0]);
       console.log("sections", sections[0]);
 
-      if(course[0].length == 0) return; // if there are no courses, then there are no sections
+      if(course == undefined) return; // if there are no courses, then there are no sections
       me.setState({
-        course: course,
-        sections: sections
+        course: course[0],
+        sections: sections[0]
       });
     });
   }
@@ -124,7 +93,7 @@ export default class Courses extends React.Component {
   }
 
   addQuizToCourse(quiz) {
-    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseTitle);
+    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var course = this.state.course;
     course.quizzes.push({title: quiz.title});
     this.setState({course: course});
@@ -133,25 +102,17 @@ export default class Courses extends React.Component {
 
   selectCourse(props) {
     var data = {};
-    switch(props.courseTitle) {
-      case "CSCI 201":
+    switch(props.course.id) {
+      case 1:
         data.course = course201;
         data.sections = sections201;
         break;
-      case "CSCI 104":
+      case 2:
         data.course = course104;
         data.sections = sections104;
         break;
     }
     return data;
-  }
-
-  componentWillReceiveProps(newProps) {
-    var data = this.selectCourse(newProps);
-    this.setState({
-      course: data.course,
-      sections: data.sections
-    });
   }
 
   render() {

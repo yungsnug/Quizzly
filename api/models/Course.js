@@ -6,8 +6,8 @@
 */
 
 module.exports = {
-  // Primitives
   attributes: {
+    // Primitives
     title: { // 'CSCI 201'
       type: 'string'
     },
