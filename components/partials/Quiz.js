@@ -24,7 +24,7 @@ export default class extends React.Component {
             {this.props.quiz.questions.map(function(question, i) {
               var boundClick = this.handleClick.bind(this, i);
               return (
-                <div onClick={boundClick} key={i} title={question} ref={'question' + i} className="item">{question.title}</div>
+                <div onClick={boundClick} key={i} text={question} ref={'question' + i} className="item">{question.text}</div>
               );
             }, this)}
           </div>
