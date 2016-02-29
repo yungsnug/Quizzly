@@ -170,7 +170,7 @@ A. Fill code in for Create function in UserController<br/>
 -Type/create function should appear like:<br/>
 	<code>
 		create: function(req, res){
- 			var params = req.params.all()
+ 			var params = req.params.all();
  			User.create({name: params.name}).exec(function createCB(err,created){
    				return res.json({
      				notice: 'Created user with name ' + created.name
