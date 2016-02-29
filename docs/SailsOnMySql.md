@@ -1,9 +1,9 @@
 <h1>Getting Sails, Waterline, MySQL running on Mac OS X or Linux.</h1><br/>
 <h2>For other OS's having any trouble follow: http://sailsjs.org/get-started#?getting-started-installation</h2><br/>
-<hr><br/>
+<hr>
 (Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)<br/>
 (Extra Note: 10. checkout common errors before hitting me up)<br/>
-<hr><br/>
+<hr>
 Overview:<br/>
 1. First create a MySQL database - database used by sails-mysql adapter.<br/>
 IMPORTANT: to run steps 6-9 need to start SQL server<br/>
@@ -19,7 +19,7 @@ IMPORTANT: to run steps 6-9 need to start SQL server<br/>
 11. Getting Started/Checkout More/Using Sails, Waterline, and sails-mysql<br/>
 12. References<br/>
 
-<hr><br/>
+<hr>
 
 <h1>1. First create a MySQL database.</h1><br/>
 
