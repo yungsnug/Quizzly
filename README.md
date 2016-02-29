@@ -7,7 +7,7 @@ A. After cloning, cd into directory Quizzly<br/>
 B. To setup connections and models from barebone files run the following:<br/>
 -Run <code>cp config/connections.js.template config/connections.js</code><br/>
 -Run <code>cp config/models.js.template config/models.js</code><br/>
--If using MySQL-> change both files (config/models.js and config/connections.js) - see comments. (In connections make sure to read comments at top) <br/>
+-If using MySQL-> install MySQL following step of guide: <a href="https://github.com/freyconner24/Quizzly/blob/master/docs/SailsOnMySql.md">MySQL Guide</a>. And change both files (config/models.js and config/connections.js) - see comments. (In connections make sure to read comments at top) <br/>
 C. To install/build application do the following: </br>
 -Run <code>npm install</code><br/>
 
