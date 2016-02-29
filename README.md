@@ -2,12 +2,15 @@
 
 a [Sails](http://sailsjs.org) application
 
-To run locally:
--after cloning, cd into directory Quizzly
--Run <code>npm install</code>
--Then run the following 2 commands in-order to not edit default files (config/connections.js and config/models.js):
--Run <code>git update-index --assume-unchanged config/connections.js</code>
--Run <code>git update-index --assume-unchanged config/models.js</code>
+To run locally:<br/>
+A. After cloning, cd into directory Quizzly<br/>
+B. To setup connections and models from barebone files run the following:<br/>
+-Run <code>cp config/connections.js.template config/connections.js</code><br/>
+-Run <code>cp config/models.js.template config/models.js</code><br/>
+-If using MySQL-> change both files (config/models.js and config/connections.js) - see comments. <br/>
+C. To install/build application do the following: </br>
+-Run <code>npm install</code><br/>
+
 
 You must run this command every time you change a React file: `browserify -t [ babelify --presets [ react ] ] components/app.js -o assets/js/bundle.js`
 
