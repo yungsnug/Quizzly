@@ -35,7 +35,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 ), document.getElementById("quizzly"));
 
 },{"./pages/Courses.js":2,"./pages/Layout.js":3,"./pages/Quizzes.js":4,"react":227,"react-dom":14,"react-router":42}],2:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -43,19 +43,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Course = require("../partials/Course.js");
+var _Course = require('../partials/Course.js');
 
 var _Course2 = _interopRequireDefault(_Course);
 
-var _Modal = require("../partials/Modal.js");
+var _Modal = require('../partials/Modal.js');
 
 var _Modal2 = _interopRequireDefault(_Modal);
 
-var _MetricModal = require("../partials/MetricModal.js");
+var _MetricModal = require('../partials/MetricModal.js');
 
 var _MetricModal2 = _interopRequireDefault(_MetricModal);
 
@@ -65,23 +65,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// "use strict";
-
-var course201 = {
-  title: "CSCI 201",
-  quizzes: [{ title: "Week 1" }, { title: "Week 2" }, { title: "Week 3" }, { title: "Week 4" }, { title: "Week 5" }, { title: "Week 6" }, { title: "Week 7" }, { title: "Week 8" }]
-};
-
-var sections201 = [{ title: "67558" }, { title: "49939" }, { title: "12283" }];
-
-var course104 = {
-  title: "CSCI 104",
-  quizzes: [{ title: "Week 1" }, { title: "Week 2" }, { title: "Week 3" }, { title: "Week 4" }]
-};
-
-var sections104 = [{ title: "98857" }, { title: "79988" }, { title: "09932" }];
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // "use strict";
 
 var Courses = function (_React$Component) {
   _inherits(Courses, _React$Component);
@@ -107,7 +91,7 @@ var Courses = function (_React$Component) {
   }
 
   _createClass(Courses, [{
-    key: "componentDidMount",
+    key: 'componentDidMount',
     value: function componentDidMount() {
       var me = this;
 
@@ -123,7 +107,7 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "closeModal",
+    key: 'closeModal',
     value: function closeModal() {
       this.setState({
         showModal: false,
@@ -131,7 +115,7 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "showMetricModal",
+    key: 'showMetricModal',
     value: function showMetricModal(quiz) {
       console.log("showMetricModal!", quiz);
       var modalInfo = this.state.modalInfo;
@@ -143,7 +127,7 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "addCourseModal",
+    key: 'addCourseModal',
     value: function addCourseModal() {
       var modalInfo = this.state.modalInfo;
       modalInfo.modalType = "ADD_COURSE";
@@ -155,7 +139,7 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "addQuizModal",
+    key: 'addQuizModal',
     value: function addQuizModal() {
       var modalInfo = this.state.modalInfo;
       modalInfo.title = "Add Quiz";
@@ -167,7 +151,7 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "addQuizToCourse",
+    key: 'addQuizToCourse',
     value: function addQuizToCourse(quiz) {
       console.log("Adding quiz '" + quiz.title + "' in course " + this.props.courseTitle);
       var course = this.state.course;
@@ -176,7 +160,7 @@ var Courses = function (_React$Component) {
       this.closeModal();
     }
   }, {
-    key: "selectCourse",
+    key: 'selectCourse',
     value: function selectCourse(props) {
       var data = {};
       switch (props.courseTitle) {
@@ -192,7 +176,7 @@ var Courses = function (_React$Component) {
       return data;
     }
   }, {
-    key: "componentWillReceiveProps",
+    key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
       var data = this.selectCourse(newProps);
       this.setState({
@@ -201,16 +185,16 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       var _this2 = this;
 
       return _react2.default.createElement(
-        "div",
+        'div',
         null,
         _react2.default.createElement(
-          "div",
-          { id: "courses", className: "quizzlyContent" },
+          'div',
+          { id: 'courses', className: 'quizzlyContent' },
           _react2.default.createElement(_Course2.default, {
             course: this.state.course,
             isCourse: true,
@@ -229,9 +213,9 @@ var Courses = function (_React$Component) {
             });
           }, this),
           _react2.default.createElement(
-            "div",
-            { className: "addEntityButton", onClick: this.addCourseModal.bind(this) },
-            "+"
+            'div',
+            { className: 'addEntityButton', onClick: this.addCourseModal.bind(this) },
+            '+'
           )
         ),
         function () {
@@ -375,34 +359,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var quizzes201 = [{
-  title: "Threading",
-  questions: [{ title: "What is threading?" }, { title: "What is a lock?" }, { title: "What is a CV?" }, { title: "What is a mutex?" }]
-}, {
-  title: "OO Programming",
-  questions: [{ title: "What is inheritance?" }, { title: "What is OO?" }, { title: "What is a class?" }, { title: "What is an interface?" }, { title: "What is Java OO?" }, { title: "What is C++ OO?" }]
-}, {
-  title: "Programming Languages",
-  questions: [{ title: "What is Python?" }, { title: "What is a Java?" }, { title: "What is a C++" }, { title: "What is a Ada" }, { title: "What is a Cobol" }, { title: "What is a Lisp" }, { title: "What is a Prolog" }]
-}, {
-  title: "Javascript",
-  questions: [{ title: "What is AJAX?" }, { title: "What does AJAX stand for?" }, { title: "What is synchronous?" }, { title: "What is var?" }, { title: "What is == vs ===?" }]
-}];
-
-var quizzes104 = [{
-  title: "OO Programming",
-  questions: [{ title: "What is inheritance?" }, { title: "What is OO?" }, { title: "What is a class?" }, { title: "What is an interface?" }, { title: "What is Java OO?" }, { title: "What is C++ OO?" }]
-}, {
-  title: "Programming Languages",
-  questions: [{ title: "What is Python?" }, { title: "What is a Java?" }, { title: "What is a C++" }, { title: "What is a Ada" }, { title: "What is a Cobol" }, { title: "What is a Lisp" }, { title: "What is a Prolog" }]
-}, {
-  title: "Javascript",
-  questions: [{ title: "What is AJAX?" }, { title: "What does AJAX stand for?" }, { title: "What is synchronous?" }, { title: "What is var?" }, { title: "What is == vs ===?" }]
-}, {
-  title: "Threading",
-  questions: [{ title: "What is threading?" }, { title: "What is a lock?" }, { title: "What is a CV?" }, { title: "What is a mutex?" }]
-}];
-
 var Quizzes = function (_React$Component) {
   _inherits(Quizzes, _React$Component);
 
@@ -425,6 +381,20 @@ var Quizzes = function (_React$Component) {
   }
 
   _createClass(Quizzes, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var me = this;
+      console.log("componentDidMount");
+      $.when($.post("/quiz/find", { course: 1 })).then(function (quizzes) {
+        console.log("quizzes", quizzes);
+
+        if (quizzes == undefined) return; // if there are no courses, then there are no sections
+        me.setState({
+          quizzes: quizzes
+        });
+      });
+    }
+  }, {
     key: 'handleClick',
     value: function handleClick(num) {
       console.log("handle clik!", num);
@@ -473,12 +443,12 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'addQuestionToQuiz',
     value: function addQuestionToQuiz(question, quizIndex) {
-      if (question.title.trim().length == 0) return;
+      if (question.text.trim().length == 0) return;
 
-      console.log("Adding question '" + question.title + "' in quiz " + this.state.quizzes[quizIndex].title);
+      console.log("Adding question '" + question.text + "' in quiz " + this.state.quizzes[quizIndex].title);
       var quizzes = this.state.quizzes;
       var question = {
-        title: question.title
+        text: question.text
       };
       quizzes[quizIndex].questions.push(question);
       this.setState({ quizzes: quizzes });
@@ -1591,8 +1561,8 @@ var _class = function (_React$Component) {
               var boundClick = this.handleClick.bind(this, i);
               return _react2.default.createElement(
                 "div",
-                { onClick: boundClick, key: i, title: question, ref: 'question' + i, className: "item" },
-                question.title
+                { onClick: boundClick, key: i, text: question, ref: 'question' + i, className: "item" },
+                question.text
               );
             }, this)
           ),

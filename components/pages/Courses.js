@@ -1,41 +1,5 @@
 // "use strict";
 
-var course201 = {
-  title: "CSCI 201",
-  quizzes: [
-    {title: "Week 1"},
-    {title: "Week 2"},
-    {title: "Week 3"},
-    {title: "Week 4"},
-    {title: "Week 5"},
-    {title: "Week 6"},
-    {title: "Week 7"},
-    {title: "Week 8"}
-  ]
-};
-
-var sections201 = [
-  { title: "67558" },
-  { title: "49939" },
-  { title: "12283" }
-];
-
-var course104 = {
-  title: "CSCI 104",
-  quizzes: [
-    {title: "Week 1"},
-    {title: "Week 2"},
-    {title: "Week 3"},
-    {title: "Week 4"}
-  ]
-};
-
-var sections104 = [
-  { title: "98857" },
-  { title: "79988" },
-  { title: "09932" }
-];
-
 import React from 'react'
 import Course from '../partials/Course.js'
 import Modal from '../partials/Modal.js'

@@ -4,96 +4,6 @@ import React from 'react'
 import Quiz from '../partials/Quiz.js'
 import Modal from '../partials/Modal.js'
 
-var quizzes201 = [
-  {
-    title: "Threading",
-    questions: [
-      {title: "What is threading?"},
-      {title: "What is a lock?"},
-      {title: "What is a CV?"},
-      {title: "What is a mutex?"}
-    ]
-  },
-  {
-    title: "OO Programming",
-    questions: [
-      {title: "What is inheritance?"},
-      {title: "What is OO?"},
-      {title: "What is a class?"},
-      {title: "What is an interface?"},
-      {title: "What is Java OO?"},
-      {title: "What is C++ OO?"}
-    ]
-  },
-  {
-    title: "Programming Languages",
-    questions: [
-      {title: "What is Python?"},
-      {title: "What is a Java?"},
-      {title: "What is a C++"},
-      {title: "What is a Ada"},
-      {title: "What is a Cobol"},
-      {title: "What is a Lisp"},
-      {title: "What is a Prolog"}
-    ]
-  },
-  {
-    title: "Javascript",
-    questions: [
-      {title: "What is AJAX?"},
-      {title: "What does AJAX stand for?"},
-      {title: "What is synchronous?"},
-      {title: "What is var?"},
-      {title: "What is == vs ===?"}
-    ]
-  }
-];
-
-var quizzes104 = [
-  {
-    title: "OO Programming",
-    questions: [
-      {title: "What is inheritance?"},
-      {title: "What is OO?"},
-      {title: "What is a class?"},
-      {title: "What is an interface?"},
-      {title: "What is Java OO?"},
-      {title: "What is C++ OO?"}
-    ]
-  },
-  {
-    title: "Programming Languages",
-    questions: [
-      {title: "What is Python?"},
-      {title: "What is a Java?"},
-      {title: "What is a C++"},
-      {title: "What is a Ada"},
-      {title: "What is a Cobol"},
-      {title: "What is a Lisp"},
-      {title: "What is a Prolog"}
-    ]
-  },
-  {
-    title: "Javascript",
-    questions: [
-      {title: "What is AJAX?"},
-      {title: "What does AJAX stand for?"},
-      {title: "What is synchronous?"},
-      {title: "What is var?"},
-      {title: "What is == vs ===?"}
-    ]
-  },
-  {
-    title: "Threading",
-    questions: [
-      {title: "What is threading?"},
-      {title: "What is a lock?"},
-      {title: "What is a CV?"},
-      {title: "What is a mutex?"}
-    ]
-  }
-];
-
 export default class Quizzes extends React.Component {
   constructor(props) {
     super(props);
@@ -107,6 +17,23 @@ export default class Quizzes extends React.Component {
         index: -1
       }
     };
+  }
+
+  componentDidMount() {
+    var me = this;
+    console.log("componentDidMount");
+    $.when(
+      $.post("/quiz/find",
+        { course: 1 }
+      )
+    ).then(function(quizzes) {
+      console.log("quizzes", quizzes);
+
+      if(quizzes == undefined) return; // if there are no courses, then there are no sections
+      me.setState({
+        quizzes: quizzes
+      });
+    });
   }
 
   handleClick(num) {
@@ -151,12 +78,12 @@ export default class Quizzes extends React.Component {
   }
 
   addQuestionToQuiz(question, quizIndex) {
-    if(question.title.trim().length == 0) return;
+    if(question.text.trim().length == 0) return;
 
-    console.log("Adding question '" +  question.title + "' in quiz " + this.state.quizzes[quizIndex].title);
+    console.log("Adding question '" +  question.text + "' in quiz " + this.state.quizzes[quizIndex].title);
     var quizzes = this.state.quizzes;
     var question = {
-      title: question.title
+      text: question.text
     };
     quizzes[quizIndex].questions.push(question);
     this.setState({quizzes: quizzes});
