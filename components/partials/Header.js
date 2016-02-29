@@ -7,15 +7,17 @@ export class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseTitle: props.courseTitle,
-      term: props.term
+      course: props.data.course,
+      term: props.data.term
     }
   }
 
   changeCourse(event) {
     this.props.changeCourse(event.target.value);
+    var course = this.state.course;
+    course.id = event.target.value;
     this.setState({
-      courseTitle: event.target.value
+      course: course
     });
   }
 
@@ -30,9 +32,9 @@ export class Header extends React.Component {
     return (
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
         <div className="ml10">
-          <select value={this.state.courseTitle} className="dropdown mr10" onChange={this.changeCourse.bind(this)}>
-            <option value="CSCI 201">CSCI 201</option>
-            <option value="CSCI 104">CSCI 104</option>
+          <select value={this.state.course.id} className="dropdown mr10" onChange={this.changeCourse.bind(this)}>
+            <option value="1">CSCI 201</option>
+            <option value="2">CSCI 104</option>
           </select>
           <select value={this.state.term} className="dropdown" onChange={this.changeTerm.bind(this)}>
             <option value="Fall 2016">Fall 2016</option>

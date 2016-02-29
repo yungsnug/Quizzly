@@ -4,21 +4,44 @@ import React from 'react'
 import {Sidebar} from '../partials/Sidebar.js'
 import {Header} from '../partials/Header.js'
 
-import { Link } from 'react-router'
+import {Link} from 'react-router'
 
 export default class Layout extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
-      courseTitle: "CSCI 201",
+      course: {
+        id: 1,
+        title: "CSCI 201",
+        quizzes: []
+      },
       term: "Summer 2015"
     }
   }
 
-  changeCourse(courseTitle) {
-    console.log("changeCourse", courseTitle);
-    this.setState({
-      courseTitle: courseTitle
+  componentDidMount() {
+    this.getCourseById(this.state.course.id);
+  }
+
+  changeCourse(courseId) {
+    this.getCourseById(courseId);
+  }
+
+  getCourseById(courseId) {
+    console.log("changeCourseId", courseId);
+    var me = this;
+
+    $.when(
+      $.post("/course/find",
+        { id: courseId }
+      )
+    ).then(function(course) {
+      console.log("course", course);
+
+      if(course == undefined) return; // if there are no courses, then there are no sections
+      me.setState({
+        course: course
+      });
     });
   }
 
@@ -41,7 +64,7 @@ export default class Layout extends React.Component {
         />
         {React.Children.map(me.props.children, function (child) {
           return React.cloneElement(child, {
-            courseTitle: me.state.courseTitle,
+            course: me.state.course,
             term: me.state.term
           });
         })}

@@ -129,3 +129,99 @@ var sections104 = [
   { title: "79988" },
   { title: "09932" }
 ];
+
+var courses201 = [
+  {
+    title: "CSCI 201",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"},
+      {title: "Week 5"},
+      {title: "Week 6"},
+      {title: "Week 7"},
+      {title: "Week 8"}
+    ]
+  },
+  {
+    title: "67558",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"},
+      {title: "Week 5"},
+      {title: "Week 6"},
+      {title: "Week 7"},
+      {title: "Week 8"}
+    ]
+  },
+  {
+    title: "49939",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"},
+      {title: "Week 5"},
+      {title: "Week 6"},
+      {title: "Week 7"},
+      {title: "Week 8"}
+    ]
+  },
+  {
+    title: "12283",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"},
+      {title: "Week 5"},
+      {title: "Week 6"},
+      {title: "Week 7"},
+      {title: "Week 8"}
+    ]
+  }
+];
+
+
+// I think this is bad data below
+var courses104 = [
+  {
+    title: "CSCI 104",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"}
+    ]
+  },
+  {
+    title: "98857",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"}
+    ]
+  },
+  {
+    title: "79988",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"}
+    ]
+  },
+  {
+    title: "09932",
+    quizzes: [
+      {title: "Week 1"},
+      {title: "Week 2"},
+      {title: "Week 3"},
+      {title: "Week 4"}
+    ]
+  }
+];

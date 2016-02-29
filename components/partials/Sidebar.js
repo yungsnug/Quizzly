@@ -3,101 +3,6 @@
 import React from 'react'
 import {Link} from 'react-router'
 
-var courses201 = [
-  {
-    title: "CSCI 201",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"},
-      {title: "Week 5"},
-      {title: "Week 6"},
-      {title: "Week 7"},
-      {title: "Week 8"}
-    ]
-  },
-  {
-    title: "67558",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"},
-      {title: "Week 5"},
-      {title: "Week 6"},
-      {title: "Week 7"},
-      {title: "Week 8"}
-    ]
-  },
-  {
-    title: "49939",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"},
-      {title: "Week 5"},
-      {title: "Week 6"},
-      {title: "Week 7"},
-      {title: "Week 8"}
-    ]
-  },
-  {
-    title: "12283",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"},
-      {title: "Week 5"},
-      {title: "Week 6"},
-      {title: "Week 7"},
-      {title: "Week 8"}
-    ]
-  }
-];
-
-var courses104 = [
-  {
-    title: "CSCI 104",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"}
-    ]
-  },
-  {
-    title: "98857",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"}
-    ]
-  },
-  {
-    title: "79988",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"}
-    ]
-  },
-  {
-    title: "09932",
-    quizzes: [
-      {title: "Week 1"},
-      {title: "Week 2"},
-      {title: "Week 3"},
-      {title: "Week 4"}
-    ]
-  }
-];
-
-
 // export class Sidebar extend {
 export class Sidebar extends React.Component {
   constructor(props) {
@@ -106,12 +11,10 @@ export class Sidebar extends React.Component {
   }
 
   setFilter(filter) {
-    console.log("1 filter", this.state.selected);
     this.setState({selected: filter});
   }
 
   isActive(value){
-    // console.log("isActive", value);
     return 'mt15 pt15 pb15 show ' + ((value === this.state.selected) ? 'greenBlueGradientLight' : '');
   }
 

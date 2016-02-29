@@ -11,7 +11,7 @@ export default class Courses extends React.Component {
     var data = this.selectCourse(props);
 
     this.state = {
-      course: data.course,
+      course: props.course,
       sections: data.sections,
       showModal: false,
       showMetricModal: false,
@@ -23,14 +23,22 @@ export default class Courses extends React.Component {
   }
 
   componentDidMount() {
+    this.getCoursesAndSections(this.state.course.id);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.getCoursesAndSections(newProps.course.id);
+  }
+
+  getCoursesAndSections(courseId) {
     var me = this;
 
     $.when(
       $.post("/course/find",
-        { id: 3 }
+        { id: courseId }
       ),
       $.post("/section/find",
-        { course: 3 }
+        { course: courseId }
       )
     ).then(function(course, sections) {
       console.log("course", course[0]);
@@ -85,7 +93,7 @@ export default class Courses extends React.Component {
   }
 
   addQuizToCourse(quiz) {
-    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseTitle);
+    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var course = this.state.course;
     course.quizzes.push({title: quiz.title});
     this.setState({course: course});
@@ -94,25 +102,17 @@ export default class Courses extends React.Component {
 
   selectCourse(props) {
     var data = {};
-    switch(props.courseTitle) {
-      case "CSCI 201":
+    switch(props.course.id) {
+      case 1:
         data.course = course201;
         data.sections = sections201;
         break;
-      case "CSCI 104":
+      case 2:
         data.course = course104;
         data.sections = sections104;
         break;
     }
     return data;
-  }
-
-  componentWillReceiveProps(newProps) {
-    var data = this.selectCourse(newProps);
-    this.setState({
-      course: data.course,
-      sections: data.sections
-    });
   }
 
   render() {
