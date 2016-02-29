@@ -9,6 +9,7 @@ export default class Quizzes extends React.Component {
     super(props);
     var data = this.selectCourse(props);
     this.state = {
+      course: props.course,
       quizzes: data.quizzes,
       showModal: false,
       modalInfo: {
@@ -20,11 +21,19 @@ export default class Quizzes extends React.Component {
   }
 
   componentDidMount() {
+    this.getQuizzesFromCourseId(this.props.course.id);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.getQuizzesFromCourseId(newProps.course.id);
+  }
+
+  getQuizzesFromCourseId(courseId) {
     var me = this;
     console.log("componentDidMount");
     $.when(
       $.post("/quiz/find",
-        { course: 1 }
+        { course: courseId }
       )
     ).then(function(quizzes) {
       console.log("quizzes", quizzes);
@@ -66,7 +75,7 @@ export default class Quizzes extends React.Component {
   }
 
   addQuizToCourse(quiz) {
-    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseTitle);
+    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseId);
     var quizzes = this.state.quizzes;
     var quiz = {
       title: quiz.title,
@@ -92,22 +101,15 @@ export default class Quizzes extends React.Component {
 
   selectCourse(props) {
     var data = {};
-    switch(props.courseTitle) {
-      case "CSCI 201":
+    switch(props.course.id) {
+      case 1:
         data.quizzes = quizzes201;
         break;
-      case "CSCI 104":
+      case 2:
         data.quizzes = quizzes104;
         break;
     }
     return data;
-  }
-
-  componentWillReceiveProps(newProps) {
-    var data = this.selectCourse(newProps);
-    this.setState({
-      quizzes: data.quizzes
-    });
   }
 
   render() {
@@ -126,7 +128,7 @@ export default class Quizzes extends React.Component {
             return (
               <Modal
                 modalInfo={this.state.modalInfo}
-                course={this.props.courseTitle}
+                course={this.props.courseId}
                 quizzes={this.state.quizzes}
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}
