@@ -1,10 +1,9 @@
-SailsOnMySql.md<br/>
-
 <h1>Getting Sails, Waterline, MySQL running on Mac OS X or Linux.</h1><br/>
 <h2>For other OS's having any trouble follow: http://sailsjs.org/get-started#?getting-started-installation</h2><br/>
 <hr><br/>
-(Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)<br/><br/>
+(Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)<br/>
 (Extra Note: 10. checkout common errors before hitting me up)<br/>
+<hr><br/>
 Overview:<br/>
 1. First create a MySQL database - database used by sails-mysql adapter.<br/>
 IMPORTANT: to run steps 6-9 need to start SQL server<br/>
@@ -33,7 +32,7 @@ A. Install MySQL:<br/>
 B. Turn on MySQL:<br/>
 -From preference pane: click turn on - wait until says running<br/>
 or<br/>
--From command line: sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist<br/>
+-From command line: <code>sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
 
 C. Login to mysql:<br/>
 -type (replace [temppwd] with temporary password): <code>mysql -uroot -p [temppwd]</code><br/>
@@ -47,7 +46,7 @@ D. Change temp mysql password:<br/>
 -This will exit out of mysql and into command line<br/>
 
 -Now change password (replace [temppwd] and [newpwd] including []):<br/>
-mysqladmin -u root -p[temppwd] password [newpwd]<br/>
+<code>mysqladmin -u root -p[temppwd] password [newpwd]</code><br/>
 
 E. Fix 2002 Socket Bug (note: check errors section if it happens at a later date)<br/>
 -Type:<code>sudo mkdir /var/mysql</code><br/>
@@ -69,8 +68,8 @@ or<br/>
 -In command line login.<br/>
 
 H. Checkout different ways to run (from command line)<br/>
--Start: sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist<br/>
--Stop: sudo launchctl unload -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist<br/>
+-Start: <code>sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
+-Stop: <code>sudo launchctl unload -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
 -Checkout: http://coolestguidesontheplanet.com/start-stop-mysql-from-the-command-line-terminal-osx-linux/<br/>
 
 
@@ -120,24 +119,24 @@ A. Navigate/Open config/connections.js<br/>
 B. Create new mysql connection in connections.js for sails-mysql<br/>
 -inside <code>module.exports.connections = {</code><br/>
 -type (make sure to input password for mysql and database for mysql you created in step 1 in for xxxxxxxx and testdb):<br/>
-<code><br/>
-	mysql: {<br/>
-    adapter    : 'sails-mysql',<br/>
-    host      : 'localhost',<br/>
-    port      : 3306,<br/>
-    user      : 'root',<br/>
-    password  : 'xxxxxxxx',<br/>
-    database  : 'testdb',<br/>
+<code>
+	mysql: {
+    adapter    : 'sails-mysql',
+    host      : 'localhost',
+    port      : 3306,
+    user      : 'root',
+    password  : 'xxxxxxxx',
+    database  : 'testdb',
 
-    // OR (explicit sets take precedence)<br/>
-    // adapter    : 'sails-mysql',<br/>
-    // url       : 'mysql://root:xxxxxxxx@localhost:3306/testdb'<br/>
+    // OR (explicit sets take precedence)
+    // adapter    : 'sails-mysql',
+    // url       : 'mysql://root:xxxxxxxx@localhost:3306/testdb'
 
-    // Optional<br/>
+    // Optional
 
-    charset   : 'utf8',<br/>
-    collation : 'utf8_swedish_ci'<br/>
-  }<br/>
+    charset   : 'utf8',
+    collation : 'utf8_swedish_ci'
+  }
 </code><br/>
 
 C. Connect to database<br/>
@@ -169,29 +168,29 @@ This creates a controller called UserController.js under the api/controller fold
 A. Fill code in for Create function in UserController<br/>
 -Navigate/Open api/controller/UserController.js<br/>
 -Type/create function should appear like:<br/>
-	<code><br/>
-		create: function(req, res){<br/>
- 			var params = req.params.all()<br/>
- 			User.create({name: params.name}).exec(function createCB(err,created){<br/>
-   				return res.json({<br/>
-     				notice: 'Created user with name ' + created.name<br/>
-   				});<br/>
- 			});<br/>
-		},<br/>
+	<code>
+		create: function(req, res){
+ 			var params = req.params.all()
+ 			User.create({name: params.name}).exec(function createCB(err,created){
+   				return res.json({
+     				notice: 'Created user with name ' + created.name
+   				});
+ 			});
+		},
 	</code><br/>
 
 
 <h1>9. Create path within API</h1><br/>
 
-A. Add route<br/>
+A. Add route (Don't Do - see Blueprints API on sails website)<br/>
 -Navigate/Open config/routes.js<br/>
--Inside <code>module.exports.routes = {</code><br/>
+-Inside <code>module.exports.routes = {</code>
 -Type/code within should appear like:<br/>
-	<code><br/>
-		'/': {<br/>
-    		view: 'homepage',<br/>
-    		'post /User': 'UserController.create'<br/>
-  		}<br/>
+	<code>
+		'/': {
+    		view: 'homepage',
+    		'post /User': 'UserController.create'
+  		}
   	</code><br/>
 
 B. Test route/create function<br/>

@@ -1,10 +1,9 @@
-SailsLocally.md<br/>
-
 <h1>Getting Sails, Waterline on Mac OS X.</h1><br/>
 <h2>For other OS's having any trouble follow: http://sailsjs.org/get-started#?getting-started-installation</h2><br/>
 <hr><br/>
 (Note: if one of the installations from command line does not appear to be working try with sudo: <code>sudo [command]</code>)<br/>
 (Extra Note: 10. checkout common errors before hitting me up)<br/>
+<hr><br/>
 Overview:<br/>
 1. Install nodejs - sails runs on nodejs (whenever you call npm).<br/>
 2. Install Sails - sails provides an api model that is easy to navigate on top of nodejs<br/>
@@ -103,29 +102,29 @@ This creates a controller called UserController.js under the api/controller fold
 A. Fill code in for Create function in UserController<br/>
 -Navigate/Open api/controller/UserController.js<br/>
 -Type/create function should appear like:<br/>
-	<code><br/>
-		create: function(req, res){<br/>
- 			var params = req.params.all()<br/>
+	<code>
+		create: function(req, res){
+ 			var params = req.params.all();
  			User.create({name: params.name}).exec(function createCB(err,created){<br/>
-   				return res.json({<br/>
-     				notice: 'Created user with name ' + created.name<br/>
-   				});<br/>
- 			});<br/>
-		},<br/>
+   				return res.json({
+     				notice: 'Created user with name ' + created.name
+   				});
+ 			});
+		},
 	</code><br/>
 
 <h1>8. Create path within API (Don't need to do this because of Blueprints?)</h1><br/>
 Checkout Blueprints: http://sailsjs.org/documentation/reference/blueprint-api<br/>
 
-A. Add route<br/>
+A. Add route (Don't Do - see Blueprints API on sails website)<br/>
 -Navigate/Open config/routes.js<br/>
 -Inside <code>module.exports.routes = {</code><br/>
 -Type/code within should appear like:<br/>
-	<code><br/>
-		'/': {<br/>
-    		view: 'homepage',<br/>
-    		'post /User': 'UserController.create'<br/>
-  		}<br/>
+	<code>
+		'/': {
+    		view: 'homepage',
+    		'post /User': 'UserController.create'
+  		}
   	</code><br/>
 
 B. Test route/create function<br/>
