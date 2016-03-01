@@ -1,10 +1,10 @@
 "use strict";
 
 import React from 'react'
-import {Sidebar} from '../partials/Sidebar.js'
-import {Header} from '../partials/Header.js'
-
-import {Link} from 'react-router'
+import Sidebar from '../partials/Sidebar.js'
+import Header from '../partials/Header.js'
+import CourseController from '../../api/controllers/CourseController.js'
+import Course from '../../api/models/Course.js'
 
 export default class Layout extends React.Component {
   constructor() {
@@ -31,17 +31,11 @@ export default class Layout extends React.Component {
     console.log("changeCourseId", courseId);
     var me = this;
 
-    $.when(
-      $.post("/course/find",
-        { id: courseId }
-      )
-    ).then(function(course) {
+    $.post("/course/find", { id: courseId })
+    .then(function(course) {
       console.log("course", course);
-
       if(course == undefined) return; // if there are no courses, then there are no sections
-      me.setState({
-        course: course
-      });
+      me.setState({ course: course });
     });
   }
 

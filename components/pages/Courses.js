@@ -1,4 +1,4 @@
-// "use strict";
+"use strict";
 
 import React from 'react'
 import Course from '../partials/Course.js'
@@ -34,12 +34,8 @@ export default class Courses extends React.Component {
     var me = this;
 
     $.when(
-      $.post("/course/find",
-        { id: courseId }
-      ),
-      $.post("/section/find",
-        { course: courseId }
-      )
+      $.post("/course/find", { id: courseId }),
+      $.post("/section/find", { course: courseId })
     ).then(function(course, sections) {
       console.log("course", course[0]);
       console.log("sections", sections[0]);
@@ -94,6 +90,7 @@ export default class Courses extends React.Component {
 
   addQuizToCourse(quiz) {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
+    console.log("quiz", quiz);
     var course = this.state.course;
     course.quizzes.push({title: quiz.title});
     this.setState({course: course});

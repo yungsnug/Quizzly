@@ -31,18 +31,15 @@ export default class Quizzes extends React.Component {
   getQuizzesFromCourseId(courseId) {
     var me = this;
     console.log("componentDidMount");
-    $.when(
-      $.post("/quiz/find",
-        { course: courseId }
-      )
-    ).then(function(quizzes) {
-      console.log("quizzes", quizzes);
+      $.post("/quiz/find", { course: courseId })
+      .then(function(quizzes) {
+        console.log("quizzes", quizzes);
 
-      if(quizzes == undefined) return; // if there are no courses, then there are no sections
-      me.setState({
-        quizzes: quizzes
+        if(quizzes == undefined) return; // if there are no courses, then there are no sections
+        me.setState({
+          quizzes: quizzes
+        });
       });
-    });
   }
 
   handleClick(num) {
