@@ -11,7 +11,8 @@ export default class Layout extends React.Component {
       course: {
         id: 1,
         title: "CSCI 201",
-        quizzes: []
+        quizzes: [],
+        sections: []
       },
       term: "Summer 2015"
     }

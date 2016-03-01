@@ -75,11 +75,9 @@ var Courses = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Courses).call(this, props));
 
-    var data = _this.selectCourse(props);
-
     _this.state = {
       course: props.course,
-      sections: data.sections,
+      sections: props.course.sections,
       showModal: false,
       showMetricModal: false,
       modalInfo: {
@@ -104,7 +102,6 @@ var Courses = function (_React$Component) {
     key: 'getCoursesAndSections',
     value: function getCoursesAndSections(courseId) {
       var me = this;
-
       $.when($.post("/course/find", { id: courseId }), $.post("/section/find", { course: courseId })).then(function (course, sections) {
         console.log("course", course[0]);
         console.log("sections", sections[0]);
@@ -164,27 +161,42 @@ var Courses = function (_React$Component) {
     key: 'addQuizToCourse',
     value: function addQuizToCourse(quiz) {
       console.log("Adding quiz '" + quiz.title + "' in course " + this.props.course.title);
-      console.log("quiz", quiz);
-      var course = this.state.course;
-      course.quizzes.push({ title: quiz.title });
-      this.setState({ course: course });
-      this.closeModal();
+      var me = this;
+      $.post('quiz/create/', {
+        title: quiz.title,
+        course: me.props.course.id
+      }).then(function (quiz) {
+        console.log(quiz);
+        var course = me.state.course;
+        course.quizzes.push(quiz);
+        me.setState({ course: course });
+        me.closeModal();
+      });
     }
   }, {
-    key: 'selectCourse',
-    value: function selectCourse(props) {
-      var data = {};
-      switch (props.course.id) {
-        case 1:
-          data.course = course201;
-          data.sections = sections201;
-          break;
-        case 2:
-          data.course = course104;
-          data.sections = sections104;
-          break;
-      }
-      return data;
+    key: 'addSectionToCourse',
+    value: function addSectionToCourse(section) {
+      var me = this;
+      //TODO: add student array to section
+      $.post('section/create/', { title: section.title, course: me.state.course.id }).then(function (section) {
+        console.log("section", section);
+        var sections = me.state.sections;
+        sections.push(section);
+        me.setState({ sections: sections });
+        me.closeModal();
+      });
+    }
+  }, {
+    key: 'deleteSectionFromCourse',
+    value: function deleteSectionFromCourse(sectionIndex) {
+      var me = this;
+      var sections = me.state.sections;
+      $.post('section/destroy/', { id: sections[sectionIndex].id }).then(function (section) {
+        console.log("section", section);
+        sections.splice(sectionIndex, 1);
+        me.setState({ sections: sections });
+        me.closeModal();
+      });
     }
   }, {
     key: 'render',
@@ -202,16 +214,19 @@ var Courses = function (_React$Component) {
             isCourse: true,
             ref: 'course',
             addQuizModal: this.addQuizModal.bind(this),
-            showMetricModal: this.showMetricModal.bind(this)
+            showMetricModal: this.showMetricModal.bind(this),
+            sectionIndex: -1,
+            deleteSectionFromCourse: this.deleteSectionFromCourse.bind(this)
           }),
           this.state.sections.map(function (section, i) {
             return _react2.default.createElement(_Course2.default, {
               section: section,
+              sectionIndex: i,
               course: this.state.course,
               isCourse: false,
               key: i,
-              ref: 'section' + i,
-              showMetricModal: this.showMetricModal.bind(this)
+              showMetricModal: this.showMetricModal.bind(this),
+              deleteSectionFromCourse: this.deleteSectionFromCourse.bind(this)
             });
           }, this),
           _react2.default.createElement(
@@ -226,7 +241,8 @@ var Courses = function (_React$Component) {
             showModal: _this2.state.showModal,
             key: _this2.state.showModal,
             closeModal: _this2.closeModal.bind(_this2),
-            addQuizToCourse: _this2.addQuizToCourse.bind(_this2)
+            addQuizToCourse: _this2.addQuizToCourse.bind(_this2),
+            addSectionToCourse: _this2.addSectionToCourse.bind(_this2)
           });
         }(),
         function () {
@@ -283,7 +299,8 @@ var Layout = function (_React$Component) {
       course: {
         id: 1,
         title: "CSCI 201",
-        quizzes: []
+        quizzes: [],
+        sections: []
       },
       term: "Summer 2015"
     };
@@ -385,10 +402,10 @@ var Quizzes = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Quizzes).call(this, props));
 
-    var data = _this.selectCourse(props);
+    console.log("quizzes", props.course.quizzes);
     _this.state = {
       course: props.course,
-      quizzes: data.quizzes,
+      quizzes: [{ title: "", questions: [], course: 0, id: 0 }],
       showModal: false,
       modalInfo: {
         modalType: "ADD_QUIZ",
@@ -459,43 +476,62 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'addQuizToCourse',
     value: function addQuizToCourse(quiz) {
-      console.log("Adding quiz '" + quiz.title + "' in course " + this.props.courseId);
-      var quizzes = this.state.quizzes;
-      var quiz = {
+      console.log("Adding quiz '" + quiz.title + "' in course " + this.props.course.title);
+      var me = this;
+      $.post('quiz/create/', {
         title: quiz.title,
-        questions: []
-      };
-      quizzes.push(quiz);
-      this.setState({ quizzes: quizzes });
-      this.closeModal();
+        course: me.props.course.id
+      }).then(function (quiz) {
+        console.log(quiz);
+        quiz.questions = [];
+        var quizzes = me.state.quizzes;
+        quizzes.push(quiz);
+        me.setState({ quizzes: quizzes });
+        me.closeModal();
+      });
     }
   }, {
     key: 'addQuestionToQuiz',
     value: function addQuestionToQuiz(question, quizIndex) {
+      var me = this;
       if (question.text.trim().length == 0) return;
 
-      console.log("Adding question '" + question.text + "' in quiz " + this.state.quizzes[quizIndex].title);
       var quizzes = this.state.quizzes;
-      var question = {
-        text: question.text
-      };
-      quizzes[quizIndex].questions.push(question);
-      this.setState({ quizzes: quizzes });
-      this.closeModal();
+      $.post('/question/create', { text: question.text, type: 'freeResponse', quiz: quizzes[quizIndex].id }).then(function (question) {
+        quizzes[quizIndex].questions.push(question);
+        me.setState({ quizzes: quizzes });
+        me.closeModal();
+      });
     }
   }, {
-    key: 'selectCourse',
-    value: function selectCourse(props) {
-      var data = {};
-      switch (props.course.id) {
-        case 1:
-          data.quizzes = quizzes201;
-          break;
-        case 2:
-          data.quizzes = quizzes104;
-          break;
-      }
-      return data;
+    key: 'deleteQuizFromCourse',
+    value: function deleteQuizFromCourse(quizIndex) {
+      var me = this;
+      var quizzes = this.state.quizzes;
+      $.post('/quiz/destroy', { id: quizzes[quizIndex].id }).then(function () {
+        var questions = quizzes[quizIndex].questions;
+        if (questions.length == 0) return $.when(null);
+        var questionIds = [];
+        for (var i = 0; i < questions.length; ++i) {
+          questionIds.push(questions[i].id);
+        }
+        return $.post('/question/destroy', { id: questionIds });
+      }).then(function () {
+        quizzes.splice(quizIndex, 1);
+        me.setState({ quizzes: quizzes });
+        me.closeModal();
+      });
+    }
+  }, {
+    key: 'deleteQuestionFromQuiz',
+    value: function deleteQuestionFromQuiz(quizIndex, questionIndex) {
+      var me = this;
+      var quizzes = this.state.quizzes;
+      $.post('/question/destroy', { id: quizzes[quizIndex].questions[questionIndex].id }).then(function () {
+        quizzes[quizIndex].questions.splice(questionIndex, 1);
+        me.setState({ quizzes: quizzes });
+        me.closeModal();
+      });
     }
   }, {
     key: 'render',
@@ -509,7 +545,14 @@ var Quizzes = function (_React$Component) {
           'div',
           { id: 'quizzes', className: 'p20 quizzlyContent' },
           this.state.quizzes.map(function (quiz, i) {
-            return _react2.default.createElement(_Quiz2.default, { quiz: quiz, key: i, ref: 'quiz' + i, quizIndex: i, addQuestionModal: this.addQuestionModal.bind(this) });
+            return _react2.default.createElement(_Quiz2.default, {
+              quiz: quiz,
+              key: i,
+              quizIndex: i,
+              deleteQuizFromCourse: this.deleteQuizFromCourse.bind(this),
+              deleteQuestionFromQuiz: this.deleteQuestionFromQuiz.bind(this),
+              addQuestionModal: this.addQuestionModal.bind(this)
+            });
           }, this),
           _react2.default.createElement(
             'div',
@@ -662,7 +705,7 @@ var AddCourseBody = function (_React$Component) {
         courseInput = null;
         addButton = _react2.default.createElement(
           "div",
-          { className: "modalButton" },
+          { className: "modalButton", onClick: this.props.addSectionToCourse.bind(this, this.state.course.sections[0]) },
           "ADD SECTION"
         );
         footerButton = null;
@@ -764,7 +807,7 @@ var AddQuizBody = function (_React$Component) {
     _this.state = {
       isAddFreeResponse: false,
       question: {
-        title: "",
+        text: "",
         placeholder: "Question...",
         inputs: [{ letter: "A", text: "", placeholder: "Answer A..." }, { letter: "B", text: "", placeholder: "Answer B..." }, { letter: "C", text: "", placeholder: "Answer C..." }]
       }
@@ -778,7 +821,7 @@ var AddQuizBody = function (_React$Component) {
       var me = this;
       var question = this.state.question;
       if (i == 'question') {
-        question.title = event.target.value;
+        question.text = event.target.value;
       } else {
         question.inputs[i].text = event.target.value;
       }
@@ -825,7 +868,7 @@ var AddQuizBody = function (_React$Component) {
           type: "text",
           className: "addCourseInput",
           placeholder: this.state.question.placeholder,
-          value: this.state.question.title,
+          value: this.state.question.text,
           onChange: this.handleChange.bind(this, 'question')
         })
       );
@@ -1016,6 +1059,7 @@ var _class = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, props));
 
+    console.log("Course props: ", props);
     _this.state = {
       title: "Course Title"
     };
@@ -1025,11 +1069,6 @@ var _class = function (_React$Component) {
   _createClass(_class, [{
     key: "render",
     value: function render() {
-      var header = _react2.default.createElement(
-        "div",
-        { className: "header" },
-        this.props.isCourse ? this.props.course.title : this.props.section.title
-      );
       var footer = this.props.isCourse ? _react2.default.createElement(
         "div",
         { className: "footerButton", onClick: this.props.addQuizModal.bind(this) },
@@ -1041,7 +1080,16 @@ var _class = function (_React$Component) {
         _react2.default.createElement(
           "div",
           { className: "scrollRegion" },
-          header,
+          _react2.default.createElement(
+            "div",
+            { className: "header" },
+            this.props.isCourse ? this.props.course.title : this.props.section.title,
+            _react2.default.createElement(
+              "span",
+              { className: "floatR pointer", onClick: this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
+              _react2.default.createElement("img", { src: "images/close.png", style: { "width": "12px" } })
+            )
+          ),
           _react2.default.createElement(
             "div",
             { className: "body" },
@@ -1484,7 +1532,7 @@ var Modal = function (_React$Component) {
     value: function render() {
       var body = {};
       if (this.state.modalType == "ADD_COURSE") {
-        body = _react2.default.createElement(_AddCourseBody2.default, null);
+        body = _react2.default.createElement(_AddCourseBody2.default, { addSectionToCourse: this.props.addSectionToCourse.bind(this) });
       } else if (this.state.modalType == "ADD_QUIZ") {
         body = _react2.default.createElement(_AddQuizBody2.default, { addQuizToCourse: this.props.addQuizToCourse.bind(this), course: this.props.course });
       } else if (this.state.modalType == "ADD_QUESTION") {
@@ -1559,11 +1607,6 @@ var _class = function (_React$Component) {
   }
 
   _createClass(_class, [{
-    key: "handleClick",
-    value: function handleClick(num) {
-      console.log("Clicked: ", num);
-    }
-  }, {
     key: "render",
     value: function render() {
       return _react2.default.createElement(
@@ -1575,16 +1618,20 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "header" },
-            this.props.quiz.title
+            this.props.quiz.title,
+            _react2.default.createElement(
+              "span",
+              { className: "floatR pointer", onClick: this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex) },
+              _react2.default.createElement("img", { src: "images/close.png", style: { "width": "12px" } })
+            )
           ),
           _react2.default.createElement(
             "div",
             { className: "body" },
             this.props.quiz.questions.map(function (question, i) {
-              var boundClick = this.handleClick.bind(this, i);
               return _react2.default.createElement(
                 "div",
-                { onClick: boundClick, key: i, text: question, ref: 'question' + i, className: "item" },
+                { onClick: this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, i), key: i, text: question, className: "item" },
                 question.text
               );
             }, this)

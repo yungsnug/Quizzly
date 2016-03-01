@@ -8,11 +8,9 @@ import MetricModal from '../partials/MetricModal.js'
 export default class Courses extends React.Component {
   constructor(props) {
     super(props);
-    var data = this.selectCourse(props);
-
     this.state = {
       course: props.course,
-      sections: data.sections,
+      sections: props.course.sections,
       showModal: false,
       showMetricModal: false,
       modalInfo: {
@@ -32,7 +30,6 @@ export default class Courses extends React.Component {
 
   getCoursesAndSections(courseId) {
     var me = this;
-
     $.when(
       $.post("/course/find", { id: courseId }),
       $.post("/section/find", { course: courseId })
@@ -90,26 +87,44 @@ export default class Courses extends React.Component {
 
   addQuizToCourse(quiz) {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
-    console.log("quiz", quiz);
-    var course = this.state.course;
-    course.quizzes.push({title: quiz.title});
-    this.setState({course: course});
-    this.closeModal();
+    var me = this;
+    $.post('quiz/create/',
+      {
+        title: quiz.title,
+        course: me.props.course.id
+      }
+    ).then(function(quiz) {
+      console.log(quiz);
+      var course = me.state.course;
+      course.quizzes.push(quiz);
+      me.setState({course: course});
+      me.closeModal();
+    });
   }
 
-  selectCourse(props) {
-    var data = {};
-    switch(props.course.id) {
-      case 1:
-        data.course = course201;
-        data.sections = sections201;
-        break;
-      case 2:
-        data.course = course104;
-        data.sections = sections104;
-        break;
-    }
-    return data;
+  addSectionToCourse(section) {
+    var me = this;
+    //TODO: add student array to section
+    $.post('section/create/', { title: section.title, course: me.state.course.id }
+    ).then(function(section) {
+      console.log("section", section);
+      var sections = me.state.sections;
+      sections.push(section);
+      me.setState({sections: sections});
+      me.closeModal();
+    });
+  }
+
+  deleteSectionFromCourse(sectionIndex) {
+    var me = this;
+    var sections = me.state.sections;
+    $.post('section/destroy/', { id: sections[sectionIndex].id }
+    ).then(function(section) {
+      console.log("section", section);
+      sections.splice(sectionIndex, 1);
+      me.setState({sections: sections});
+      me.closeModal();
+    });
   }
 
   render() {
@@ -122,16 +137,19 @@ export default class Courses extends React.Component {
             ref={'course'}
             addQuizModal={this.addQuizModal.bind(this)}
             showMetricModal={this.showMetricModal.bind(this)}
+            sectionIndex={-1}
+            deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
           />
           {this.state.sections.map(function(section, i) {
             return (
               <Course
                 section={section}
+                sectionIndex={i}
                 course={this.state.course}
                 isCourse={false}
                 key={i}
-                ref={'section' + i}
                 showMetricModal={this.showMetricModal.bind(this)}
+                deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
               />
             );
           }, this)}
@@ -147,6 +165,7 @@ export default class Courses extends React.Component {
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}
                 addQuizToCourse={this.addQuizToCourse.bind(this)}
+                addSectionToCourse={this.addSectionToCourse.bind(this)}
               />
             );
         })()}
