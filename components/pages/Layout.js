@@ -1,10 +1,8 @@
 "use strict";
 
 import React from 'react'
-import Sidebar from '../partials/Sidebar.js'
-import Header from '../partials/Header.js'
-import CourseController from '../../api/controllers/CourseController.js'
-import Course from '../../api/models/Course.js'
+import {Sidebar} from '../partials/Sidebar.js'
+import {Header} from '../partials/Header.js'
 
 export default class Layout extends React.Component {
   constructor() {
