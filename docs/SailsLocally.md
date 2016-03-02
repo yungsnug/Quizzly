@@ -20,7 +20,6 @@ Overview:<br/>
 <hr>
 
 <h1>1. Install nodejs.</h1><br/>
-<h2>Note: Make sure you use a different terminal or quit from mysql by typing: <code>quit</code> before moving on to next steps.</h2> <br/>
 
 A. Download and install nodejs from https://nodejs.org/en/.  Mature and Dependable works. <br/>
 B. Check node is in your path by typing: <code>node -v</code>. This should return the version number.<br/>

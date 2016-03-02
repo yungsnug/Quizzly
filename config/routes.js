@@ -41,7 +41,7 @@ module.exports.routes = {
   '/quizzes': {
     view: 'app'
   },
-    '/entrance': {
+  '/entrance': {
     view: 'app'
   },
   'post /login': 'AuthController.login',

@@ -7,10 +7,10 @@ import Modal from '../partials/Modal.js'
 export default class Quizzes extends React.Component {
   constructor(props) {
     super(props);
-    var data = this.selectCourse(props);
+    console.log("quizzes", props.course.quizzes);
     this.state = {
       course: props.course,
-      quizzes: data.quizzes,
+      quizzes: [{title: "", questions: [], course: 0, id: 0}],
       showModal: false,
       modalInfo: {
         modalType: "ADD_QUIZ",
@@ -31,18 +31,15 @@ export default class Quizzes extends React.Component {
   getQuizzesFromCourseId(courseId) {
     var me = this;
     console.log("componentDidMount");
-    $.when(
-      $.post("/quiz/find",
-        { course: courseId }
-      )
-    ).then(function(quizzes) {
-      console.log("quizzes", quizzes);
+      $.post("/quiz/find", { course: courseId })
+      .then(function(quizzes) {
+        console.log("quizzes", quizzes);
 
-      if(quizzes == undefined) return; // if there are no courses, then there are no sections
-      me.setState({
-        quizzes: quizzes
+        if(quizzes == undefined) return; // if there are no courses, then there are no sections
+        me.setState({
+          quizzes: quizzes
+        });
       });
-    });
   }
 
   handleClick(num) {
@@ -75,41 +72,65 @@ export default class Quizzes extends React.Component {
   }
 
   addQuizToCourse(quiz) {
-    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.courseId);
-    var quizzes = this.state.quizzes;
-    var quiz = {
-      title: quiz.title,
-      questions: []
-    };
-    quizzes.push(quiz);
-    this.setState({quizzes: quizzes});
-    this.closeModal();
+    console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
+    var me = this;
+    $.post('quiz/create/',
+      {
+        title: quiz.title,
+        course: me.props.course.id
+      }
+    ).then(function(quiz) {
+      console.log(quiz);
+      quiz.questions = [];
+      var quizzes = me.state.quizzes;
+      quizzes.push(quiz);
+      me.setState({quizzes: quizzes});
+      me.closeModal();
+    });
   }
 
   addQuestionToQuiz(question, quizIndex) {
+    var me = this;
     if(question.text.trim().length == 0) return;
 
-    console.log("Adding question '" +  question.text + "' in quiz " + this.state.quizzes[quizIndex].title);
     var quizzes = this.state.quizzes;
-    var question = {
-      text: question.text
-    };
-    quizzes[quizIndex].questions.push(question);
-    this.setState({quizzes: quizzes});
-    this.closeModal();
+    $.post('/question/create', {text: question.text, type: 'freeResponse', quiz: quizzes[quizIndex].id})
+    .then(function(question) {
+      quizzes[quizIndex].questions.push(question);
+      me.setState({quizzes: quizzes});
+      me.closeModal();
+    });
   }
 
-  selectCourse(props) {
-    var data = {};
-    switch(props.course.id) {
-      case 1:
-        data.quizzes = quizzes201;
-        break;
-      case 2:
-        data.quizzes = quizzes104;
-        break;
-    }
-    return data;
+  deleteQuizFromCourse(quizIndex) {
+    var me = this;
+    var quizzes = this.state.quizzes;
+    $.post('/quiz/destroy', {id: quizzes[quizIndex].id})
+    .then(function() {
+      var questions = quizzes[quizIndex].questions;
+      if(questions.length == 0) return $.when(null);
+      var questionIds = [];
+      for(var i = 0; i < questions.length; ++i) {
+        questionIds.push(questions[i].id);
+      }
+      return $.post('/question/destroy', {id: questionIds});
+    })
+    .then(function() {
+      quizzes.splice(quizIndex, 1);
+      me.setState({quizzes: quizzes});
+      me.closeModal();
+    });
+  }
+
+  deleteQuestionFromQuiz(quizIndex, questionIndex) {
+    var me = this;
+    var quizzes = this.state.quizzes;
+    $.post('/question/destroy', {id: quizzes[quizIndex].questions[questionIndex].id})
+    .then(function() {
+      quizzes[quizIndex].questions.splice(questionIndex, 1);
+      me.setState({quizzes: quizzes});
+      me.closeModal();
+    });
   }
 
   render() {
@@ -118,7 +139,14 @@ export default class Quizzes extends React.Component {
         <div id="quizzes" className="p20 quizzlyContent">
           {this.state.quizzes.map(function(quiz, i) {
             return (
-              <Quiz quiz={quiz} key={i} ref={'quiz' + i} quizIndex={i} addQuestionModal={this.addQuestionModal.bind(this)} />
+              <Quiz
+                quiz={quiz}
+                key={i}
+                quizIndex={i}
+                deleteQuizFromCourse={this.deleteQuizFromCourse.bind(this)}
+                deleteQuestionFromQuiz={this.deleteQuestionFromQuiz.bind(this)}
+                addQuestionModal={this.addQuestionModal.bind(this)}
+              />
             );
           }, this)}
           <div className="addEntityButton" onClick={this.addQuizModal.bind(this)}>+</div>

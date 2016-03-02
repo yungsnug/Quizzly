@@ -4,16 +4,15 @@ import React from 'react'
 import {Sidebar} from '../partials/Sidebar.js'
 import {Header} from '../partials/Header.js'
 
-import {Link} from 'react-router'
-
 export default class Layout extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       course: {
         id: 1,
         title: "CSCI 201",
-        quizzes: []
+        quizzes: [],
+        sections: []
       },
       term: "Summer 2015"
     }
@@ -31,17 +30,11 @@ export default class Layout extends React.Component {
     console.log("changeCourseId", courseId);
     var me = this;
 
-    $.when(
-      $.post("/course/find",
-        { id: courseId }
-      )
-    ).then(function(course) {
+    $.post("/course/find", { id: courseId })
+    .then(function(course) {
       console.log("course", course);
-
       if(course == undefined) return; // if there are no courses, then there are no sections
-      me.setState({
-        course: course
-      });
+      me.setState({ course: course });
     });
   }
 

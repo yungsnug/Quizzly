@@ -88,7 +88,7 @@ export default class AddCourseBody extends React.Component {
       footerButton = <div className="footerButton" onClick={this.addSection.bind(this)} >+</div>
     } else {
       courseInput = null;
-      addButton = <div className="modalButton">ADD SECTION</div>
+      addButton = <div className="modalButton" onClick={this.props.addSectionToCourse.bind(this, this.state.course.sections[0])}>ADD SECTION</div>
       footerButton = null;
     }
 

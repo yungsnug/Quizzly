@@ -1,9 +1,8 @@
 "use strict";
 
 import React from 'react'
-import {Layout} from '../layout.js'
 import {Link} from 'react-router'
-import browserHistory from 'react-router/lib/BrowserHistory';
+import { browserHistory } from 'react-router'
 
 export default class extends React.Component {
   constructor(props) {
@@ -43,7 +42,7 @@ export default class extends React.Component {
   render() {
     return (
       <div id="quizzlyEntrance">
-        <div className="centerBlock alignC" style={{"padding-top": "5%"}}>
+        <div className="centerBlock alignC" style={{"paddingTop": "5%"}}>
           <div className="title mb10">QUIZZLY</div>
           <div className="subtitle mb20">The scholastic environment where clickers do not exist</div>
           <img className="logo mb20" src="/images/logo.png"/>
@@ -62,9 +61,6 @@ export default class extends React.Component {
               value={this.state.password}
               onChange={this.handlePasswordChange.bind(this)}
             />
-            <div className="signInButton mb20">
-              <Link to="courses">SIGN IN</Link>
-            </div>
             <input type="submit" value="SIGN IN" className="signInButton mb20"/>
           </form>
           <div className="subsubtitle">Or switch to&nbsp;

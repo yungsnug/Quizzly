@@ -8,7 +8,7 @@ export default class AddQuizBody extends React.Component {
     this.state = {
       isAddFreeResponse: false,
       question: {
-        title: "",
+        text: "",
         placeholder: "Question...",
         inputs: [
           {letter: "A", text: "", placeholder: "Answer A..."},
@@ -23,7 +23,7 @@ export default class AddQuizBody extends React.Component {
     var me = this;
     var question = this.state.question;
     if(i == 'question') {
-      question.title = event.target.value;
+      question.text = event.target.value;
     } else {
       question.inputs[i].text = event.target.value;
     }
@@ -69,7 +69,7 @@ export default class AddQuizBody extends React.Component {
           type="text"
           className="addCourseInput"
           placeholder={this.state.question.placeholder}
-          value={this.state.question.title}
+          value={this.state.question.text}
           onChange={this.handleChange.bind(this, 'question')}
         />
       </div>
