@@ -34,7 +34,18 @@ module.exports.routes = {
 
   '/': {
     view: 'app'
-  }
+  },
+  '/courses': {
+    view: 'app'
+  },
+  '/quizzes': {
+    view: 'app'
+  },
+    '/entrance': {
+    view: 'app'
+  },
+  'post /login': 'AuthController.login',
+  'post /user': 'AuthController.user'
 
   /***************************************************************************
   *                                                                          *
