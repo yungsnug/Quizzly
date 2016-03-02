@@ -41,7 +41,7 @@ export default class extends React.Component {
 
   render() {
     return (
-      <div id="quizzlyEntrance">
+      <div id="quizzlyEntrance" className="gradientBody">
         <div className="centerBlock alignC" style={{"paddingTop": "5%"}}>
           <div className="title mb10">QUIZZLY</div>
           <div className="subtitle mb20">The scholastic environment where clickers do not exist</div>
