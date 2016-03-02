@@ -5,7 +5,7 @@ a [Sails](http://sailsjs.org) application
 To run locally:<br/>
 A. Have nodejs installed (only step 1): <a href="https://github.com/freyconner24/Quizzly/blob/master/docs/SailsLocally.md#1-install-nodejs">NodeJS installation</a><br/>
 B. Run <code>sudo npm install sails -g</code><br/>
-C. After cloning (<a href="https://github.com/freyconner24/Quizzly/blob/master/docs/githubStartup.md#github-guidecommands">Git Commands Guide w/ Clone Command</a>, cd into directory Quizzly<br/>
+C. After cloning (<a href="https://github.com/freyconner24/Quizzly/blob/master/docs/githubStartup.md#github-guidecommands">Git Commands Guide w/ Clone Command</a>), cd into directory Quizzly<br/>
 D. To setup connections and models from barebone files run the following:<br/>
 -Run <code>cp config/connections.js.template config/connections.js</code><br/>
 -Run <code>cp config/models.js.template config/models.js</code><br/>
