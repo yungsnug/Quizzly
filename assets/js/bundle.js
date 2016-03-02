@@ -206,8 +206,8 @@ var Courses = function (_React$Component) {
   }, {
     key: 'getName',
     value: function getName() {
-      $.post('/user').then(function (professor) {
-        console.log("professor", professor);
+      $.post('/user').then(function (user) {
+        console.log("user", user);
       });
     }
   }, {
