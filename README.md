@@ -18,6 +18,9 @@ G. Make sure MySQL server is running if using MySQL (check password and db name 
 H. I recommend having 2 terminal windows open.  In one window you run the compile line above and in the other window you run the server with `sails lift` <br/>
 I. For MySQL, get MySQLWorkbench and CSV files loaded in database: <a href="https://github.com/freyconner24/Quizzly/blob/master/docs/mySQLWorkbench.md#mysql-workbench-guide">MySQLWorkbench Guide</a>
 
+
+Git commands trouble? Start here:<a href="https://github.com/freyconner24/Quizzly/blob/master/docs/githubStartup.md#github-guidecommands">Git Commands Guide</a>
+
 You must run this command every time you change a React file: `browserify -t [ babelify --presets [ react ] ] components/app.js -o assets/js/bundle.js`
 
 
