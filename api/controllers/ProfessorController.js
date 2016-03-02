@@ -7,7 +7,6 @@
 
 module.exports = {
   login: function(req, res) {
-
     console.log("attempting to login...");
     var p = req.params.all();
     console.log("email", p.email);
