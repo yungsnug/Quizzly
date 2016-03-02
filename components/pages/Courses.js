@@ -129,8 +129,8 @@ export default class Courses extends React.Component {
 
   getName() {
     $.post('/user')
-    .then(function(professor) {
-      console.log("professor", professor);
+    .then(function(user) {
+      console.log("user", user);
     });
   }
 
