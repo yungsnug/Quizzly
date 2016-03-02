@@ -5,8 +5,8 @@ import {Sidebar} from '../partials/Sidebar.js'
 import {Header} from '../partials/Header.js'
 
 export default class Layout extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       course: {
         id: 1,

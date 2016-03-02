@@ -40,7 +40,9 @@ module.exports.routes = {
   },
   '/quizzes': {
     view: 'app'
-  }
+  },
+  'get /login': 'ProfessorController.login',
+  'post /user': 'AuthController.user'
 
   /***************************************************************************
   *                                                                          *

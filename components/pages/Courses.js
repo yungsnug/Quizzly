@@ -127,10 +127,17 @@ export default class Courses extends React.Component {
     });
   }
 
+  getName() {
+    $.post('/user')
+    .then(function(professor) {
+      console.log("professor", professor);
+    });
+  }
+
   render() {
     return (
       <div>
-        <div id="courses" className="quizzlyContent">
+        <div id="courses" className="quizzlyContent" onClick={this.getName.bind(this)}>
           <Course
             course={this.state.course}
             isCourse={true}

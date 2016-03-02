@@ -33,7 +33,7 @@ module.exports.http = {
     // order: [
     //   'startRequestTimer',
     //   'cookieParser',
-    //   'session',
+      // 'session',
     //   'myRequestLogger',
     //   'bodyParser',
     //   'handleBodyParserError',

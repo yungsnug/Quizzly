@@ -199,6 +199,13 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
+    key: 'getName',
+    value: function getName() {
+      $.post('/user').then(function (professor) {
+        console.log("professor", professor);
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -208,7 +215,7 @@ var Courses = function (_React$Component) {
         null,
         _react2.default.createElement(
           'div',
-          { id: 'courses', className: 'quizzlyContent' },
+          { id: 'courses', className: 'quizzlyContent', onClick: this.getName.bind(this) },
           _react2.default.createElement(_Course2.default, {
             course: this.state.course,
             isCourse: true,
@@ -290,11 +297,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Layout = function (_React$Component) {
   _inherits(Layout, _React$Component);
 
-  function Layout() {
+  function Layout(props) {
     _classCallCheck(this, Layout);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Layout).call(this));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Layout).call(this, props));
 
+    console.log("req", props);
     _this.state = {
       course: {
         id: 1,
