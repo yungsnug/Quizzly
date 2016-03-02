@@ -37,7 +37,7 @@
 - In Result Grid bar. Click on import: <br/>
 <img src="images/import.png" alt="import"style="width:304px;height:228px;"> <br/>
 - Navigate to .csv with name of table in Quizzly/db/ and select. Result Grid should be populated. <br/>
-- In Result Grid. Select first object in Result Grid (if its not real data).  Then in Result Grid bar, select red minus table sign (to delete):<br/>
+- In Result Grid. Select first object in Result Grid (if its not correct data [heading data]).  Then in Result Grid bar, select red minus table sign (to delete):<br/>
 <img src="images/delete.png" alt="import"style="width:304px;height:228px;"> <br/>
 - Hit apply at bottom right.<br/>
 <img src="images/apply.png" alt="import"style="width:304px;height:228px;"> <br/>
