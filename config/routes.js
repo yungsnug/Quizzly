@@ -41,6 +41,9 @@ module.exports.routes = {
   '/quizzes': {
     view: 'app'
   },
+  '/entrance': {
+    view: 'app'
+  },
   'get /login': 'ProfessorController.login',
   'post /user': 'AuthController.user'
 
