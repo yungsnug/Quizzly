@@ -22,6 +22,7 @@
 	Hostname: 127.0.0.1 Port: 3306
 	Username: root
 </code>
+<br/>
 -OK <br/>
 -Double click on new connection (with [name of connection]) <br/>
 -Enter password for db <br/>
@@ -35,11 +36,11 @@
 <img src="images/workbenchzoom.png" alt="Workbench Zoom"style="width:304px;height:228px;"> <br/>
 - In Result Grid bar. Click on import: <br/>
 <img src="images/import.png" alt="import"style="width:304px;height:228px;"> <br/>
-- Navigate to .csv with name of table in Quizzly/db/ and select. Result Grid should be populated.
+- Navigate to .csv with name of table in Quizzly/db/ and select. Result Grid should be populated. <br/>
 - In Result Grid. Select first object in Result Grid (if its not real data).  Then in Result Grid bar, select red minus table sign (to delete):<br/>
 <img src="images/delete.png" alt="import"style="width:304px;height:228px;"> <br/>
 - Hit apply at bottom right.<br/>
 <img src="images/apply.png" alt="import"style="width:304px;height:228px;"> <br/>
-- Hit apply in next window. Result should say: Execute SQL Statements. SQL script was successfully applied to the database.
--Close. Table on MySQL is now filled with csv data! 
+- Hit apply in next window. Result should say: Execute SQL Statements. SQL script was successfully applied to the database.<br/>
+-Close. Table on MySQL is now filled with csv data! <br/>
 -Go to next table and repeat from NOTE!
