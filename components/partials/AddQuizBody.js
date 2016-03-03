@@ -5,9 +5,17 @@ import React from 'react'
 export default class AddQuizBody extends React.Component {
   constructor(props) {
     super(props);
+    var quiz = {title: ""};
+    console.log("got here 1", props.quizIndex);
+    if(props.quizIndex > -1) {
+      console.log("got here 2");
+      quiz = props.course.quizzes[props.quizIndex];
+    }
 
+    console.log("quiz??", quiz);
     this.state = {
-      quiz: {title: "", placeholder: "Quiz title..."}
+      placeholder: "Quiz title...",
+      quiz: quiz
     };
   }
 
@@ -31,7 +39,7 @@ export default class AddQuizBody extends React.Component {
               value={this.state.quiz.title}
               onChange={this.handleChange.bind(this, 'quiz')}
             />
-            <div className="plusButton ml15" onClick={this.props.addQuizToCourse.bind(this, me.state.quiz)}>+</div>
+            <div className="plusButton ml15" onClick={this.props.addQuizToCourse.bind(this, me.state.quiz, me.props.quizIndex)}>+</div>
           </div>
         </div>
       </div>

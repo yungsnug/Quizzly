@@ -19,11 +19,19 @@ export default class Modal extends React.Component {
   render() {
     var body = {};
     if(this.state.modalType == "ADD_COURSE") {
-      body = <AddCourseBody addSectionToCourse={this.props.addSectionToCourse.bind(this)}/>;
+      body = <AddCourseBody
+              addSectionToCourse={this.props.addSectionToCourse.bind(this)}/>;
     } else if(this.state.modalType == "ADD_QUIZ") {
-      body = <AddQuizBody addQuizToCourse={this.props.addQuizToCourse.bind(this)} course={this.props.course} />;
+      body = <AddQuizBody
+              addQuizToCourse={this.props.addQuizToCourse.bind(this)}
+              quizIndex={this.props.modalInfo.quizIndex}
+              course={this.props.course} />;
     } else if(this.state.modalType == "ADD_QUESTION") {
-      body = <AddQuestionBody addQuestionToQuiz={this.props.addQuestionToQuiz.bind(this)} quizzes={this.props.quizzes} quizIndex={this.props.modalInfo.index} />;
+      body = <AddQuestionBody
+              addQuestionToQuiz={this.props.addQuestionToQuiz.bind(this)}
+              quizzes={this.props.quizzes}
+              quizIndex={this.props.modalInfo.quizIndex}
+              questionIndex={this.props.modalInfo.questionIndex} />;
     }
 
     return (

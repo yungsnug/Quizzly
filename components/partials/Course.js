@@ -12,7 +12,7 @@ export default class extends React.Component {
   }
 
   render() {
-    var footer = this.props.isCourse ? <div className="footerButton" onClick={this.props.addQuizModal.bind(this)}>+</div> : null;
+    var footer = this.props.isCourse ? <div className="footerButton" onClick={this.props.showQuizModal.bind(this)}>+</div> : null;
     return (
       <div className="mainPanel">
         <div className="scrollRegion">
@@ -22,9 +22,12 @@ export default class extends React.Component {
           </div>
 
           <div className="body">
-            {this.props.course.quizzes.map(function(quiz, i) {
+            {this.props.course.quizzes.map(function(quiz, quizIndex) {
               return (
-                <div onClick={this.props.showMetricModal.bind(this, quiz)} key={i} title={quiz} ref={'quiz' + i} className="item">{quiz.title}</div>
+                <div /*onClick={this.props.showMetricModal.bind(this, quiz)}*/ key={quizIndex} title={quiz} className="item">
+                  <span className="pointer" onClick={this.props.showQuizInModal.bind(this, quizIndex)}>{quiz.title}</span>
+                  {this.props.isCourse ? <span className="floatR pointer opacity40" onClick={this.props.deleteQuizFromCourse.bind(this, quizIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span> : null}
+                </div>
               );
             }, this)}
           </div>

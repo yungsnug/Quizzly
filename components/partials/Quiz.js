@@ -20,13 +20,16 @@ export default class extends React.Component {
             <span className="floatR pointer" onClick={this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
             </div>
           <div className="body">
-            {this.props.quiz.questions.map(function(question, i) {
+            {this.props.quiz.questions.map(function(question, questionIndex) {
               return (
-                <div onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, i)} key={i} text={question} className="item">{question.text}</div>
+                <div key={questionIndex} className="item">
+                  <span className="pointer" onClick={this.props.showQuestionInModal.bind(this, this.props.quizIndex, questionIndex)}>{question.text}</span>
+                  <span className="floatR pointer opacity40" onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, questionIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span>
+                </div>
               );
             }, this)}
           </div>
-          <div className="footerButton" onClick={this.props.addQuestionModal.bind(this, this.props.quiz.title, this.props.quizIndex)}>+</div>
+          <div className="footerButton" onClick={this.props.showQuestionModal.bind(this, this.props.quizIndex, -1)}>+</div>
         </div>
       </div>
     );

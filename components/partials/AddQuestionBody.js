@@ -2,20 +2,29 @@
 
 import React from 'react'
 
-export default class AddQuizBody extends React.Component {
+export default class AddQuestionBody extends React.Component {
   constructor(props) {
     super(props);
+    var question = {
+      type: "multipleChoice",
+      text: "",
+      answers: [
+        {option: "A", text: ""},
+        {option: "B", text: ""},
+        {option: "C", text: ""}
+      ]
+    };
+
+    if(props.quizzes[props.quizIndex].questions[props.questionIndex] != undefined) {
+      question = props.quizzes[props.quizIndex].questions[props.questionIndex];
+      question.answers = [];
+      console.log("AddQuestionBody::question", question);
+    }
+
     this.state = {
-      isAddFreeResponse: false,
-      question: {
-        text: "",
-        placeholder: "Question...",
-        inputs: [
-          {letter: "A", text: "", placeholder: "Answer A..."},
-          {letter: "B", text: "", placeholder: "Answer B..."},
-          {letter: "C", text: "", placeholder: "Answer C..."}
-        ]
-      }
+      isFreeResponse: question.type == "freeResponse" ? true : false,
+      placeholder: "Question...",
+      question: question
     };
   }
 
@@ -25,78 +34,77 @@ export default class AddQuizBody extends React.Component {
     if(i == 'question') {
       question.text = event.target.value;
     } else {
-      question.inputs[i].text = event.target.value;
+      question.answers[i].text = event.target.value;
     }
 
     this.setState({question: question});
   }
 
   addQuestion() {
-    var inputs = this.state.question.inputs;
-    var letter = String.fromCharCode(inputs[inputs.length - 1].letter.charCodeAt() + 1);
-    var input = {letter: letter, text: "", placeholder: "Answer " + letter + "..."};
-    inputs.push(input);
-    this.setState({inputs: inputs});
+    var answers = this.state.question.answers;
+    var option = String.fromCharCode(answers[answers.length - 1].option.charCodeAt() + 1);
+    var answer = {option: option, text: ""};
+    answers.push(answer);
+    this.setState({answers: answers});
   }
 
   showFreeResponse() {
     var question = this.state.question;
-    question.inputs = [];
+    question.answers = [];
     this.setState({
-      isAddFreeResponse: true,
+      isFreeResponse: true,
       question: question
     });
   }
 
   showMultipleChoice() {
     var question = this.state.question;
-    question.inputs = [
-      {letter: "A", text: "", placeholder: "Answer A..."},
-      {letter: "B", text: "", placeholder: "Answer B..."},
-      {letter: "C", text: "", placeholder: "Answer C..."}
+    question.answers = [
+      {option: "A", text: ""},
+      {option: "B", text: ""},
+      {option: "C", text: ""}
     ];
     this.setState({
-      isAddFreeResponse: false,
+      isFreeResponse: false,
       question: question
     });
   }
 
   render() {
     var me = this;
-    var questionInput = (
+    var questionAnswer = (
       <div className="flex mb20 flexVertical">
         <input
           type="text"
           className="addCourseInput"
-          placeholder={this.state.question.placeholder}
+          placeholder={this.state.placeholder}
           value={this.state.question.text}
           onChange={this.handleChange.bind(this, 'question')}
         />
       </div>
     );
 
-    var footer = this.state.isAddFreeResponse ? null : <div className="footerButton" onClick={this.addQuestion.bind(this)} >+</div>;
+    var footer = this.state.isFreeResponse ? null : <div className="footerButton" onClick={this.addQuestion.bind(this)} >+</div>;
     return (
       <div id="addQuestionBody">
         <div className="row">
           <div className="six columns p20 pr10">
-            <div className={"modalButton " + (this.state.isAddFreeResponse ? "opacity40" : "")} onClick={this.showMultipleChoice.bind(this)}>MULTIPLE CHOICE</div>
+            <div className={"modalButton " + (this.state.isFreeResponse ? "opacity40" : "")} onClick={this.showMultipleChoice.bind(this)}>MULTIPLE CHOICE</div>
           </div>
           <div className="six columns p20 pl10">
-            <div className={"modalButton " + (this.state.isAddFreeResponse ? "" : "opacity40")} onClick={this.showFreeResponse.bind(this)}>FREE RESPONSE</div>
+            <div className={"modalButton " + (this.state.isFreeResponse ? "" : "opacity40")} onClick={this.showFreeResponse.bind(this)}>FREE RESPONSE</div>
           </div>
         </div>
         <div className="pl20 pr20">
-          {questionInput}
-          {this.state.question.inputs.map(function(input, i) {
+          {questionAnswer}
+          {this.state.question.answers.map(function(answer, i) {
             return (
               <div className="flex mb20 flexVertical">
-                <span className="mr15">{input.letter}.)</span>
+                <span className="mr15">{answer.option}.)</span>
                 <input
                   type="text"
                   className="addCourseInput"
-                  placeholder={input.placeholder}
-                  value={input.text}
+                  value={answer.text}
                   onChange={me.handleChange.bind(me, i)}
                   key={i}
                 />
@@ -105,7 +113,7 @@ export default class AddQuizBody extends React.Component {
           })}
         </div>
         <div className="pb20 pl20 pr20">
-          <div className="modalButton" onClick={this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex)}>ADD QUESTION</div>
+          <div className="modalButton" onClick={this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>
         </div>
         {footer}
       </div>

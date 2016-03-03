@@ -139,8 +139,8 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: 'addCourseModal',
-    value: function addCourseModal() {
+    key: 'showCourseModal',
+    value: function showCourseModal() {
       var modalInfo = this.state.modalInfo;
       modalInfo.modalType = "ADD_COURSE";
       modalInfo.title = "Add Course";
@@ -151,11 +151,12 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
-    key: 'addQuizModal',
-    value: function addQuizModal() {
+    key: 'showQuizModal',
+    value: function showQuizModal(quizIndex) {
       var modalInfo = this.state.modalInfo;
       modalInfo.title = "Add Quiz";
       modalInfo.modalType = "ADD_QUIZ";
+      modalInfo.quizIndex = quizIndex;
       this.setState({
         showModal: true,
         showMetricModal: false,
@@ -163,20 +164,36 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
+    key: 'showQuizInModal',
+    value: function showQuizInModal(quizIndex) {
+      console.log("showQuizInModal::quizIndex", quizIndex);
+      this.showQuizModal(quizIndex);
+    }
+  }, {
     key: 'addQuizToCourse',
-    value: function addQuizToCourse(quiz) {
+    value: function addQuizToCourse(quiz, quizIndex) {
       console.log("Adding quiz '" + quiz.title + "' in course " + this.props.course.title);
       var me = this;
-      $.post('quiz/create/', {
-        title: quiz.title,
-        course: me.props.course.id
-      }).then(function (quiz) {
-        console.log(quiz);
-        var course = me.state.course;
-        course.quizzes.push(quiz);
-        me.setState({ course: course });
-        me.closeModal();
-      });
+      if (quizIndex > -1) {
+        $.post('quiz/update/' + quiz.id, { title: quiz.title }).then(function (quiz) {
+          console.log(quiz);
+          var course = me.state.course;
+          course.quizzes[quizIndex] = quiz;
+          me.setState({ course: course });
+          me.closeModal();
+        });
+      } else {
+        $.post('quiz/create/', {
+          title: quiz.title,
+          course: me.props.course.id
+        }).then(function (quiz) {
+          console.log(quiz);
+          var course = me.state.course;
+          course.quizzes.push(quiz);
+          me.setState({ course: course });
+          me.closeModal();
+        });
+      }
     }
   }, {
     key: 'addSectionToCourse',
@@ -204,6 +221,29 @@ var Courses = function (_React$Component) {
       });
     }
   }, {
+    key: 'deleteQuizFromCourse',
+    value: function deleteQuizFromCourse(quizIndex) {
+      var me = this;
+      var quizzes = this.state.course.quizzes;
+      $.post('/quiz/find/' + quizzes[quizIndex].id).then(function (quiz) {
+        return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
+      }).then(function (quiz) {
+        var questions = quiz.questions;
+        if (questions.length == 0) return $.when(null);
+        var questionIds = [];
+        for (var i = 0; i < questions.length; ++i) {
+          questionIds.push(questions[i].id);
+        }
+        return $.post('/question/destroy', { id: questionIds });
+      }).then(function () {
+        quizzes.splice(quizIndex, 1);
+        var course = me.state.course;
+        course.quizzes = quizzes;
+        me.setState({ course: course });
+        me.closeModal();
+      });
+    }
+  }, {
     key: 'getName',
     value: function getName() {
       $.post('/user').then(function (user) {
@@ -225,25 +265,28 @@ var Courses = function (_React$Component) {
             course: this.state.course,
             isCourse: true,
             ref: 'course',
-            addQuizModal: this.addQuizModal.bind(this),
+            showQuizModal: this.showQuizModal.bind(this),
+            showQuizInModal: this.showQuizInModal.bind(this),
             showMetricModal: this.showMetricModal.bind(this),
+            deleteQuizFromCourse: this.deleteQuizFromCourse.bind(this),
             sectionIndex: -1,
             deleteSectionFromCourse: this.deleteSectionFromCourse.bind(this)
           }),
-          this.state.sections.map(function (section, i) {
+          this.state.sections.map(function (section, sectionIndex) {
             return _react2.default.createElement(_Course2.default, {
               section: section,
-              sectionIndex: i,
+              sectionIndex: sectionIndex,
               course: this.state.course,
               isCourse: false,
-              key: i,
+              key: sectionIndex,
+              showQuizInModal: this.showQuizInModal.bind(this),
               showMetricModal: this.showMetricModal.bind(this),
               deleteSectionFromCourse: this.deleteSectionFromCourse.bind(this)
             });
           }, this),
           _react2.default.createElement(
             'div',
-            { className: 'addEntityButton', onClick: this.addCourseModal.bind(this) },
+            { className: 'addEntityButton', onClick: this.showCourseModal.bind(this) },
             '+'
           )
         ),
@@ -251,6 +294,7 @@ var Courses = function (_React$Component) {
           if (_this2.state.showModal) return _react2.default.createElement(_Modal2.default, {
             modalInfo: _this2.state.modalInfo,
             showModal: _this2.state.showModal,
+            course: _this2.state.course,
             key: _this2.state.showModal,
             closeModal: _this2.closeModal.bind(_this2),
             addQuizToCourse: _this2.addQuizToCourse.bind(_this2),
@@ -346,7 +390,7 @@ var _class = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { id: 'quizzlyEntrance' },
+        { id: 'quizzlyEntrance', className: 'gradientBody' },
         _react2.default.createElement(
           'div',
           { className: 'centerBlock alignC', style: { "paddingTop": "5%" } },
@@ -595,8 +639,8 @@ var Quizzes = function (_React$Component) {
       console.log("handle clik!", num);
     }
   }, {
-    key: 'addQuizModal',
-    value: function addQuizModal() {
+    key: 'showQuizModal',
+    value: function showQuizModal() {
       var modalInfo = this.state.modalInfo;
       modalInfo.title = "Add Quiz";
       modalInfo.modalType = "ADD_QUIZ";
@@ -606,16 +650,23 @@ var Quizzes = function (_React$Component) {
       });
     }
   }, {
-    key: 'addQuestionModal',
-    value: function addQuestionModal(quizTitle, quizIndex) {
+    key: 'showQuestionModal',
+    value: function showQuestionModal(quizIndex, questionIndex) {
+      var quiz = this.state.quizzes[quizIndex];
       var modalInfo = this.state.modalInfo;
-      modalInfo.title = "Adding quiz question to: " + quizTitle;
+      modalInfo.title = "Editing question in " + quiz.title;
       modalInfo.modalType = "ADD_QUESTION";
-      modalInfo.index = quizIndex;
+      modalInfo.quizIndex = quizIndex;
+      modalInfo.questionIndex = questionIndex;
       this.setState({
         showModal: true,
         modalInfo: modalInfo
       });
+    }
+  }, {
+    key: 'showQuestionInModal',
+    value: function showQuestionInModal(quizIndex, questionIndex) {
+      this.showQuestionModal(quizIndex, questionIndex);
     }
   }, {
     key: 'closeModal',
@@ -641,23 +692,31 @@ var Quizzes = function (_React$Component) {
     }
   }, {
     key: 'addQuestionToQuiz',
-    value: function addQuestionToQuiz(question, quizIndex) {
+    value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
       var me = this;
       if (question.text.trim().length == 0) return;
 
       var quizzes = this.state.quizzes;
-      $.post('/question/create', { text: question.text, type: 'freeResponse', quiz: quizzes[quizIndex].id }).then(function (question) {
-        quizzes[quizIndex].questions.push(question);
-        me.setState({ quizzes: quizzes });
-        me.closeModal();
-      });
+      if (questionIndex > -1) {
+        $.post('/question/update/' + question.id, { text: question.text, type: question.type }).then(function (question) {
+          quizzes[quizIndex].questions[questionIndex] = question;
+          me.setState({ quizzes: quizzes });
+          me.closeModal();
+        });
+      } else {
+        $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id }).then(function (question) {
+          quizzes[quizIndex].questions.push(question);
+          me.setState({ quizzes: quizzes });
+          me.closeModal();
+        });
+      }
     }
   }, {
     key: 'deleteQuizFromCourse',
     value: function deleteQuizFromCourse(quizIndex) {
       var me = this;
       var quizzes = this.state.quizzes;
-      $.post('/quiz/destroy', { id: quizzes[quizIndex].id }).then(function () {
+      $.post('/quiz/destroy/' + quizzes[quizIndex].id).then(function () {
         var questions = quizzes[quizIndex].questions;
         if (questions.length == 0) return $.when(null);
         var questionIds = [];
@@ -700,12 +759,13 @@ var Quizzes = function (_React$Component) {
               quizIndex: i,
               deleteQuizFromCourse: this.deleteQuizFromCourse.bind(this),
               deleteQuestionFromQuiz: this.deleteQuestionFromQuiz.bind(this),
-              addQuestionModal: this.addQuestionModal.bind(this)
+              showQuestionModal: this.showQuestionModal.bind(this),
+              showQuestionInModal: this.showQuestionInModal.bind(this)
             });
           }, this),
           _react2.default.createElement(
             'div',
-            { className: 'addEntityButton', onClick: this.addQuizModal.bind(this) },
+            { className: 'addEntityButton', onClick: this.showQuizModal.bind(this) },
             '+'
           )
         ),
@@ -945,26 +1005,35 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var AddQuizBody = function (_React$Component) {
-  _inherits(AddQuizBody, _React$Component);
+var AddQuestionBody = function (_React$Component) {
+  _inherits(AddQuestionBody, _React$Component);
 
-  function AddQuizBody(props) {
-    _classCallCheck(this, AddQuizBody);
+  function AddQuestionBody(props) {
+    _classCallCheck(this, AddQuestionBody);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddQuizBody).call(this, props));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddQuestionBody).call(this, props));
+
+    var question = {
+      type: "multipleChoice",
+      text: "",
+      answers: [{ option: "A", text: "" }, { option: "B", text: "" }, { option: "C", text: "" }]
+    };
+
+    if (props.quizzes[props.quizIndex].questions[props.questionIndex] != undefined) {
+      question = props.quizzes[props.quizIndex].questions[props.questionIndex];
+      question.answers = [];
+      console.log("AddQuestionBody::question", question);
+    }
 
     _this.state = {
-      isAddFreeResponse: false,
-      question: {
-        text: "",
-        placeholder: "Question...",
-        inputs: [{ letter: "A", text: "", placeholder: "Answer A..." }, { letter: "B", text: "", placeholder: "Answer B..." }, { letter: "C", text: "", placeholder: "Answer C..." }]
-      }
+      isFreeResponse: question.type == "freeResponse" ? true : false,
+      placeholder: "Question...",
+      question: question
     };
     return _this;
   }
 
-  _createClass(AddQuizBody, [{
+  _createClass(AddQuestionBody, [{
     key: "handleChange",
     value: function handleChange(i, event) {
       var me = this;
@@ -972,7 +1041,7 @@ var AddQuizBody = function (_React$Component) {
       if (i == 'question') {
         question.text = event.target.value;
       } else {
-        question.inputs[i].text = event.target.value;
+        question.answers[i].text = event.target.value;
       }
 
       this.setState({ question: question });
@@ -980,19 +1049,19 @@ var AddQuizBody = function (_React$Component) {
   }, {
     key: "addQuestion",
     value: function addQuestion() {
-      var inputs = this.state.question.inputs;
-      var letter = String.fromCharCode(inputs[inputs.length - 1].letter.charCodeAt() + 1);
-      var input = { letter: letter, text: "", placeholder: "Answer " + letter + "..." };
-      inputs.push(input);
-      this.setState({ inputs: inputs });
+      var answers = this.state.question.answers;
+      var option = String.fromCharCode(answers[answers.length - 1].option.charCodeAt() + 1);
+      var answer = { option: option, text: "" };
+      answers.push(answer);
+      this.setState({ answers: answers });
     }
   }, {
     key: "showFreeResponse",
     value: function showFreeResponse() {
       var question = this.state.question;
-      question.inputs = [];
+      question.answers = [];
       this.setState({
-        isAddFreeResponse: true,
+        isFreeResponse: true,
         question: question
       });
     }
@@ -1000,9 +1069,9 @@ var AddQuizBody = function (_React$Component) {
     key: "showMultipleChoice",
     value: function showMultipleChoice() {
       var question = this.state.question;
-      question.inputs = [{ letter: "A", text: "", placeholder: "Answer A..." }, { letter: "B", text: "", placeholder: "Answer B..." }, { letter: "C", text: "", placeholder: "Answer C..." }];
+      question.answers = [{ option: "A", text: "" }, { option: "B", text: "" }, { option: "C", text: "" }];
       this.setState({
-        isAddFreeResponse: false,
+        isFreeResponse: false,
         question: question
       });
     }
@@ -1010,19 +1079,19 @@ var AddQuizBody = function (_React$Component) {
     key: "render",
     value: function render() {
       var me = this;
-      var questionInput = _react2.default.createElement(
+      var questionAnswer = _react2.default.createElement(
         "div",
         { className: "flex mb20 flexVertical" },
         _react2.default.createElement("input", {
           type: "text",
           className: "addCourseInput",
-          placeholder: this.state.question.placeholder,
+          placeholder: this.state.placeholder,
           value: this.state.question.text,
           onChange: this.handleChange.bind(this, 'question')
         })
       );
 
-      var footer = this.state.isAddFreeResponse ? null : _react2.default.createElement(
+      var footer = this.state.isFreeResponse ? null : _react2.default.createElement(
         "div",
         { className: "footerButton", onClick: this.addQuestion.bind(this) },
         "+"
@@ -1038,7 +1107,7 @@ var AddQuizBody = function (_React$Component) {
             { className: "six columns p20 pr10" },
             _react2.default.createElement(
               "div",
-              { className: "modalButton " + (this.state.isAddFreeResponse ? "opacity40" : ""), onClick: this.showMultipleChoice.bind(this) },
+              { className: "modalButton " + (this.state.isFreeResponse ? "opacity40" : ""), onClick: this.showMultipleChoice.bind(this) },
               "MULTIPLE CHOICE"
             )
           ),
@@ -1047,7 +1116,7 @@ var AddQuizBody = function (_React$Component) {
             { className: "six columns p20 pl10" },
             _react2.default.createElement(
               "div",
-              { className: "modalButton " + (this.state.isAddFreeResponse ? "" : "opacity40"), onClick: this.showFreeResponse.bind(this) },
+              { className: "modalButton " + (this.state.isFreeResponse ? "" : "opacity40"), onClick: this.showFreeResponse.bind(this) },
               "FREE RESPONSE"
             )
           )
@@ -1055,22 +1124,21 @@ var AddQuizBody = function (_React$Component) {
         _react2.default.createElement(
           "div",
           { className: "pl20 pr20" },
-          questionInput,
-          this.state.question.inputs.map(function (input, i) {
+          questionAnswer,
+          this.state.question.answers.map(function (answer, i) {
             return _react2.default.createElement(
               "div",
               { className: "flex mb20 flexVertical" },
               _react2.default.createElement(
                 "span",
                 { className: "mr15" },
-                input.letter,
+                answer.option,
                 ".)"
               ),
               _react2.default.createElement("input", {
                 type: "text",
                 className: "addCourseInput",
-                placeholder: input.placeholder,
-                value: input.text,
+                value: answer.text,
                 onChange: me.handleChange.bind(me, i),
                 key: i
               })
@@ -1082,8 +1150,8 @@ var AddQuizBody = function (_React$Component) {
           { className: "pb20 pl20 pr20" },
           _react2.default.createElement(
             "div",
-            { className: "modalButton", onClick: this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex) },
-            "ADD QUESTION"
+            { className: "modalButton", onClick: this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex) },
+            "SAVE QUESTION"
           )
         ),
         footer
@@ -1091,10 +1159,10 @@ var AddQuizBody = function (_React$Component) {
     }
   }]);
 
-  return AddQuizBody;
+  return AddQuestionBody;
 }(_react2.default.Component);
 
-exports.default = AddQuizBody;
+exports.default = AddQuestionBody;
 
 },{"react":228}],8:[function(require,module,exports){
 "use strict";
@@ -1125,8 +1193,17 @@ var AddQuizBody = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddQuizBody).call(this, props));
 
+    var quiz = { title: "" };
+    console.log("got here 1", props.quizIndex);
+    if (props.quizIndex > -1) {
+      console.log("got here 2");
+      quiz = props.course.quizzes[props.quizIndex];
+    }
+
+    console.log("quiz??", quiz);
     _this.state = {
-      quiz: { title: "", placeholder: "Quiz title..." }
+      placeholder: "Quiz title...",
+      quiz: quiz
     };
     return _this;
   }
@@ -1165,7 +1242,7 @@ var AddQuizBody = function (_React$Component) {
             }),
             _react2.default.createElement(
               "div",
-              { className: "plusButton ml15", onClick: this.props.addQuizToCourse.bind(this, me.state.quiz) },
+              { className: "plusButton ml15", onClick: this.props.addQuizToCourse.bind(this, me.state.quiz, me.props.quizIndex) },
               "+"
             )
           )
@@ -1220,7 +1297,7 @@ var _class = function (_React$Component) {
     value: function render() {
       var footer = this.props.isCourse ? _react2.default.createElement(
         "div",
-        { className: "footerButton", onClick: this.props.addQuizModal.bind(this) },
+        { className: "footerButton", onClick: this.props.showQuizModal.bind(this) },
         "+"
       ) : null;
       return _react2.default.createElement(
@@ -1242,11 +1319,20 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "body" },
-            this.props.course.quizzes.map(function (quiz, i) {
+            this.props.course.quizzes.map(function (quiz, quizIndex) {
               return _react2.default.createElement(
                 "div",
-                { onClick: this.props.showMetricModal.bind(this, quiz), key: i, title: quiz, ref: 'quiz' + i, className: "item" },
-                quiz.title
+                { /*onClick={this.props.showMetricModal.bind(this, quiz)}*/key: quizIndex, title: quiz, className: "item" },
+                _react2.default.createElement(
+                  "span",
+                  { className: "pointer", onClick: this.props.showQuizInModal.bind(this, quizIndex) },
+                  quiz.title
+                ),
+                this.props.isCourse ? _react2.default.createElement(
+                  "span",
+                  { className: "floatR pointer opacity40", onClick: this.props.deleteQuizFromCourse.bind(this, quizIndex) },
+                  _react2.default.createElement("img", { src: "images/close.png", style: { "width": "8px" } })
+                ) : null
               );
             }, this)
           ),
@@ -1681,11 +1767,19 @@ var Modal = function (_React$Component) {
     value: function render() {
       var body = {};
       if (this.state.modalType == "ADD_COURSE") {
-        body = _react2.default.createElement(_AddCourseBody2.default, { addSectionToCourse: this.props.addSectionToCourse.bind(this) });
+        body = _react2.default.createElement(_AddCourseBody2.default, {
+          addSectionToCourse: this.props.addSectionToCourse.bind(this) });
       } else if (this.state.modalType == "ADD_QUIZ") {
-        body = _react2.default.createElement(_AddQuizBody2.default, { addQuizToCourse: this.props.addQuizToCourse.bind(this), course: this.props.course });
+        body = _react2.default.createElement(_AddQuizBody2.default, {
+          addQuizToCourse: this.props.addQuizToCourse.bind(this),
+          quizIndex: this.props.modalInfo.quizIndex,
+          course: this.props.course });
       } else if (this.state.modalType == "ADD_QUESTION") {
-        body = _react2.default.createElement(_AddQuestionBody2.default, { addQuestionToQuiz: this.props.addQuestionToQuiz.bind(this), quizzes: this.props.quizzes, quizIndex: this.props.modalInfo.index });
+        body = _react2.default.createElement(_AddQuestionBody2.default, {
+          addQuestionToQuiz: this.props.addQuestionToQuiz.bind(this),
+          quizzes: this.props.quizzes,
+          quizIndex: this.props.modalInfo.quizIndex,
+          questionIndex: this.props.modalInfo.questionIndex });
       }
 
       return _react2.default.createElement(
@@ -1777,17 +1871,26 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "body" },
-            this.props.quiz.questions.map(function (question, i) {
+            this.props.quiz.questions.map(function (question, questionIndex) {
               return _react2.default.createElement(
                 "div",
-                { onClick: this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, i), key: i, text: question, className: "item" },
-                question.text
+                { key: questionIndex, className: "item" },
+                _react2.default.createElement(
+                  "span",
+                  { className: "pointer", onClick: this.props.showQuestionInModal.bind(this, this.props.quizIndex, questionIndex) },
+                  question.text
+                ),
+                _react2.default.createElement(
+                  "span",
+                  { className: "floatR pointer opacity40", onClick: this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, questionIndex) },
+                  _react2.default.createElement("img", { src: "images/close.png", style: { "width": "8px" } })
+                )
               );
             }, this)
           ),
           _react2.default.createElement(
             "div",
-            { className: "footerButton", onClick: this.props.addQuestionModal.bind(this, this.props.quiz.title, this.props.quizIndex) },
+            { className: "footerButton", onClick: this.props.showQuestionModal.bind(this, this.props.quizIndex, -1) },
             "+"
           )
         )

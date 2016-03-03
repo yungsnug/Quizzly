@@ -46,7 +46,7 @@ export default class Quizzes extends React.Component {
     console.log("handle clik!", num);
   }
 
-  addQuizModal() {
+  showQuizModal() {
     var modalInfo = this.state.modalInfo;
     modalInfo.title = "Add Quiz";
     modalInfo.modalType = "ADD_QUIZ";
@@ -56,15 +56,21 @@ export default class Quizzes extends React.Component {
     });
   }
 
-  addQuestionModal(quizTitle, quizIndex) {
+  showQuestionModal(quizIndex, questionIndex) {
+    var quiz = this.state.quizzes[quizIndex];
     var modalInfo = this.state.modalInfo;
-    modalInfo.title = "Adding quiz question to: " + quizTitle;
+    modalInfo.title = "Editing question in " + quiz.title;
     modalInfo.modalType = "ADD_QUESTION";
-    modalInfo.index = quizIndex;
+    modalInfo.quizIndex = quizIndex;
+    modalInfo.questionIndex = questionIndex;
     this.setState({
       showModal: true,
       modalInfo: modalInfo
     });
+  }
+
+  showQuestionInModal(quizIndex, questionIndex) {
+    this.showQuestionModal(quizIndex, questionIndex);
   }
 
   closeModal() {
@@ -89,23 +95,32 @@ export default class Quizzes extends React.Component {
     });
   }
 
-  addQuestionToQuiz(question, quizIndex) {
+  addQuestionToQuiz(question, quizIndex, questionIndex) {
     var me = this;
     if(question.text.trim().length == 0) return;
 
     var quizzes = this.state.quizzes;
-    $.post('/question/create', {text: question.text, type: 'freeResponse', quiz: quizzes[quizIndex].id})
-    .then(function(question) {
-      quizzes[quizIndex].questions.push(question);
-      me.setState({quizzes: quizzes});
-      me.closeModal();
-    });
+    if(questionIndex > -1) {
+      $.post('/question/update/' + question.id, {text: question.text, type: question.type})
+      .then(function(question) {
+        quizzes[quizIndex].questions[questionIndex] = question;
+        me.setState({quizzes: quizzes});
+        me.closeModal();
+      });
+    } else {
+      $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id})
+      .then(function(question) {
+        quizzes[quizIndex].questions.push(question);
+        me.setState({quizzes: quizzes});
+        me.closeModal();
+      });
+    }
   }
 
   deleteQuizFromCourse(quizIndex) {
     var me = this;
     var quizzes = this.state.quizzes;
-    $.post('/quiz/destroy', {id: quizzes[quizIndex].id})
+    $.post('/quiz/destroy/' + quizzes[quizIndex].id)
     .then(function() {
       var questions = quizzes[quizIndex].questions;
       if(questions.length == 0) return $.when(null);
@@ -145,11 +160,12 @@ export default class Quizzes extends React.Component {
                 quizIndex={i}
                 deleteQuizFromCourse={this.deleteQuizFromCourse.bind(this)}
                 deleteQuestionFromQuiz={this.deleteQuestionFromQuiz.bind(this)}
-                addQuestionModal={this.addQuestionModal.bind(this)}
+                showQuestionModal={this.showQuestionModal.bind(this)}
+                showQuestionInModal={this.showQuestionInModal.bind(this)}
               />
             );
           }, this)}
-          <div className="addEntityButton" onClick={this.addQuizModal.bind(this)}>+</div>
+          <div className="addEntityButton" onClick={this.showQuizModal.bind(this)}>+</div>
         </div>
         {(() => {
           if(this.state.showModal)
