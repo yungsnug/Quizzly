@@ -23,6 +23,8 @@ IMPORTANT: to run steps 6-9 need to start SQL server<br/>
 
 <h1>1. First create a MySQL database.</h1><br/>
 
+Always when replacing replace [] as well.
+
 A. Install MySQL:<br/>
 -Download and install MySQL community from: http://dev.mysql.com/downloads/mysql/<br/>
 -Make sure to download the DMG, not the TAR!<br/>
@@ -35,7 +37,7 @@ or<br/>
 -From command line: <code>sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
 
 C. Login to mysql:<br/>
--type (replace [temppwd] with temporary password): <code>mysql -uroot -p [temppwd]</code><br/>
+-type (replace [temppwd] with temporary password including []): <code>mysql -uroot -p [temppwd]</code><br/>
 
 D. Change temp mysql password:<br/>
 -Now terminal should appear with: mysql><br/>
@@ -254,6 +256,9 @@ A-4. To uninstall:<br/>
 -<code>sudo rm -rf /Library/Receipts/mysql*</code><br/>
 -<code>sudo rm -rf /Library/Receipts/MySQL*</code><br/>
 -<code>sudo rm -rf /var/db/receipts/com.mysql.*</code><br/>
+
+(Preference Pane should be gone)
+IF THESE COMMANDS DON'T WORK - SEE/FOLLOW: http://community.jaspersoft.com/wiki/uninstall-mysql-mac-os-x<br/>
 
 -Now, start this tutorial from the beginning.<br/>
 
