@@ -32,6 +32,17 @@
 - Left side -> Under Schemas -> click on [db name]: <br/>
 <img src="images/workbenchtable.png" alt="Workbench"style="width:304px;height:228px;"> <br/>
 <h3>NOTE: (DO FOR EACH TABLE)</h3>
+<h4>NOTE: Order for doing filling tables:</h4>
+1.Professor<br/>
+2.Course<br/>
+3.Section<br/>
+4.Quiz<br/>
+5.Question<br/>
+6.Student<br/>
+7.Answer<br/>
+
+
+<h4>STEPS:</h4)
 - Click on table with lightning highlighted in above image. <br/>
 <img src="images/workbenchzoom.png" alt="Workbench Zoom"style="width:304px;height:228px;"> <br/>
 - In Result Grid bar. Click on import: <br/>

@@ -37,7 +37,7 @@ or<br/>
 -From command line: <code>sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
 
 C. Login to mysql:<br/>
--type (replace [temppwd] with temporary password including []): <code>mysql -uroot -p [temppwd]</code><br/>
+-type (replace [temppwd] with temporary password including []): <code>mysql -uroot -p[temppwd]</code><br/>
 
 D. Change temp mysql password:<br/>
 -Now terminal should appear with: mysql><br/>
