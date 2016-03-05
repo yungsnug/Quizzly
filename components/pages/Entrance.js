@@ -129,9 +129,9 @@ export default class extends React.Component {
             <input type="submit" value={this.state.isSignIn ? "SIGN IN" : "SIGN UP"} className="signButton mb20"/>
           </form>
           <div className="subsubtitle">Or switch to&nbsp;
-            <a href="#" onClick={this.swapEntryType.bind(this)}>{this.state.isSignIn ? "sign up" : "sign in"}</a>
+            <a href="#" className="bold" onClick={this.swapEntryType.bind(this)}>{this.state.isSignIn ? "sign up" : "sign in"}</a>
             &nbsp;or&nbsp;
-            <a href="#">sign in with Blackboard</a>
+            <a href="#" className="bold">sign in with Blackboard</a>
           </div>
         </div>
         <a className="footer">About</a>
