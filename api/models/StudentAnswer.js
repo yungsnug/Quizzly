@@ -6,9 +6,39 @@
 */
 
 module.exports = {
+	attributes: {
+    // Primitives
+    
 
-  attributes: {
+	// Associations
+	//Student ID (one student -> many answers),
+	student: {
+		model: 'student'
+    }, 
+	//Section ID (one section -> many answers),
+	section: {
+		model: 'section'
+	},
 
+	//Question ID (one question -> one answer), 
+	question: {
+		model: 'question'
+		
+	},
+	//Answer ID (one answer -> one answer).
+	answer: {
+        model: 'answer'
+        
+    },
+    //Quiz ID (one quiz -> many answers)
+    quiz: {
+      model: 'quiz'
+    },
+    
+    
+    
+
+    // Methods
   }
 };
 
