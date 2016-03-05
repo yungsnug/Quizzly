@@ -44,7 +44,11 @@ module.exports.routes = {
   '/entrance': {
     view: 'app'
   },
+  '/style': {
+    view: 'app'
+  },
   'post /login': 'AuthController.login',
+  'post /logout': 'AuthController.logout',
   'post /user': 'AuthController.user'
 
   /***************************************************************************
