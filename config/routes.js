@@ -48,7 +48,7 @@ module.exports.routes = {
     view: 'app'
   },
   'post /login': 'AuthController.login',
-  'post /logout': 'AuthController.login',
+  'post /logout': 'AuthController.logout',
   'post /user': 'AuthController.user'
 
   /***************************************************************************

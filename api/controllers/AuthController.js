@@ -50,6 +50,6 @@ module.exports = {
   },
   logout: function(req, res) {
     delete req.session.user;
-    res.json(user);
+    res.ok();
   }
 };

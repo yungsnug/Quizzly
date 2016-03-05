@@ -355,8 +355,11 @@ var _class = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, props));
 
     _this.state = {
+      isSignIn: true,
       email: "",
-      password: ""
+      password: "",
+      firstName: "",
+      lastName: ""
     };
     return _this;
   }
@@ -369,8 +372,8 @@ var _class = function (_React$Component) {
       this.setState(state);
     }
   }, {
-    key: 'handleLoginSubmit',
-    value: function handleLoginSubmit(e) {
+    key: 'handleEntranceSubmit',
+    value: function handleEntranceSubmit(e) {
       e.preventDefault();
       var email = this.state.email.trim();
       var password = this.state.password.trim();
@@ -387,8 +390,34 @@ var _class = function (_React$Component) {
       });
     }
   }, {
+    key: 'swapEntryType',
+    value: function swapEntryType() {
+      var isSignIn = this.state.isSignIn;
+      this.setState({ isSignIn: !isSignIn });
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
+      var firstName = {};
+      var lastName = {};
+      if (!this.state.isSignIn) {
+        firstName = _react2.default.createElement('input', {
+          className: 'entranceInput mb30',
+          type: 'text',
+          placeholder: 'First name',
+          value: this.state.firstName,
+          onChange: this.handleInputChange.bind(this, 'firstName')
+        });
+        lastName = _react2.default.createElement('input', {
+          className: 'entranceInput mb30',
+          type: 'text',
+          placeholder: 'Last name',
+          value: this.state.lastName,
+          onChange: this.handleInputChange.bind(this, 'lastName')
+        });
+      }
       return _react2.default.createElement(
         'div',
         { id: 'quizzlyEntrance', className: 'gradientBody' },
@@ -408,11 +437,33 @@ var _class = function (_React$Component) {
           _react2.default.createElement('img', { className: 'logo mb20', src: '/images/logo.png' }),
           _react2.default.createElement(
             'form',
-            { className: 'loginForm', onSubmit: this.handleLoginSubmit.bind(this) },
+            { className: 'loginForm', onSubmit: this.handleEntranceSubmit.bind(this) },
+            function () {
+              if (!_this2.state.isSignIn) {
+                return _react2.default.createElement(
+                  'div',
+                  null,
+                  _react2.default.createElement('input', {
+                    className: 'entranceInput mb30',
+                    type: 'text',
+                    placeholder: 'First name',
+                    value: _this2.state.firstName,
+                    onChange: _this2.handleInputChange.bind(_this2, 'firstName')
+                  }),
+                  _react2.default.createElement('input', {
+                    className: 'entranceInput mb30',
+                    type: 'text',
+                    placeholder: 'Last name',
+                    value: _this2.state.lastName,
+                    onChange: _this2.handleInputChange.bind(_this2, 'lastName')
+                  })
+                );
+              }
+            }(),
             _react2.default.createElement('input', {
               className: 'entranceInput mb30',
               type: 'text',
-              placeholder: 'School Email',
+              placeholder: 'School email',
               value: this.state.email,
               onChange: this.handleInputChange.bind(this, 'email')
             }),
@@ -423,7 +474,7 @@ var _class = function (_React$Component) {
               value: this.state.password,
               onChange: this.handleInputChange.bind(this, 'password')
             }),
-            _react2.default.createElement('input', { type: 'submit', value: 'SIGN IN', className: 'signInButton mb20' })
+            _react2.default.createElement('input', { type: 'submit', value: this.state.isSignIn ? "SIGN IN" : "SIGN UP", className: 'signButton mb20' })
           ),
           _react2.default.createElement(
             'div',
@@ -431,8 +482,8 @@ var _class = function (_React$Component) {
             'Or switch to ',
             _react2.default.createElement(
               'a',
-              { href: '#' },
-              'sign up'
+              { href: '#', onClick: this.swapEntryType.bind(this) },
+              this.state.isSignIn ? "sign up" : "sign in"
             ),
             ' or ',
             _react2.default.createElement(
