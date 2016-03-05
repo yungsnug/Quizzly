@@ -1,0 +1,81 @@
+text,correct,option,question,id,createdAt,updatedAt
+"An ancient hair-removal technique, practiced for centuries among the most beautiful women of Asia and the Middle East. It is the best alternative to waxing and tweezing, especially for sensitive skin.",0,A,1,1,2016-02-26 15:18:08,2016-02-26 15:18:58
+"A thread in computer science is short for a thread of execution. Threads are a way for a program to divide (termed ""split"") itself into two or more simultaneously (or pseudo-simultaneously) running tasks. Threads and processes differ from one operating system to another but, in general, a thread is contained inside a process and different threads in the same process share same resources while different processes in the same multitasking operating system do not. Threads are lightweight, in terms of the system resources they consume, as compared with processes.",1,B,1,2,2016-02-26 15:18:08,2016-02-26 15:18:08
+To pass the end of a thread through the eye of (a needle).,0,C,1,3,2016-02-26 15:18:08,2016-02-26 15:18:08
+"To thread one's way, as through a passage or between obstacles",0,D,1,4,2016-02-26 15:18:08,2016-02-26 15:18:08
+Eyebrows,0,A,3,5,2016-02-26 15:18:08,2016-02-26 15:18:08
+Clothing,0,B,3,6,2016-02-26 15:18:08,2016-02-26 15:18:08
+Threads,1,C,3,7,2016-02-26 15:18:08,2016-02-26 15:18:08
+"A frame, implemented as an instance of the JFrame class, is a window that has decorations such as a border, a title, and supports button components that close or iconify the window. Applications with a GUI usually include at least one frame.",1,A,5,8,2016-02-26 15:18:08,2016-02-26 15:18:08
+Short for Jewish Frame,0,B,5,9,2016-02-26 15:18:08,2016-02-26 15:18:08
+A Frame shaped like a J,0,C,5,10,2016-02-26 15:18:08,2016-02-26 15:18:08
+Read the manual,0,A,7,11,2016-02-26 15:18:08,2016-02-26 15:18:08
+Install,1,B,7,12,2016-02-26 15:18:08,2016-02-26 15:18:08
+Dancing like a baller,0,C,7,13,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,A,9,14,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,B,9,15,2016-02-26 15:18:08,2016-02-26 15:18:08
+A cool dude,0,A,11,16,2016-02-26 15:18:08,2016-02-26 15:18:08
+"a binary variable, having two possible values called “true” and “false.”",1,B,11,17,2016-02-26 15:18:08,2016-02-26 15:18:08
+A mathematical model,0,C,11,18,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,A,13,19,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,B,13,20,2016-02-26 15:18:08,2016-02-26 15:18:08
+Binary Search Tree,1,A,15,21,2016-02-26 15:18:08,2016-02-26 15:18:08
+British Summer Time,0,B,15,22,2016-02-26 15:18:08,2016-02-26 15:18:08
+Related to Big O notation,1,A,17,23,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its a band name,0,B,17,24,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,A,19,25,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,B,19,26,2016-02-26 15:18:08,2016-02-26 15:18:08
+TRUE,1,A,21,27,2016-02-26 15:18:08,2016-02-26 15:18:08
+FALSE,0,B,21,28,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,A,23,29,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,B,23,30,2016-02-26 15:18:08,2016-02-26 15:18:08
+"In Object-oriented programming, an object is an instance of a Class. Objects are an abstraction. They hold both data, and ways to manipulate the data.",1,A,25,31,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its something,0,B,25,32,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its a dog,0,C,25,33,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its a cat,0,D,25,34,2016-02-26 15:18:08,2016-02-26 15:18:08
+None of the above,0,E,25,35,2016-02-26 15:18:08,2016-02-26 15:18:08
+Yes,1,A,27,36,2016-02-26 15:18:08,2016-02-26 15:18:08
+No,0,B,27,37,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,A,29,38,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,B,29,39,2016-02-26 15:18:08,2016-02-26 15:18:08
+Know What?,1,A,31,40,2016-02-26 15:18:08,2016-02-26 15:18:08
+Computer Science,0,B,31,41,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,C,31,42,2016-02-26 15:18:08,2016-02-26 15:18:08
+Yes,1,A,33,43,2016-02-26 15:18:08,2016-02-26 15:18:08
+No,0,B,33,44,2016-02-26 15:18:08,2016-02-26 15:18:08
+Cows are purple,0,A,35,45,2016-02-26 15:18:08,2016-02-26 15:18:08
+Computer Science,0,B,35,46,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,C,35,47,2016-02-26 15:18:08,2016-02-26 15:18:08
+1=1,1,D,35,48,2016-02-26 15:18:08,2016-02-26 15:18:08
+TRUE,1,A,37,49,2016-02-26 15:18:08,2016-02-26 15:18:08
+FALSE,0,B,37,50,2016-02-26 15:18:08,2016-02-26 15:18:08
+TRUE,1,A,39,51,2016-02-26 15:18:08,2016-02-26 15:18:08
+FALSE,0,B,39,52,2016-02-26 15:18:08,2016-02-26 15:18:08
+Maybe,1,A,41,53,2016-02-26 15:18:08,2016-02-26 15:18:08
+Bob,0,B,41,54,2016-02-26 15:18:08,2016-02-26 15:18:08
+"A computer network or data network is a telecommunications network which allows computers to exchange data. In computer networks, networked computing devices exchange data with each other using a data link. The connections between nodes are established using either cable media or wireless media. The best-known computer network is the Internet.",1,A,43,55,2016-02-26 15:18:08,2016-02-26 15:18:08
+Say hello,0,B,43,56,2016-02-26 15:18:08,2016-02-26 15:18:08
+Talk to people,0,C,43,57,2016-02-26 15:18:08,2016-02-26 15:18:08
+The word the Knights of Ni cannot hear or say.,0,A,45,58,2016-02-26 15:18:08,2016-02-26 15:18:08
+Information Technology,1,B,45,59,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its a website,0,A,47,60,2016-02-26 15:18:08,2016-02-26 15:18:08
+There is no software,0,B,47,61,2016-02-26 15:18:08,2016-02-26 15:18:08
+"Software engineering is the study and an application of engineering to the design, development, implementation and maintenance of software in a systematic method.",1,C,47,62,2016-02-26 15:18:08,2016-02-26 15:18:08
+The club,0,A,49,63,2016-02-26 15:18:08,2016-02-26 15:18:08
+The computer lounge,0,B,49,64,2016-02-26 15:18:08,2016-02-26 15:18:08
+The kitchen,0,C,49,65,2016-02-26 15:18:08,2016-02-26 15:18:08
+Wherever you want!,1,D,49,66,2016-02-26 15:18:08,2016-02-26 15:18:08
+"Email, Slack, github, text, etc.",1,A,51,67,2016-02-26 15:18:08,2016-02-26 15:18:08
+Telepathy,0,B,51,68,2016-02-26 15:18:08,2016-02-26 15:18:08
+Yes,1,A,53,69,2016-02-26 15:18:08,2016-02-26 15:18:08
+No,0,B,53,70,2016-02-26 15:18:08,2016-02-26 15:18:08
+"Numbers, letters, symbols, encryption, capitalization, unordered, etc.",1,A,55,71,2016-02-26 15:18:08,2016-02-26 15:18:08
+Make password: password!,0,B,55,72,2016-02-26 15:18:08,2016-02-26 15:18:08
+"In computer science, a lock or mutex (from mutual exclusion) is a synchronization mechanism for enforcing limits on access to a resource in an environment where there are many threads of execution. A lock is designed to enforce a mutual exclusion concurrency control policy.",1,A,57,73,2016-02-26 15:18:08,2016-02-26 15:18:08
+Its something you put on a door. Put a key in to unlock ,0,B,57,74,2016-02-26 15:18:08,2016-02-26 15:18:08
+"CV stands for curriculum vitae, which is Latin for 'course of life'. It is a summary of your experience, skills and education. In the USA and Canada it is known as a résumé - this is the French word for summary",1,A,59,75,2016-02-26 15:18:08,2016-02-26 15:18:08
+"CV (clutch victory) - any situation or event that was close to becoming a failure, but ended well. Any surprising victory. ",0,B,59,76,2016-02-26 15:18:08,2016-02-26 15:18:08
+Front of the room,0,A,61,77,2016-02-26 15:18:08,2016-02-26 15:18:08
+Back of the room,0,B,61,78,2016-02-26 15:18:08,2016-02-26 15:18:08
+Depends on the classroom,0,C,61,79,2016-02-26 15:18:08,2016-02-26 15:18:08
+On the big ben,1,D,61,80,2016-02-26 15:18:08,2016-02-26 15:18:08
