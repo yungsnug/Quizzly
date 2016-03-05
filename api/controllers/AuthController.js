@@ -48,6 +48,9 @@ module.exports = {
       console.log("promise call is done");
     });
   },
+  signup: function(req, res) {
+
+  },
   logout: function(req, res) {
     delete req.session.user;
     res.ok();

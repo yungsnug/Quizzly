@@ -9,6 +9,7 @@ export default class extends React.Component {
     super(props);
     this.state = {
       isSignIn: true,
+      isProfessor: false,
       email: "",
       password: "",
       firstName: "",
@@ -24,20 +25,40 @@ export default class extends React.Component {
 
   handleEntranceSubmit(e) {
     e.preventDefault();
+    var firstName = "", lastName = "";
     var email = this.state.email.trim();
     var password = this.state.password.trim();
     if (!password || !email) {
       return;
     }
 
-    $.post('/login', {email: email, password: password}, function(user) {
-      console.log("User is logged in", user);
-      browserHistory.push('/courses');
-    })
-    .fail(function(err) {
-      alert(err);
-      console.log(err);
-    });
+    if(this.state.isSignIn) {
+      $.post('/login', {email: email, password: password}, function(user) {
+        console.log("User is logged in", user);
+        browserHistory.push('/courses');
+      })
+      .fail(function(err) {
+        alert(err);
+        console.log(err);
+      });
+    } else {
+      var firstName = this.state.firstName.trim();
+      var lastName = this.state.lastName.trim();
+      var isProfessor = this.state.isProfessor;
+
+      if (!firstName || !lastName) {
+        return;
+      }
+
+      $.post('/signup', {email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor}, function(user) {
+        console.log("User has signed up", user);
+        browserHistory.push('/courses');
+      })
+      .fail(function(err) {
+        alert(err);
+        console.log(err);
+      });
+    }
   }
 
   swapEntryType() {
@@ -45,27 +66,13 @@ export default class extends React.Component {
     this.setState({isSignIn: !isSignIn});
   }
 
+  updateIsProfessor(e) {
+    var isProfessor = e.target.checked;
+    console.log("isProfessor", isProfessor);
+    this.setState({isProfessor: isProfessor});
+  }
+
   render() {
-    var firstName = {};
-    var lastName = {};
-    if(!this.state.isSignIn) {
-      firstName =
-        <input
-          className="entranceInput mb30"
-          type="text"
-          placeholder="First name"
-          value={this.state.firstName}
-          onChange={this.handleInputChange.bind(this, 'firstName')}
-        />;
-      lastName =
-        <input
-          className="entranceInput mb30"
-          type="text"
-          placeholder="Last name"
-          value={this.state.lastName}
-          onChange={this.handleInputChange.bind(this, 'lastName')}
-        />;
-    }
     return (
       <div id="quizzlyEntrance" className="gradientBody">
         <div className="centerBlock alignC" style={{"paddingTop": "5%"}}>
@@ -109,6 +116,16 @@ export default class extends React.Component {
               value={this.state.password}
               onChange={this.handleInputChange.bind(this, 'password')}
             />
+            {(() => {
+              if(!this.state.isSignIn) {
+                return (
+                  <div className="mb20">
+                    <input type="checkbox" className="mr10" onChange={this.updateIsProfessor.bind(this)} checked={this.state.isProfessor}/>
+                    <span className="p white">{"I'm a Professor"}</span>
+                  </div>
+                );
+              }
+            })()}
             <input type="submit" value={this.state.isSignIn ? "SIGN IN" : "SIGN UP"} className="signButton mb20"/>
           </form>
           <div className="subsubtitle">Or switch to&nbsp;
