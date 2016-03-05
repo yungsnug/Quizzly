@@ -10,6 +10,7 @@ module.exports = {
     // Primitives
     text: {
       type: 'string',
+      size: 1000,
       required: true
     },
     correct: {
