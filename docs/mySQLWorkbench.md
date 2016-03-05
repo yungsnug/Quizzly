@@ -30,20 +30,21 @@
 
 <h2>3. Load CSV data and save (per table)</h2>
 - Left side -> Under Schemas -> click on [db name]: <br/>
-<img src="images/workbenchtable.png" alt="Workbench"style="width:304px;height:228px;"> <br/>
 <h3>NOTE: (DO FOR EACH TABLE)</h3>
-<h4>NOTE: Order for doing filling tables:</h4>
+<h4>NOTE: Order for filling tables:</h4>
+<h5>(make sure for student and answer use student2.csv and answer2.csv)</h5>
 1.Professor<br/>
 2.Course<br/>
 3.Section<br/>
 4.Quiz<br/>
 5.Question<br/>
-6.Student<br/>
-7.Answer<br/>
-
+6.Student2<br/>
+7.Answer2<br/>
 
 <h4>STEPS:</h4)
-- Click on table with lightning highlighted in above image. <br/>
+- Click on table with lightning highlighted in below image. On left side under SCHEMAS -> [namedb] -> Tables -> [tablename1] <br/>
+<img src="images/workbenchtable.png" alt="Workbench"style="width:304px;height:228px;"> <br/>
+
 <img src="images/workbenchzoom.png" alt="Workbench Zoom"style="width:304px;height:228px;"> <br/>
 - In Result Grid bar. Click on import: <br/>
 <img src="images/import.png" alt="import"style="width:304px;height:228px;"> <br/>

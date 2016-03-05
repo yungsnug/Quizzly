@@ -37,7 +37,7 @@ or<br/>
 -From command line: <code>sudo launchctl load -F  /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist</code><br/>
 
 C. Login to mysql:<br/>
--type (replace [temppwd] with temporary password including []): <code>mysql -uroot -p[temppwd]</code><br/>
+-type (replace [temppwd] with temporary password): <code>mysql -uroot -p[temppwd]</code><br/>
 
 D. Change temp mysql password:<br/>
 -Now terminal should appear with: mysql><br/>
@@ -47,7 +47,7 @@ D. Change temp mysql password:<br/>
 -Type: <code>quit</code><br/>
 -This will exit out of mysql and into command line<br/>
 
--Now change password (replace [temppwd] and [newpwd] including []):<br/>
+-Now change password (replace [temppwd] and [newpwd]):<br/>
 <code>mysqladmin -u root -p[temppwd] password [newpwd]</code><br/>
 
 E. Fix 2002 Socket Bug (note: check errors section if it happens at a later date)<br/>
