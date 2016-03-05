@@ -356,6 +356,7 @@ var _class = function (_React$Component) {
 
     _this.state = {
       isSignIn: true,
+      isProfessor: false,
       email: "",
       password: "",
       firstName: "",
@@ -375,19 +376,39 @@ var _class = function (_React$Component) {
     key: 'handleEntranceSubmit',
     value: function handleEntranceSubmit(e) {
       e.preventDefault();
+      var firstName = "",
+          lastName = "";
       var email = this.state.email.trim();
       var password = this.state.password.trim();
       if (!password || !email) {
         return;
       }
 
-      $.post('/login', { email: email, password: password }, function (user) {
-        console.log("User is logged in", user);
-        _reactRouter.browserHistory.push('/courses');
-      }).fail(function (err) {
-        alert(err);
-        console.log(err);
-      });
+      if (this.state.isSignIn) {
+        $.post('/login', { email: email, password: password }, function (user) {
+          console.log("User is logged in", user);
+          _reactRouter.browserHistory.push('/courses');
+        }).fail(function (err) {
+          alert(err);
+          console.log(err);
+        });
+      } else {
+        var firstName = this.state.firstName.trim();
+        var lastName = this.state.lastName.trim();
+        var isProfessor = this.state.isProfessor;
+
+        if (!firstName || !lastName) {
+          return;
+        }
+
+        $.post('/signup', { email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor }, function (user) {
+          console.log("User has signed up", user);
+          _reactRouter.browserHistory.push('/courses');
+        }).fail(function (err) {
+          alert(err);
+          console.log(err);
+        });
+      }
     }
   }, {
     key: 'swapEntryType',
@@ -396,28 +417,17 @@ var _class = function (_React$Component) {
       this.setState({ isSignIn: !isSignIn });
     }
   }, {
+    key: 'updateIsProfessor',
+    value: function updateIsProfessor(e) {
+      var isProfessor = e.target.checked;
+      console.log("isProfessor", isProfessor);
+      this.setState({ isProfessor: isProfessor });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var firstName = {};
-      var lastName = {};
-      if (!this.state.isSignIn) {
-        firstName = _react2.default.createElement('input', {
-          className: 'entranceInput mb30',
-          type: 'text',
-          placeholder: 'First name',
-          value: this.state.firstName,
-          onChange: this.handleInputChange.bind(this, 'firstName')
-        });
-        lastName = _react2.default.createElement('input', {
-          className: 'entranceInput mb30',
-          type: 'text',
-          placeholder: 'Last name',
-          value: this.state.lastName,
-          onChange: this.handleInputChange.bind(this, 'lastName')
-        });
-      }
       return _react2.default.createElement(
         'div',
         { id: 'quizzlyEntrance', className: 'gradientBody' },
@@ -474,6 +484,20 @@ var _class = function (_React$Component) {
               value: this.state.password,
               onChange: this.handleInputChange.bind(this, 'password')
             }),
+            function () {
+              if (!_this2.state.isSignIn) {
+                return _react2.default.createElement(
+                  'div',
+                  { className: 'mb20' },
+                  _react2.default.createElement('input', { type: 'checkbox', className: 'mr10', onChange: _this2.updateIsProfessor.bind(_this2), checked: _this2.state.isProfessor }),
+                  _react2.default.createElement(
+                    'span',
+                    { className: 'p white' },
+                    "I'm a Professor"
+                  )
+                );
+              }
+            }(),
             _react2.default.createElement('input', { type: 'submit', value: this.state.isSignIn ? "SIGN IN" : "SIGN UP", className: 'signButton mb20' })
           ),
           _react2.default.createElement(
@@ -482,13 +506,13 @@ var _class = function (_React$Component) {
             'Or switch to ',
             _react2.default.createElement(
               'a',
-              { href: '#', onClick: this.swapEntryType.bind(this) },
+              { href: '#', className: 'bold', onClick: this.swapEntryType.bind(this) },
               this.state.isSignIn ? "sign up" : "sign in"
             ),
             ' or ',
             _react2.default.createElement(
               'a',
-              { href: '#' },
+              { href: '#', className: 'bold' },
               'sign in with Blackboard'
             )
           )

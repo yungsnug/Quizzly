@@ -48,6 +48,27 @@ module.exports = {
       console.log("promise call is done");
     });
   },
+  signup: function(req, res) {
+    var data = req.params.all();
+    console.log(data);
+    var UserType = {};
+    if(data.isProfessor) {
+      UserType = Professor;
+    } else {
+      UserType = Student;
+    }
+
+    UserType.create({email: data.email, password: data.password, firstName: data.firstName, lastName: data.lastName})
+    .exec(function(err, user) {
+      console.log("signed up user", user);
+      user.password = "";
+      delete user.password;
+
+      req.session.user = user;
+      console.log("req.session", req.session);
+      res.json(user);
+    });
+  },
   logout: function(req, res) {
     delete req.session.user;
     res.ok();
