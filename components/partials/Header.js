@@ -2,6 +2,7 @@
 
 import React from 'react'
 import {Link} from 'react-router'
+import { browserHistory } from 'react-router'
 
 export class Header extends React.Component {
   constructor(props) {
@@ -28,6 +29,18 @@ export class Header extends React.Component {
     });
   }
 
+  handleLogout() {
+    console.log("trying to logout");
+    $.post("/logout")
+    .then(function() {
+      console.log("user successfully logged out");
+      browserHistory.push('/entrance');
+    })
+    .fail(function() {
+      console.log("logout failed");
+    });
+  }
+
   render() {
     return (
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
@@ -48,9 +61,7 @@ export class Header extends React.Component {
           <a className="ml30" href="#">Terms &amp; Services</a>
           <a className="ml30" href="#">Contact</a>
           <a className="ml30" href="#">About</a>
-          <div className="ml30">
-            <Link to="/entrance">Log Out</Link>
-          </div>
+          <a className="ml30 pointer" onClick={this.handleLogout.bind(this)}>Log Out</a>
           <div className="ml30 mr10 circle avatar"></div>
         </div>
       </div>

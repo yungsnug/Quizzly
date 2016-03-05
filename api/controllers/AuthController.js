@@ -31,7 +31,13 @@ module.exports = {
         user = professor;
       } else if(student.length > 0) {
         user = student;
+      } else {
+        res.status(400);
+        res.send('That user was not found!');
       }
+
+      user.password = "";
+      delete user.password;
 
       req.session.user = user;
       console.log("req.session", req.session);
@@ -41,5 +47,9 @@ module.exports = {
     }).done(function(){
       console.log("promise call is done");
     });
+  },
+  logout: function(req, res) {
+    delete req.session.user;
+    res.json(user);
   }
 };

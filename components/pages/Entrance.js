@@ -13,30 +13,28 @@ export default class extends React.Component {
     };
   }
 
-  handleEmailChange(e) {
-    this.setState({email: e.target.value});
-  }
-
-  handlePasswordChange(e) {
-    this.setState({password: e.target.value});
+  handleInputChange(input, e) {
+    var state = this.state;
+    state[input] = e.target.value;
+    this.setState(state);
   }
 
   handleLoginSubmit(e) {
     e.preventDefault();
-    browserHistory.push('/courses');
-    // window.location.href = "/courses";
     var email = this.state.email.trim();
     var password = this.state.password.trim();
     if (!password || !email) {
       return;
     }
-    // TODO: send request to the server
-    this.setState({email: '', password: ''});
 
-  }
-
-  componentDidMount() {
-    console.log("Entrance componentDidMount");
+    $.post('/login', {email: email, password: password}, function(user) {
+      console.log("User is logged in", user);
+      browserHistory.push('/courses');
+    })
+    .fail(function(err) {
+      alert(err);
+      console.log(err);
+    });
   }
 
   render() {
@@ -52,14 +50,14 @@ export default class extends React.Component {
               type="text"
               placeholder="School Email"
               value={this.state.email}
-              onChange={this.handleEmailChange.bind(this)}
+              onChange={this.handleInputChange.bind(this, 'email')}
             />
             <input
               className="entranceInput mb30"
               type="password"
               placeholder="Password"
               value={this.state.password}
-              onChange={this.handlePasswordChange.bind(this)}
+              onChange={this.handleInputChange.bind(this, 'password')}
             />
             <input type="submit" value="SIGN IN" className="signInButton mb20"/>
           </form>
