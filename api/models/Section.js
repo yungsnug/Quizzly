@@ -18,7 +18,8 @@ module.exports = {
     },
     students: {
       collection: 'student',
-      via: 'section'
+      via: 'sections',
+      dominant: true
     },
 
     // Methods

@@ -32,8 +32,9 @@ module.exports = {
     },
 
     // Associations
-    section: {
-      model: 'section'
+    sections: {
+      collection: 'section',
+      via: 'students'
     },
 
     // Methods
