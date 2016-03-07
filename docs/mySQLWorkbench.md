@@ -32,14 +32,13 @@
 - Left side -> Under Schemas -> click on [db name]: <br/>
 <h3>NOTE: (DO FOR EACH TABLE)</h3>
 <h4>NOTE: Order for filling tables:</h4>
-<h5>(make sure for student and answer use student2.csv and answer2.csv)</h5>
 1.Professor<br/>
 2.Course<br/>
 3.Section<br/>
 4.Quiz<br/>
 5.Question<br/>
-6.Student2<br/>
-7.Answer2<br/>
+6.Student<br/>
+7.Answer<br/>
 8.studentAnswer<br/>
 
 <h4>STEPS:</h4)

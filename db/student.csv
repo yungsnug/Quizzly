@@ -1,2 +1,52 @@
 email,password,studentId,firstName,lastName,school,section,id,createdAt,updatedAt
-conner@usc.edu,test,NULL,Conner,Frey,"University of Southern California",1,1,"2016-02-26 15:18:08","2016-02-26 15:18:08"
+conner@usc.edu,test,NULL,Conner,Frey,University of Southern California,1,1,2016-02-26 15:18:08,2016-02-26 15:18:08
+zeff@usc.edu,test,NULL,Zach,Zeff,University of Southern California,1,2,2016-02-27 15:18:08,2016-02-27 15:18:08
+kintz@usc.edu,test,NULL,"Sonya 
+",Kintz ,University of Southern California,1,3,2016-02-28 15:18:08,2016-02-28 15:18:08
+gossage@usc.edu,test,NULL,Latrisha,Gossage,University of Southern California,1,4,2016-02-29 15:18:08,2016-02-29 15:18:08
+torrey@usc.edu,test,NULL,Crissy ,Torrey,University of Southern California,1,5,2016-03-01 15:18:08,2016-03-01 15:18:08
+amo@usc.edu,test,NULL,Janetta   ,Amo,University of Southern California,2,6,2016-03-02 15:18:08,2016-03-02 15:18:08
+mcilwain@usc.edu,test,NULL,Filiberto ,Mcilwain,University of Southern California,2,7,2016-03-03 15:18:08,2016-03-03 15:18:08
+alexandre@usc.edu,test,NULL,Rebecca ,Alexandre,University of Southern California,2,8,2016-03-04 15:18:08,2016-03-04 15:18:08
+nelsen@usc.edu,test,NULL,Denae ,Nelsen,University of Southern California,2,9,2016-03-05 15:18:08,2016-03-05 15:18:08
+duren@usc.edu,test,NULL,Karisa  ,Duren,University of Southern California,2,10,2016-03-06 15:18:08,2016-03-06 15:18:08
+krahn@usc.edu,test,NULL,Luanna,Krahn,University of Southern California,3,11,2016-03-07 15:18:08,2016-03-07 15:18:08
+pilon@usc.edu,test,NULL,Mireya ,Pilon,University of Southern California,3,12,2016-03-08 15:18:08,2016-03-08 15:18:08
+fitzsimmons@usc.edu,test,NULL,Ming ,Fitzsimmons,University of Southern California,3,13,2016-03-09 15:18:08,2016-03-09 15:18:08
+conlon@usc.edu,test,NULL,Latrice  ,Conlon,University of Southern California,3,14,2016-03-10 15:18:08,2016-03-10 15:18:08
+loaiza@usc.edu,test,NULL,Jules ,Loaiza,University of Southern California,3,15,2016-03-11 15:18:08,2016-03-11 15:18:08
+kunst@usc.edu,test,NULL,Chantal   ,Kunst,University of Southern California,4,16,2016-03-12 15:18:08,2016-03-12 15:18:08
+brickley@usc.edu,test,NULL,Season ,Brickley,University of Southern California,4,17,2016-03-13 15:18:08,2016-03-13 15:18:08
+backlund@usc.edu,test,NULL,Rae  ,Backlund,University of Southern California,4,18,2016-03-14 15:18:08,2016-03-14 15:18:08
+rolph@usc.edu,test,NULL,Ryan  ,Rolph,University of Southern California,4,19,2016-03-15 15:18:08,2016-03-15 15:18:08
+jordahl@usc.edu,test,NULL,Tandy ,Jordahl ,University of Southern California,4,20,2016-03-16 15:18:08,2016-03-16 15:18:08
+jones@usc.edu,test,NULL,Ciara  ,Jones,University of Southern California,5,21,2016-03-17 15:18:08,2016-03-17 15:18:08
+rivas@usc.edu,test,NULL,Nila  ,Rivas,University of Southern California,5,22,2016-03-18 15:18:08,2016-03-18 15:18:08
+derouen@usc.edu,test,NULL,Hayley ,Derouen,University of Southern California,5,23,2016-03-19 15:18:08,2016-03-19 15:18:08
+plowden@usc.edu,test,NULL,Danyell  ,Plowden,University of Southern California,5,24,2016-03-20 15:18:08,2016-03-20 15:18:08
+kellner@usc.edu,test,NULL,Lyman  ,Kellner,University of Southern California,5,25,2016-03-21 15:18:08,2016-03-21 15:18:08
+flippin@usc.edu,test,NULL,German  ,Flippin,University of Southern California,6,26,2016-03-22 15:18:08,2016-03-22 15:18:08
+mincks@usc.edu,test,NULL,Ayana ,Mincks ,University of Southern California,6,27,2016-03-23 15:18:08,2016-03-23 15:18:08
+bickers@usc.edu,test,NULL,Elvia  ,Bickers,University of Southern California,6,28,2016-03-24 15:18:08,2016-03-24 15:18:08
+serra@usc.edu,test,NULL,Elfriede  ,Serra,University of Southern California,6,29,2016-03-25 15:18:08,2016-03-25 15:18:08
+borst@usc.edu,test,NULL,Daniel,Borst  ,University of Southern California,6,30,2016-03-26 15:18:08,2016-03-26 15:18:08
+smalley@usc.edu,test,NULL,Halina  ,Smalley,University of Southern California,7,31,2016-03-27 15:18:08,2016-03-27 15:18:08
+staudt@usc.edu,test,NULL,Nakesha  ,Staudt,University of Southern California,7,32,2016-03-28 15:18:08,2016-03-28 15:18:08
+conkling@usc.edu,test,NULL,Desiree ,Conkling,University of Southern California,7,33,2016-03-29 15:18:08,2016-03-29 15:18:08
+ledesma@usc.edu,test,NULL,Louis ,Ledesma,University of Southern California,7,34,2016-03-30 15:18:08,2016-03-30 15:18:08
+templin@usc.edu,test,NULL,Annalisa,Templin  ,University of Southern California,7,35,2016-03-31 15:18:08,2016-03-31 15:18:08
+bova@usc.edu,test,NULL,Ray  ,Bova,University of Southern California,8,36,2016-04-01 15:18:08,2016-04-01 15:18:08
+afanador@usc.edu,test,NULL,Akilah  ,Afanador,University of Southern California,8,37,2016-04-02 15:18:08,2016-04-02 15:18:08
+pietila@usc.edu,test,NULL,Nadene,Pietila  ,University of Southern California,8,38,2016-04-03 15:18:08,2016-04-03 15:18:08
+line@usc.edu,test,NULL,Elke  ,Line,University of Southern California,8,39,2016-04-04 15:18:08,2016-04-04 15:18:08
+roza@usc.edu,test,NULL,Ladonna ,Roza,University of Southern California,8,40,2016-04-05 15:18:08,2016-04-05 15:18:08
+heyer@usc.edu,test,NULL,Sabrina  ,Heyer,University of Southern California,9,41,2016-04-06 15:18:08,2016-04-06 15:18:08
+pompey@usc.edu,test,NULL,Concepcion  ,Pompey,University of Southern California,9,42,2016-04-07 15:18:08,2016-04-07 15:18:08
+draughn@usc.edu,test,NULL,Cammy  ,Draughn,University of Southern California,9,43,2016-04-08 15:18:08,2016-04-08 15:18:08
+manier@usc.edu,test,NULL,Marlyn,Manier  ,University of Southern California,9,44,2016-04-09 15:18:08,2016-04-09 15:18:08
+rommel@usc.edu,test,NULL,Matha  ,Rommel,University of Southern California,9,45,2016-04-10 15:18:08,2016-04-10 15:18:08
+meaders@usc.edu,test,NULL,Tesha,Meaders  ,University of Southern California,10,46,2016-04-11 15:18:08,2016-04-11 15:18:08
+krout@usc.edu,test,NULL,Bernardina ,Krout ,University of Southern California,10,47,2016-04-12 15:18:08,2016-04-12 15:18:08
+slocumb@usc.edu,test,NULL,Zane  ,Slocumb  ,University of Southern California,10,48,2016-04-13 15:18:08,2016-04-13 15:18:08
+burmeister@usc.edu,test,NULL,Tommy  ,Burmeister,University of Southern California,10,49,2016-04-14 15:18:08,2016-04-14 15:18:08
+keys@usc.edu,test,NULL,Susie  ,Keys,University of Southern California,10,50,2016-04-15 15:18:08,2016-04-15 15:18:08
