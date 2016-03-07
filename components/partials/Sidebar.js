@@ -29,7 +29,7 @@ export class Sidebar extends React.Component {
           <Link to="quizzes">Quizzes</Link>
         </div>
         <div className={this.isActive('metrics')} onClick={this.setFilter.bind(this, 'metrics')}>
-          <Link to="/">Metrics</Link>
+          <Link to="metrics">Metrics</Link>
         </div>
       </div>
     )

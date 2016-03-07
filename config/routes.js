@@ -47,6 +47,9 @@ module.exports.routes = {
   '/style': {
     view: 'app'
   },
+  '/metrics': {
+    view: 'app'
+  },
   'post /login': 'AuthController.login',
   'post /logout': 'AuthController.logout',
   'post /signup': 'AuthController.signup',
