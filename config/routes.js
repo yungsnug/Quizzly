@@ -53,7 +53,8 @@ module.exports.routes = {
   'post /login': 'AuthController.login',
   'post /logout': 'AuthController.logout',
   'post /signup': 'AuthController.signup',
-  'post /user': 'AuthController.user'
+  'post /user': 'AuthController.user',
+  'post /courses/student/:id': 'StudentController.getStudentCourses'
 
   /***************************************************************************
   *                                                                          *
