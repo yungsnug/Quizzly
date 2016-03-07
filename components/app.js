@@ -6,12 +6,14 @@ import Entrance from './pages/Entrance.js'
 import Layout from './pages/Layout.js'
 import Courses from './pages/Courses.js'
 import Quizzes from './pages/Quizzes.js'
+import Metrics from './pages/Metrics.js'
 
 render((
   <Router history={browserHistory}>
     <Route path="/" component={Layout}>
       <Route path="courses" component={Courses} />
       <Route path="quizzes" component={Quizzes} />
+      <Route path="metrics" component={Metrics} />
     </Route>
     <Route path="/entrance" component={Entrance} />
     <Route path="/style" component={Style} />
