@@ -62,25 +62,29 @@ module.exports = {
         var pushInfo = {
           "audience": "all",
           "notification": {
-             "alert": "Extras example",
+             "alert": "Question Available",
              "android": {
                "extra": {
                  "question": question.text,
                  "quiz_id": question.quiz,
                  "quest_id": question.id,
                  "type": question.type,
-            //     "answer": "dummy",
                  "answer0": answers[0].text,
                  "answer1": answers[1].text,
-                 "answer2": answers[2].text,
-                 "answer3": answers[3].text,
-                 //"answer_choices": ["Its bad", "Its good"],
+              //   "answer2": answers[2].text,
+              //   "answer3": answers[3].text,
                  "time_limit": 50,
                }
              }
           },
           "device_types": ["android"]
         };
+        if(answers.length > 2) {
+          pushInfo.notification.android.extra.answer2 = answers[2].text;
+        }
+        if(answers.length > 3) {
+          pushInfo.notification.android.extra.answer3 = answers[3].text;
+        }
 
         console.log(pushInfo);
         urbanAirshipPush.push.send(pushInfo, function (err, data) {
@@ -96,39 +100,7 @@ module.exports = {
 
         });
       });
-
-      //console.log(question);
     });
-/*
-    var pushInfo = {
-      "audience": "all",
-      "notification": {
-         "alert": "Extras example",
-         "android": {
-           "extra": {
-             "question": "Why does this website suck?",
-             "quiz_id": 1,
-             "answer": "Its bad",
-
-             //"answer_choices": ["Its bad", "Its good"],
-             "time_limit": 50,
-             "type": "multiple-choice"
-           }
-         }
-      },
-      "device_types": ["android"]
-    };
-
-    console.log(pushInfo);
-    urbanAirshipPush.push.send(pushInfo, function (err, data) {
-        if (err) {
-            // Handle error
-            console.log(err);
-            return;
-        }
-
-        console.log(data);
-    });*/
   },
 
   answer: function(req, res) {
@@ -136,8 +108,52 @@ module.exports = {
     console.log("Quiz ID: " + req.param('quiz_id'));
     console.log("User Email: " + req.param('user_email'));
     console.log("Answer: " + req.param('answer'));
-    return res.json({
-      hello: 'did it work'
+
+    Student.findOne({email: req.param('user_email')}).exec(function (err, student) {
+      if(err) {
+        return res.json({
+          error: res.negotiate(err)
+        });
+      } if (!student) {
+        return res.json({
+          error: 'Student not found'
+        });
+      }
+      console.log("found student");
+      Answer.findOne({text: req.param('answer')}).exec(function (err, answer) {
+        if(err) {
+          console.log("answer error");
+          return res.json({
+
+            error: res.negotiate(err)
+          });
+        } if (!answer) {
+          console.log("answer not found");
+          return res.json({
+
+            error: 'Student not found'
+          });
+        }
+        var data = {
+          student: student.id,
+          question: req.param('quest_id'),
+          answer: answer.id,
+          quiz: req.param('quiz_id'),
+        };
+        StudentAnswer.create(data).exec(function(err, studentAnswer) {
+          if(err) {
+            return res.json({
+              hello: 'did it work'
+            });
+          }
+
+          return res.json(studentAnswer);
+        });
+
+      });
+
+
     });
+
   }
 };
