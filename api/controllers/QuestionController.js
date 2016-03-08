@@ -57,8 +57,47 @@ module.exports = {
           error: 'Question not found'
         });
       }
+      Answer.find({question: question.id}).exec(function(err, answers) {
 
-      console.log(question);
+        var pushInfo = {
+          "audience": "all",
+          "notification": {
+             "alert": "Extras example",
+             "android": {
+               "extra": {
+                 "question": question.text,
+                 "quiz_id": question.quiz,
+                 "quest_id": question.id,
+                 "type": question.type,
+            //     "answer": "dummy",
+                 "answer0": answers[0].text,
+                 "answer1": answers[1].text,
+                 "answer2": answers[2].text,
+                 "answer3": answers[3].text,
+                 //"answer_choices": ["Its bad", "Its good"],
+                 "time_limit": 50,
+               }
+             }
+          },
+          "device_types": ["android"]
+        };
+
+        console.log(pushInfo);
+        urbanAirshipPush.push.send(pushInfo, function (err, data) {
+            if (err) {
+                // Handle error
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            return res.json({
+              success: "Push sent"
+            });
+
+        });
+      });
+
+      //console.log(question);
     });
 /*
     var pushInfo = {
@@ -95,9 +134,8 @@ module.exports = {
   answer: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
-    console.log("User Email: " + req.param('user'));
+    console.log("User Email: " + req.param('user_email'));
     console.log("Answer: " + req.param('answer'));
-    console.log("post request");
     return res.json({
       hello: 'did it work'
     });
