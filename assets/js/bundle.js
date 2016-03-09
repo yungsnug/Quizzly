@@ -856,6 +856,7 @@ var Quizzes = function (_React$Component) {
           me.closeModal();
         });
       } else {
+        console.log("adding this quesiton: ", question);
         $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id }).then(function (question) {
           quizzes[quizIndex].questions.push(question);
           me.setState({ quizzes: quizzes });
@@ -1328,14 +1329,8 @@ var AddQuestionBody = function (_React$Component) {
       answers: [{ option: "A", text: "" }, { option: "B", text: "" }, { option: "C", text: "" }]
     };
 
-    if (props.quizzes[props.quizIndex].questions[props.questionIndex] != undefined) {
-      question = props.quizzes[props.quizIndex].questions[props.questionIndex];
-      question.answers = [];
-      console.log("AddQuestionBody::question", question);
-    }
-
     _this.state = {
-      isFreeResponse: question.type == "freeResponse" ? true : false,
+      isFreeResponse: "multipleChoice",
       placeholder: "Question...",
       question: question
     };
@@ -1343,6 +1338,23 @@ var AddQuestionBody = function (_React$Component) {
   }
 
   _createClass(AddQuestionBody, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      var me = this;
+      var question = this.props.quizzes[this.props.quizIndex].questions[this.props.questionIndex];
+      if (question == undefined) {
+        return;
+      }
+
+      $.post('/question/find/' + question.id).then(function (question) {
+        console.log("AddQuestionBody::question", question);
+        me.setState({
+          question: question,
+          isFreeResponse: question.type == "freeResponse" ? true : false
+        });
+      });
+    }
+  }, {
     key: "handleChange",
     value: function handleChange(i, event) {
       var me = this;
@@ -1368,7 +1380,7 @@ var AddQuestionBody = function (_React$Component) {
     key: "showFreeResponse",
     value: function showFreeResponse() {
       var question = this.state.question;
-      question.answers = [];
+      question.type = "freeResponse";
       this.setState({
         isFreeResponse: true,
         question: question
@@ -1378,7 +1390,7 @@ var AddQuestionBody = function (_React$Component) {
     key: "showMultipleChoice",
     value: function showMultipleChoice() {
       var question = this.state.question;
-      question.answers = [{ option: "A", text: "" }, { option: "B", text: "" }, { option: "C", text: "" }];
+      question.type = "multipleChoice";
       this.setState({
         isFreeResponse: false,
         question: question
@@ -1399,6 +1411,29 @@ var AddQuestionBody = function (_React$Component) {
           onChange: this.handleChange.bind(this, 'question')
         })
       );
+
+      var answers = null;
+      if (!this.state.isFreeResponse) {
+        answers = this.state.question.answers.map(function (answer, i) {
+          return _react2.default.createElement(
+            "div",
+            { className: "flex mb20 flexVertical", key: i },
+            _react2.default.createElement(
+              "span",
+              { className: "mr15" },
+              answer.option,
+              ".)"
+            ),
+            _react2.default.createElement("input", {
+              type: "text",
+              className: "addCourseInput",
+              value: answer.text,
+              onChange: me.handleChange.bind(me, i),
+              key: i
+            })
+          );
+        });
+      }
 
       var footer = this.state.isFreeResponse ? null : _react2.default.createElement(
         "div",
@@ -1434,25 +1469,7 @@ var AddQuestionBody = function (_React$Component) {
           "div",
           { className: "pl20 pr20" },
           questionAnswer,
-          this.state.question.answers.map(function (answer, i) {
-            return _react2.default.createElement(
-              "div",
-              { className: "flex mb20 flexVertical" },
-              _react2.default.createElement(
-                "span",
-                { className: "mr15" },
-                answer.option,
-                ".)"
-              ),
-              _react2.default.createElement("input", {
-                type: "text",
-                className: "addCourseInput",
-                value: answer.text,
-                onChange: me.handleChange.bind(me, i),
-                key: i
-              })
-            );
-          })
+          answers
         ),
         _react2.default.createElement(
           "div",

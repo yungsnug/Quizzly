@@ -15,17 +15,27 @@ export default class AddQuestionBody extends React.Component {
       ]
     };
 
-    if(props.quizzes[props.quizIndex].questions[props.questionIndex] != undefined) {
-      question = props.quizzes[props.quizIndex].questions[props.questionIndex];
-      question.answers = [];
-      console.log("AddQuestionBody::question", question);
-    }
-
     this.state = {
-      isFreeResponse: question.type == "freeResponse" ? true : false,
-      placeholder: "Question...",
+      isFreeResponse: "multipleChoice",
       question: question
     };
+  }
+
+  componentWillMount() {
+    var me = this;
+    var question = this.props.quizzes[this.props.quizIndex].questions[this.props.questionIndex];
+    if(question == undefined) {
+      return;
+    }
+
+    $.post('/question/find/' + question.id)
+    .then(function(question) {
+      console.log("AddQuestionBody::question", question);
+      me.setState({
+        question: question,
+        isFreeResponse: question.type == "freeResponse" ? true : false,
+      });
+    });
   }
 
   handleChange(i, event) {
@@ -50,7 +60,7 @@ export default class AddQuestionBody extends React.Component {
 
   showFreeResponse() {
     var question = this.state.question;
-    question.answers = [];
+    question.type = "freeResponse";
     this.setState({
       isFreeResponse: true,
       question: question
@@ -59,11 +69,7 @@ export default class AddQuestionBody extends React.Component {
 
   showMultipleChoice() {
     var question = this.state.question;
-    question.answers = [
-      {option: "A", text: ""},
-      {option: "B", text: ""},
-      {option: "C", text: ""}
-    ];
+    question.type = "multipleChoice";
     this.setState({
       isFreeResponse: false,
       question: question
@@ -77,12 +83,31 @@ export default class AddQuestionBody extends React.Component {
         <input
           type="text"
           className="addCourseInput"
-          placeholder={this.state.placeholder}
+          placeholder="Question..."
           value={this.state.question.text}
           onChange={this.handleChange.bind(this, 'question')}
         />
       </div>
     );
+
+    var answers = null;
+    if(!this.state.isFreeResponse) {
+      answers = this.state.question.answers.map(function(answer, i) {
+        return (
+          <div className="flex mb20 flexVertical" key={i}>
+            <span className="mr15">{answer.option}.)</span>
+            <input
+              type="text"
+              className="addCourseInput"
+              value={answer.text}
+              placeholder="Option..."
+              onChange={me.handleChange.bind(me, i)}
+              key={i}
+            />
+          </div>
+        );
+      });
+    }
 
     var footer = this.state.isFreeResponse ? null : <div className="footerButton" onClick={this.addQuestion.bind(this)} >+</div>;
     return (
@@ -97,20 +122,7 @@ export default class AddQuestionBody extends React.Component {
         </div>
         <div className="pl20 pr20">
           {questionAnswer}
-          {this.state.question.answers.map(function(answer, i) {
-            return (
-              <div className="flex mb20 flexVertical">
-                <span className="mr15">{answer.option}.)</span>
-                <input
-                  type="text"
-                  className="addCourseInput"
-                  value={answer.text}
-                  onChange={me.handleChange.bind(me, i)}
-                  key={i}
-                />
-              </div>
-            );
-          })}
+          {answers}
         </div>
         <div className="pb20 pl20 pr20">
           <div className="modalButton" onClick={this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>

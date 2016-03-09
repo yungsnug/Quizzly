@@ -116,6 +116,7 @@ export default class Quizzes extends React.Component {
         me.closeModal();
       });
     } else {
+      console.log("adding this quesiton: ", question);
       $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id})
       .then(function(question) {
         quizzes[quizIndex].questions.push(question);
