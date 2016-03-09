@@ -896,7 +896,8 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'askQuestion',
     value: function askQuestion(quizIndex, questionIndex) {
-      var question = quizzes[quizIndex].questions[questionIndex];
+      var question = this.state.quizzes[quizIndex].questions[questionIndex];
+      console.log(question);
       $.post('question/ask/', { id: question.id }).then(function () {
         console.log("asked question success!");
       });

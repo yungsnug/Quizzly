@@ -157,7 +157,8 @@ export default class Quizzes extends React.Component {
   }
 
   askQuestion(quizIndex, questionIndex) {
-    var question = quizzes[quizIndex].questions[questionIndex];
+    var question = this.state.quizzes[quizIndex].questions[questionIndex];
+    console.log(question);
     $.post('question/ask/', { id: question.id })
     .then(function() {
       console.log("asked question success!");
