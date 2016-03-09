@@ -25,6 +25,7 @@ export default class extends React.Component {
                 <div key={questionIndex} className="item">
                   <span className="pointer" onClick={this.props.showQuestionInModal.bind(this, this.props.quizIndex, questionIndex)}>{question.text}</span>
                   <span className="floatR pointer opacity40" onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, questionIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span>
+                  <span className="small pointer floatR" onClick={this.props.askQuestion.bind(this, this.props.quizIndex, questionIndex)}>ask&nbsp;</span>
                 </div>
               );
             }, this)}

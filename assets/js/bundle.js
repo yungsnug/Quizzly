@@ -741,7 +741,6 @@ var Quizzes = function (_React$Component) {
 
     console.log("quizzes", props.course.quizzes);
     _this.state = {
-      course: props.course,
       quizzes: [{ title: "", questions: [], course: 0, id: 0 }],
       showModal: false,
       modalInfo: {
@@ -895,6 +894,14 @@ var Quizzes = function (_React$Component) {
       });
     }
   }, {
+    key: 'askQuestion',
+    value: function askQuestion(quizIndex, questionIndex) {
+      var question = quizzes[quizIndex].questions[questionIndex];
+      $.post('question/ask/', { id: question.id }).then(function () {
+        console.log("asked question success!");
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -914,7 +921,8 @@ var Quizzes = function (_React$Component) {
               deleteQuestionFromQuiz: this.deleteQuestionFromQuiz.bind(this),
               showQuestionModal: this.showQuestionModal.bind(this),
               showQuestionInModal: this.showQuestionInModal.bind(this),
-              showQuizModal: this.showQuizModal.bind(this)
+              showQuizModal: this.showQuizModal.bind(this),
+              askQuestion: this.askQuestion.bind(this)
             });
           }, this),
           _react2.default.createElement(
@@ -2194,6 +2202,11 @@ var _class = function (_React$Component) {
                   "span",
                   { className: "floatR pointer opacity40", onClick: this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, questionIndex) },
                   _react2.default.createElement("img", { src: "images/close.png", style: { "width": "8px" } })
+                ),
+                _react2.default.createElement(
+                  "span",
+                  { className: "small pointer floatR", onClick: this.props.askQuestion.bind(this, this.props.quizIndex, questionIndex) },
+                  "ask "
                 )
               );
             }, this)

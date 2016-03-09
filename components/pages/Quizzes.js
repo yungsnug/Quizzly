@@ -9,7 +9,6 @@ export default class Quizzes extends React.Component {
     super(props);
     console.log("quizzes", props.course.quizzes);
     this.state = {
-      course: props.course,
       quizzes: [{title: "", questions: [], course: 0, id: 0}],
       showModal: false,
       modalInfo: {
@@ -157,6 +156,14 @@ export default class Quizzes extends React.Component {
     });
   }
 
+  askQuestion(quizIndex, questionIndex) {
+    var question = quizzes[quizIndex].questions[questionIndex];
+    $.post('question/ask/', { id: question.id })
+    .then(function() {
+      console.log("asked question success!");
+    });
+  }
+
   render() {
     return (
       <div>
@@ -172,6 +179,7 @@ export default class Quizzes extends React.Component {
                 showQuestionModal={this.showQuestionModal.bind(this)}
                 showQuestionInModal={this.showQuestionInModal.bind(this)}
                 showQuizModal={this.showQuizModal.bind(this)}
+                askQuestion={this.askQuestion.bind(this)}
               />
             );
           }, this)}
