@@ -9,12 +9,11 @@ export default class AddQuizBody extends React.Component {
     console.log("got here 1", props.quizIndex);
     if(props.quizIndex > -1) {
       console.log("got here 2");
-      quiz = props.course.quizzes[props.quizIndex];
+      quiz = props.quizzes[props.quizIndex];
     }
 
     console.log("quiz??", quiz);
     this.state = {
-      placeholder: "Quiz title...",
       quiz: quiz
     };
   }
@@ -31,11 +30,11 @@ export default class AddQuizBody extends React.Component {
       <div id="addQuizBody">
         <div className="p20">
           <div className="flexVertical">
-            <span className="mr15" style={{"width": "94px"}}>Quiz title</span>
+            <span className="mr15" style={{"width":"94px"}}>Quiz title</span>
             <input
               type="text"
               className="addCourseInput"
-              placeholder={this.state.quiz.placeholder}
+              placeholder="Quiz title..."
               value={this.state.quiz.title}
               onChange={this.handleChange.bind(this, 'quiz')}
             />

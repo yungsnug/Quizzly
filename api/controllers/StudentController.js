@@ -16,10 +16,6 @@ module.exports = {
     .exec(function(err, student) {
       console.log("execing with student", student.firstName);
       console.log("student sections", student.sections);
-      // student.sections = [];
-      // student.sections.push(student.sections);
-      // student.sections.push(2);
-      // student.sections.push(6);
       Promise.each(student.sections, function(section){
         console.log("in promise loop with section...", section);
         return Section.findOne({id: section.id}).then(function(section){

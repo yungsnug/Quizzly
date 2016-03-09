@@ -46,10 +46,11 @@ export default class Quizzes extends React.Component {
     console.log("handle clik!", num);
   }
 
-  showQuizModal() {
+  showQuizModal(quizIndex) {
     var modalInfo = this.state.modalInfo;
     modalInfo.title = "Add Quiz";
     modalInfo.modalType = "ADD_QUIZ";
+    modalInfo.quizIndex = quizIndex;
     this.setState({
       showModal: true,
       modalInfo: modalInfo
@@ -77,22 +78,30 @@ export default class Quizzes extends React.Component {
     this.setState({showModal: false});
   }
 
-  addQuizToCourse(quiz) {
+  addQuizToCourse(quiz, quizIndex) {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var me = this;
-    $.post('quiz/create/',
-      {
-        title: quiz.title,
-        course: me.props.course.id
-      }
-    ).then(function(quiz) {
-      console.log(quiz);
-      quiz.questions = [];
-      var quizzes = me.state.quizzes;
-      quizzes.push(quiz);
-      me.setState({quizzes: quizzes});
-      me.closeModal();
-    });
+    if(quizIndex > -1) {
+      $.post('quiz/update/' + quiz.id, { title: quiz.title })
+      .then(function(quiz) {
+        console.log(quiz);
+        var quizzes = me.state.quizzes;
+        quizzes[quizIndex] = quiz;
+        me.setState({quizzes: quizzes});
+        me.closeModal();
+      });
+    } else {
+      $.post('quiz/create/', { title: quiz.title, course: me.props.course.id })
+      .then(function(quiz) {
+        console.log(quiz);
+        quiz.questions = [];
+        var quizzes = me.state.quizzes;
+        quizzes.push(quiz);
+
+        me.setState({quizzes: quizzes});
+        me.closeModal();
+      });
+    }
   }
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
@@ -162,17 +171,17 @@ export default class Quizzes extends React.Component {
                 deleteQuestionFromQuiz={this.deleteQuestionFromQuiz.bind(this)}
                 showQuestionModal={this.showQuestionModal.bind(this)}
                 showQuestionInModal={this.showQuestionInModal.bind(this)}
+                showQuizModal={this.showQuizModal.bind(this)}
               />
             );
           }, this)}
-          <div className="addEntityButton" onClick={this.showQuizModal.bind(this)}>+</div>
+          <div className="addEntityButton" onClick={this.showQuizModal.bind(this, -1)}>+</div>
         </div>
         {(() => {
           if(this.state.showModal)
             return (
               <Modal
                 modalInfo={this.state.modalInfo}
-                course={this.props.courseId}
                 quizzes={this.state.quizzes}
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}

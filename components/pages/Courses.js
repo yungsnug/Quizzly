@@ -216,6 +216,7 @@ export default class Courses extends React.Component {
                 modalInfo={this.state.modalInfo}
                 showModal={this.state.showModal}
                 course={this.state.course}
+                quizzes={this.state.course.quizzes}
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}
                 addQuizToCourse={this.addQuizToCourse.bind(this)}

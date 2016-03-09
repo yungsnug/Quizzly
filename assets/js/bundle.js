@@ -305,6 +305,7 @@ var Courses = function (_React$Component) {
             modalInfo: _this2.state.modalInfo,
             showModal: _this2.state.showModal,
             course: _this2.state.course,
+            quizzes: _this2.state.course.quizzes,
             key: _this2.state.showModal,
             closeModal: _this2.closeModal.bind(_this2),
             addQuizToCourse: _this2.addQuizToCourse.bind(_this2),
@@ -783,10 +784,11 @@ var Quizzes = function (_React$Component) {
     }
   }, {
     key: 'showQuizModal',
-    value: function showQuizModal() {
+    value: function showQuizModal(quizIndex) {
       var modalInfo = this.state.modalInfo;
       modalInfo.title = "Add Quiz";
       modalInfo.modalType = "ADD_QUIZ";
+      modalInfo.quizIndex = quizIndex;
       this.setState({
         showModal: true,
         modalInfo: modalInfo
@@ -818,20 +820,28 @@ var Quizzes = function (_React$Component) {
     }
   }, {
     key: 'addQuizToCourse',
-    value: function addQuizToCourse(quiz) {
+    value: function addQuizToCourse(quiz, quizIndex) {
       console.log("Adding quiz '" + quiz.title + "' in course " + this.props.course.title);
       var me = this;
-      $.post('quiz/create/', {
-        title: quiz.title,
-        course: me.props.course.id
-      }).then(function (quiz) {
-        console.log(quiz);
-        quiz.questions = [];
-        var quizzes = me.state.quizzes;
-        quizzes.push(quiz);
-        me.setState({ quizzes: quizzes });
-        me.closeModal();
-      });
+      if (quizIndex > -1) {
+        $.post('quiz/update/' + quiz.id, { title: quiz.title }).then(function (quiz) {
+          console.log(quiz);
+          var quizzes = me.state.quizzes;
+          quizzes[quizIndex] = quiz;
+          me.setState({ quizzes: quizzes });
+          me.closeModal();
+        });
+      } else {
+        $.post('quiz/create/', { title: quiz.title, course: me.props.course.id }).then(function (quiz) {
+          console.log(quiz);
+          quiz.questions = [];
+          var quizzes = me.state.quizzes;
+          quizzes.push(quiz);
+
+          me.setState({ quizzes: quizzes });
+          me.closeModal();
+        });
+      }
     }
   }, {
     key: 'addQuestionToQuiz',
@@ -903,19 +913,19 @@ var Quizzes = function (_React$Component) {
               deleteQuizFromCourse: this.deleteQuizFromCourse.bind(this),
               deleteQuestionFromQuiz: this.deleteQuestionFromQuiz.bind(this),
               showQuestionModal: this.showQuestionModal.bind(this),
-              showQuestionInModal: this.showQuestionInModal.bind(this)
+              showQuestionInModal: this.showQuestionInModal.bind(this),
+              showQuizModal: this.showQuizModal.bind(this)
             });
           }, this),
           _react2.default.createElement(
             'div',
-            { className: 'addEntityButton', onClick: this.showQuizModal.bind(this) },
+            { className: 'addEntityButton', onClick: this.showQuizModal.bind(this, -1) },
             '+'
           )
         ),
         function () {
           if (_this2.state.showModal) return _react2.default.createElement(_Modal2.default, {
             modalInfo: _this2.state.modalInfo,
-            course: _this2.props.courseId,
             quizzes: _this2.state.quizzes,
             key: _this2.state.showModal,
             closeModal: _this2.closeModal.bind(_this2),
@@ -1487,12 +1497,11 @@ var AddQuizBody = function (_React$Component) {
     console.log("got here 1", props.quizIndex);
     if (props.quizIndex > -1) {
       console.log("got here 2");
-      quiz = props.course.quizzes[props.quizIndex];
+      quiz = props.quizzes[props.quizIndex];
     }
 
     console.log("quiz??", quiz);
     _this.state = {
-      placeholder: "Quiz title...",
       quiz: quiz
     };
     return _this;
@@ -1526,7 +1535,7 @@ var AddQuizBody = function (_React$Component) {
             _react2.default.createElement("input", {
               type: "text",
               className: "addCourseInput",
-              placeholder: this.state.quiz.placeholder,
+              placeholder: "Quiz title...",
               value: this.state.quiz.title,
               onChange: this.handleChange.bind(this, 'quiz')
             }),
@@ -2070,7 +2079,7 @@ var Modal = function (_React$Component) {
         body = _react2.default.createElement(_AddQuizBody2.default, {
           addQuizToCourse: this.props.addQuizToCourse.bind(this),
           quizIndex: this.props.modalInfo.quizIndex,
-          course: this.props.course });
+          quizzes: this.props.quizzes });
       } else if (this.state.modalType == "ADD_QUESTION") {
         body = _react2.default.createElement(_AddQuestionBody2.default, {
           addQuestionToQuiz: this.props.addQuestionToQuiz.bind(this),
@@ -2158,7 +2167,11 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "header" },
-            this.props.quiz.title,
+            _react2.default.createElement(
+              "span",
+              { className: "pointer", onClick: this.props.showQuizModal.bind(this, this.props.quizIndex) },
+              this.props.quiz.title
+            ),
             _react2.default.createElement(
               "span",
               { className: "floatR pointer", onClick: this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex) },

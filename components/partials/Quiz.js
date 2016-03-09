@@ -16,7 +16,7 @@ export default class extends React.Component {
       <div className="mainPanel">
         <div className="scrollRegion">
           <div className="header">
-            {this.props.quiz.title}
+            <span className="pointer" onClick={this.props.showQuizModal.bind(this, this.props.quizIndex)}>{this.props.quiz.title}</span>
             <span className="floatR pointer" onClick={this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
             </div>
           <div className="body">

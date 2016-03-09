@@ -25,7 +25,7 @@ export default class Modal extends React.Component {
       body = <AddQuizBody
               addQuizToCourse={this.props.addQuizToCourse.bind(this)}
               quizIndex={this.props.modalInfo.quizIndex}
-              course={this.props.course} />;
+              quizzes={this.props.quizzes} />;
     } else if(this.state.modalType == "ADD_QUESTION") {
       body = <AddQuestionBody
               addQuestionToQuiz={this.props.addQuestionToQuiz.bind(this)}
