@@ -96,10 +96,10 @@ export default class AddCourseBody extends React.Component {
       <div id="addCourseBody">
         <div className="row">
           <div className="six columns p20 pr10">
-            <div className={"modalButton " + (this.state.isAddCourse ? "" : "opacity40")} onClick={this.showAddCourse.bind(this)}>ADD COURSE</div>
+            <div className={"modalButton " + (this.state.isAddCourse ? "opacity40" : "")} onClick={this.showAddSection.bind(this)}>ADD SECTION</div>
           </div>
           <div className="six columns p20 pl10">
-            <div className={"modalButton " + (this.state.isAddCourse ? "opacity40" : "")} onClick={this.showAddSection.bind(this)}>ADD SECTION</div>
+            <div className={"modalButton " + (this.state.isAddCourse ? "" : "opacity40")} onClick={this.showAddCourse.bind(this)}>ADD COURSE</div>
           </div>
         </div>
         <div className="pl20 pr20">

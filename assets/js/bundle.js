@@ -1221,8 +1221,8 @@ var AddCourseBody = function (_React$Component) {
             { className: "six columns p20 pr10" },
             _react2.default.createElement(
               "div",
-              { className: "modalButton " + (this.state.isAddCourse ? "" : "opacity40"), onClick: this.showAddCourse.bind(this) },
-              "ADD COURSE"
+              { className: "modalButton " + (this.state.isAddCourse ? "opacity40" : ""), onClick: this.showAddSection.bind(this) },
+              "ADD SECTION"
             )
           ),
           _react2.default.createElement(
@@ -1230,8 +1230,8 @@ var AddCourseBody = function (_React$Component) {
             { className: "six columns p20 pl10" },
             _react2.default.createElement(
               "div",
-              { className: "modalButton " + (this.state.isAddCourse ? "opacity40" : ""), onClick: this.showAddSection.bind(this) },
-              "ADD SECTION"
+              { className: "modalButton " + (this.state.isAddCourse ? "" : "opacity40"), onClick: this.showAddCourse.bind(this) },
+              "ADD COURSE"
             )
           )
         ),
