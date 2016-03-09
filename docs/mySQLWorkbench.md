@@ -40,6 +40,7 @@
 6.Student<br/>
 7.Answer<br/>
 8.studentAnswer<br/>
+9.section_students__student_sections<br/>
 
 <h4>STEPS:</h4)
 - Click on table with lightning highlighted in below image. On left side under SCHEMAS -> [namedb] -> Tables -> [tablename1] <br/>

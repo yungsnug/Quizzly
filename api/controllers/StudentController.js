@@ -12,16 +12,17 @@ module.exports = {
     console.log("--------------getStudentCourses");
     var data = req.params.all();
     var courses = [];
-    Student.findOne({id: data.id})
+    Student.findOne({id: data.id}).populate('sections')
     .exec(function(err, student) {
       console.log("execing with student", student.firstName);
-      student.sections = [];
-      student.sections.push(student.section);
-      student.sections.push(2);
-      student.sections.push(6);
+      console.log("student sections", student.sections);
+      // student.sections = [];
+      // student.sections.push(student.sections);
+      // student.sections.push(2);
+      // student.sections.push(6);
       Promise.each(student.sections, function(section){
         console.log("in promise loop with section...", section);
-        return Section.findOne({id: section}).then(function(section){
+        return Section.findOne({id: section.id}).then(function(section){
           console.log("section", section.title);
           return section;
         }).then(function(section) {

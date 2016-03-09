@@ -35,7 +35,8 @@
     "sails-memory": "^0.10.6",
     "sails-mysql": "^0.11.5",
     "sails-react-store": "^1.0.9",
-    "waterline": "^0.11.0"
+    "waterline": "^0.11.0",
+    "urban-airship-push": "^0.1.0"
   },
   "scripts": {
     "debug": "node debug app.js",
