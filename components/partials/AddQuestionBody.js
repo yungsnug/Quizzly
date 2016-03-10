@@ -9,9 +9,9 @@ export default class AddQuestionBody extends React.Component {
       type: "multipleChoice",
       text: "",
       answers: [
-        {option: "A", text: ""},
-        {option: "B", text: ""},
-        {option: "C", text: ""}
+        {option: "A", text: "", correct: false},
+        {option: "B", text: "", correct: false},
+        {option: "C", text: "", correct: false}
       ]
     };
 
@@ -31,6 +31,13 @@ export default class AddQuestionBody extends React.Component {
     $.post('/question/find/' + question.id)
     .then(function(question) {
       console.log("AddQuestionBody::question", question);
+      if(question.answers.length == 0) {
+        question.answers = [
+          {option: "A", text: "", correct: false},
+          {option: "B", text: "", correct: false},
+          {option: "C", text: "", correct: false}
+        ];
+      }
       me.setState({
         question: question,
         isFreeResponse: question.type == "freeResponse" ? true : false,
@@ -53,7 +60,7 @@ export default class AddQuestionBody extends React.Component {
   addQuestion() {
     var answers = this.state.question.answers;
     var option = String.fromCharCode(answers[answers.length - 1].option.charCodeAt() + 1);
-    var answer = {option: option, text: ""};
+    var answer = {option: option, text: "", correct: false};
     answers.push(answer);
     this.setState({answers: answers});
   }

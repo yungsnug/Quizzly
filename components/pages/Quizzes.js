@@ -4,6 +4,8 @@ import React from 'react'
 import Quiz from '../partials/Quiz.js'
 import Modal from '../partials/Modal.js'
 
+var Promise = require('bluebird');
+
 export default class Quizzes extends React.Component {
   constructor(props) {
     super(props);
@@ -104,26 +106,82 @@ export default class Quizzes extends React.Component {
   }
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
-    var me = this;
     if(question.text.trim().length == 0) return;
 
-    var quizzes = this.state.quizzes;
     if(questionIndex > -1) {
-      $.post('/question/update/' + question.id, {text: question.text, type: question.type})
-      .then(function(question) {
-        quizzes[quizIndex].questions[questionIndex] = question;
-        me.setState({quizzes: quizzes});
-        me.closeModal();
-      });
+      this.updateQuestion(question, quizIndex, questionIndex);
     } else {
-      console.log("adding this quesiton: ", question);
-      $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id})
-      .then(function(question) {
-        quizzes[quizIndex].questions.push(question);
-        me.setState({quizzes: quizzes});
+      this.createQuestion(question, quizIndex, questionIndex);
+    }
+  }
+
+  updateQuestion(question, quizIndex, questionIndex) {
+    var quizzes = this.state.quizzes;
+    var me = this;
+    $.post('/question/update/' + question.id, {text: question.text, type: question.type})
+    .then(function(question) {
+      quizzes[quizIndex].questions[questionIndex] = question;
+      me.setState({quizzes: quizzes});
+    })
+    .then(function() {
+      Promise.each(question.answers, function(answer) {
+        console.log("creating answer?", answer);
+        if(answer.id == undefined && answer.text.length == 0) {
+          return $.when(null);
+        } else if(answer.id == undefined) {
+          return me.crudAnswer('create', answer, question);
+        } else if(answer.text.length == 0) {
+          return $.post('/answer/destroy/' + answer.id);
+        } else {
+          return me.crudAnswer('update', answer, question);
+        }
+      })
+      .then(function() {
         me.closeModal();
       });
+    });
+  }
+
+  createQuestion(question, quizIndex, questionIndex) {
+    var quizzes = this.state.quizzes;
+    var me = this;
+    console.log("adding this quesiton: ", question);
+    $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id})
+    .then(function(question) {
+      quizzes[quizIndex].questions.push(question);
+      me.setState({quizzes: quizzes});
+    })
+    .then(function() {
+      Promise.each(question.answers, function(answer) {
+        if(answer.text.length == 0) {
+          return $.when(null);
+        } else {
+          return me.crudAnswer('create', answer, question);
+        }
+      })
+      .then(function() {
+        me.closeModal();
+      });
+    });
+  }
+
+  crudAnswer(operation, answer, question) {
+    var route = '';
+    route = operation == 'create' ? '/answer/create' : '/answer/update/' + answer.id;
+    switch(operation) {
+      case 'create':
+        route = '/answer/create';
+        break;
+      case 'create':
+        route = '/answer/update/' + answer.id;
+        break;
     }
+    return $.post(route, {
+      text: answer.text,
+      correct: answer.correct,
+      option: answer.option,
+      question: question.id
+    });
   }
 
   deleteQuizFromCourse(quizIndex) {
