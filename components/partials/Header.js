@@ -9,7 +9,8 @@ export class Header extends React.Component {
     super(props);
     this.state = {
       course: props.data.course,
-      term: props.data.term
+      term: props.data.term,
+      sections: props.data.course.sections,
     }
   }
 
@@ -58,10 +59,6 @@ export class Header extends React.Component {
           </select>
         </div>
         <div className="flexVertical" style={{"marginLeft":"auto"}}>
-          <a href="#">Settings</a>
-          <a className="ml30" href="#">Terms &amp; Services</a>
-          <a className="ml30" href="#">Contact</a>
-          <a className="ml30" href="#">About</a>
           <a className="ml30 pointer" onClick={this.handleLogout.bind(this)}>Log Out</a>
           <div className="ml30 mr10 circle avatar"></div>
         </div>

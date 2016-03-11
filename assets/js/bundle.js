@@ -765,13 +765,56 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Metrics = function (_React$Component) {
   _inherits(Metrics, _React$Component);
 
-  function Metrics() {
+  function Metrics(props) {
     _classCallCheck(this, Metrics);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Metrics).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Metrics).call(this, props));
+
+    console.log("props.course", props.course);
+    _this.state = {
+      course: props.course,
+      sections: props.course.sections,
+      quizzes: [],
+      questions: [],
+      answers: [],
+
+      section: { id: -1 },
+      quiz: { id: -1 },
+      question: { id: -1 },
+      answer: { id: -1 },
+
+      allSections: { id: -1, title: "All" },
+      allQuizzes: { id: -1, title: "All" },
+      allQuestions: { id: -1, title: "All" },
+      allAnswers: { id: -1, title: "All" },
+
+      isAllQuizzes: true,
+      isAllQuestions: true,
+      isAllAnswers: true
+    };
+    return _this;
   }
 
   _createClass(Metrics, [{
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(newProps) {
+      console.log("newProps", newProps.course);
+      if (newProps.course.id == -1) return;
+      var me = this;
+      $.when($.post('section/find', { course: newProps.course.id }), $.post('quiz/find', { course: newProps.course.id })).then(function (sections, quizzes) {
+        console.log("sections", sections);
+        console.log("quizzes", quizzes);
+        me.setState({
+          sections: sections[0],
+          quizzes: quizzes[0],
+
+          isAllQuizzes: true,
+          isAllQuestions: true,
+          isAllAnswers: true
+        });
+      });
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       // $.post('/getData', {studentid: 1})
@@ -779,7 +822,6 @@ var Metrics = function (_React$Component) {
       //   var ctx = document.getElementById("myChart").getContext("2d");
       //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
       // });
-
     }
   }, {
     key: "doMath",
@@ -788,12 +830,196 @@ var Metrics = function (_React$Component) {
       // return metricsData;
     }
   }, {
+    key: "changeSection",
+    value: function changeSection(event) {
+      var section = this.state.section;
+      section.id = event.target.value;
+      this.setState({
+        section: section,
+        question: { id: -1 },
+        answer: { id: -1 },
+
+        questions: [],
+        answers: [],
+
+        isAllQuestions: true,
+        isAllAnswers: true
+      });
+    }
+  }, {
+    key: "changeQuiz",
+    value: function changeQuiz(event) {
+      var me = this;
+      var quiz = this.state.quiz;
+      quiz.id = event.target.value;
+      $.post('question/find', { quiz: quiz.id }).then(function (questions) {
+        me.setState({
+          quiz: quiz,
+          question: { id: -1 },
+          answer: { id: -1 },
+
+          questions: questions,
+          answers: [],
+
+          isAllQuizzes: false,
+          isAllQuestions: true,
+          isAllAnswers: true
+        });
+      });
+    }
+  }, {
+    key: "changeQuestion",
+    value: function changeQuestion(event) {
+      var me = this;
+      var question = this.state.question;
+      question.id = event.target.value;
+      $.post('answer/find', { question: question.id }).then(function (answers) {
+        me.setState({
+          question: question,
+          answer: { id: -1 },
+
+          answers: answers,
+
+          isAllQuizzes: false,
+          isAllQuestions: false,
+          isAllAnswers: true
+        });
+      });
+    }
+  }, {
+    key: "changeAnswer",
+    value: function changeAnswer(event) {
+      var me = this;
+      var answer = this.state.answer;
+      answer.id = event.target.value;
+      this.setState({
+        answer: answer,
+
+        isAllQuizzes: false,
+        isAllQuestions: false,
+        isAllAnswers: false
+      });
+    }
+  }, {
+    key: "getMetrics",
+    value: function getMetrics() {
+      console.log("getting metrics...");
+    }
+  }, {
     key: "render",
     value: function render() {
       return _react2.default.createElement(
         "div",
         { id: "metrics", className: "quizzlyContent" },
-        _react2.default.createElement("canvas", { id: "myChart", width: "400", height: "400" })
+        _react2.default.createElement(
+          "div",
+          { className: "flexHorizontal" },
+          _react2.default.createElement(
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              { className: "small ml10" },
+              "Sections"
+            ),
+            _react2.default.createElement(
+              "select",
+              { value: this.state.section.id, className: "dropdown mr10", onChange: this.changeSection.bind(this) },
+              _react2.default.createElement(
+                "option",
+                { value: this.state.allSections.id },
+                this.state.allSections.title
+              ),
+              this.state.sections.map(function (section, sectionIndex) {
+                return _react2.default.createElement(
+                  "option",
+                  { key: sectionIndex, value: section.id },
+                  section.title
+                );
+              })
+            )
+          ),
+          _react2.default.createElement(
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              { className: "small ml10" },
+              "Quizzes"
+            ),
+            _react2.default.createElement(
+              "select",
+              { value: this.state.quiz.id, className: "dropdown mr10", onChange: this.changeQuiz.bind(this) },
+              _react2.default.createElement(
+                "option",
+                { value: this.state.allQuizzes.id },
+                this.state.allQuizzes.title
+              ),
+              this.state.quizzes.map(function (quiz, quizIndex) {
+                return _react2.default.createElement(
+                  "option",
+                  { key: quizIndex, value: quiz.id },
+                  quiz.title
+                );
+              })
+            )
+          ),
+          _react2.default.createElement(
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              { className: "small ml10" },
+              "Questions"
+            ),
+            _react2.default.createElement(
+              "select",
+              { value: this.state.question.id, className: "dropdown mr10", onChange: this.changeQuestion.bind(this) },
+              _react2.default.createElement(
+                "option",
+                { value: this.state.allQuestions.id },
+                this.state.allQuestions.title
+              ),
+              this.state.questions.map(function (question, questionIndex) {
+                return _react2.default.createElement(
+                  "option",
+                  { key: questionIndex, value: question.id },
+                  question.text
+                );
+              })
+            )
+          ),
+          _react2.default.createElement(
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              { className: "small ml10" },
+              "Answers"
+            ),
+            _react2.default.createElement(
+              "select",
+              { value: this.state.answer.id, className: "dropdown mr10", onChange: this.changeAnswer.bind(this) },
+              _react2.default.createElement(
+                "option",
+                { value: this.state.allAnswers.id },
+                this.state.allAnswers.title
+              ),
+              this.state.answers.map(function (answer, answerIndex) {
+                return _react2.default.createElement(
+                  "option",
+                  { key: answerIndex, value: answer.id },
+                  answer.text
+                );
+              })
+            )
+          ),
+          _react2.default.createElement(
+            "button",
+            { onClick: this.getMetrics.bind(this) },
+            "GET METRICS"
+          )
+        )
       );
     }
   }]);
@@ -1877,7 +2103,8 @@ var Header = exports.Header = function (_React$Component) {
 
     _this.state = {
       course: props.data.course,
-      term: props.data.term
+      term: props.data.term,
+      sections: props.data.course.sections
     };
     return _this;
   }
@@ -1959,26 +2186,6 @@ var Header = exports.Header = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'flexVertical', style: { "marginLeft": "auto" } },
-          _react2.default.createElement(
-            'a',
-            { href: '#' },
-            'Settings'
-          ),
-          _react2.default.createElement(
-            'a',
-            { className: 'ml30', href: '#' },
-            'Terms & Services'
-          ),
-          _react2.default.createElement(
-            'a',
-            { className: 'ml30', href: '#' },
-            'Contact'
-          ),
-          _react2.default.createElement(
-            'a',
-            { className: 'ml30', href: '#' },
-            'About'
-          ),
           _react2.default.createElement(
             'a',
             { className: 'ml30 pointer', onClick: this.handleLogout.bind(this) },
