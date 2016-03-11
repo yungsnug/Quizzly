@@ -12,10 +12,20 @@ module.exports = {
     console.log("req.session", req.session);
     if(req.session.user) {
       console.log("session is set");
-      res.json(req.session.user);
-      return req.session.user;
+      return res.json(req.session.user);
     } else {
       console.log("session isn't set");
+    }
+  },
+  session: function(req, res) {
+    console.log("Session::req.session", req.session);
+    if(req.session.user) {
+      console.log("session is set");
+      return res.json(req.session.user);
+    } else {
+      console.log("redirect: session isn't set");
+      res.status(400);
+      return res.send('No session');
     }
   },
   login: function(req, res) {
@@ -28,9 +38,9 @@ module.exports = {
       console.log("student", student);
       var user = {};
       if(professor.length > 0) {
-        user = professor;
+        user = professor[0];
       } else if(student.length > 0) {
-        user = student;
+        user = student[0];
       } else {
         res.status(400);
         res.send('That user was not found!');

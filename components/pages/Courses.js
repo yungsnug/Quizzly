@@ -125,7 +125,7 @@ export default class Courses extends React.Component {
     //TODO: add student array to section
     $.post('section/create/', { title: section.title, course: me.state.course.id }
     ).then(function(section) {
-      console.log("section", section);
+      console.log("created section", section);
       var sections = me.state.sections;
       sections.push(section);
       me.setState({sections: sections});
@@ -133,9 +133,19 @@ export default class Courses extends React.Component {
     });
   }
 
+  addCourseToProfessor(course) {
+    var me = this;
+    this.props.addCourseToProfessor(course)
+    .then(function() {
+      me.closeModal();
+    });
+  }
+
   deleteSectionFromCourse(sectionIndex) {
     var me = this;
     var sections = me.state.sections;
+    if(sections[sectionIndex] == undefined) return $.when(null);
+
     $.post('section/destroy/', { id: sections[sectionIndex].id }
     ).then(function(section) {
       console.log("section", section);
@@ -171,28 +181,36 @@ export default class Courses extends React.Component {
   }
 
   getName() {
-    $.post('/user')
-    .then(function(user) {
-      console.log("user", user);
-    });
+    // $.post('/user')
+    // .then(function(user) {
+    //   console.log("user", user);
+    // });
   }
 
   render() {
     return (
       <div>
         <div id="courses" className="quizzlyContent" onClick={this.getName.bind(this)}>
-          <Course
-            course={this.state.course}
-            isCourse={true}
-            ref={'course'}
-            showQuizModal={this.showQuizModal.bind(this)}
-            showQuizInModal={this.showQuizInModal.bind(this)}
-            showMetricModal={this.showMetricModal.bind(this)}
-            deleteQuizFromCourse={this.deleteQuizFromCourse.bind(this)}
-            sectionIndex={-1}
-            deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
-          />
+          {(() => {
+            if(this.state.course.id > -1) {
+              return (
+                <Course
+                  course={this.state.course}
+                  isCourse={true}
+                  ref={'course'}
+                  showQuizModal={this.showQuizModal.bind(this)}
+                  showQuizInModal={this.showQuizInModal.bind(this)}
+                  showMetricModal={this.showMetricModal.bind(this)}
+                  deleteQuizFromCourse={this.deleteQuizFromCourse.bind(this)}
+                  sectionIndex={-1}
+                  deleteCourseFromProfessor={this.props.deleteCourseFromProfessor.bind(this)}
+                  deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
+                />
+              );
+            }
+          })()}
           {this.state.sections.map(function(section, sectionIndex) {
+            // this is sections, not course!
             return (
               <Course
                 section={section}
@@ -220,6 +238,7 @@ export default class Courses extends React.Component {
                 key={this.state.showModal}
                 closeModal={this.closeModal.bind(this)}
                 addQuizToCourse={this.addQuizToCourse.bind(this)}
+                addCourseToProfessor={this.addCourseToProfessor.bind(this)}
                 addSectionToCourse={this.addSectionToCourse.bind(this)}
               />
             );

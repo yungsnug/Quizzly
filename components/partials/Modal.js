@@ -20,6 +20,7 @@ export default class Modal extends React.Component {
     var body = {};
     if(this.state.modalType == "ADD_COURSE") {
       body = <AddCourseBody
+              addCourseToProfessor={this.props.addCourseToProfessor.bind(this)}
               addSectionToCourse={this.props.addSectionToCourse.bind(this)}/>;
     } else if(this.state.modalType == "ADD_QUIZ") {
       body = <AddQuizBody

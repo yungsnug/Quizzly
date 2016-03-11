@@ -5,7 +5,6 @@ import React from 'react'
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    console.log("Course props: ", props);
     this.state = {
       title: "Course Title"
     };
@@ -18,7 +17,7 @@ export default class extends React.Component {
         <div className="scrollRegion">
           <div className="header">
             {this.props.isCourse ? this.props.course.title : this.props.section.title}
-            <span className="floatR pointer" onClick={this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
+            <span className="floatR pointer" onClick={this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
           </div>
 
           <div className="body">

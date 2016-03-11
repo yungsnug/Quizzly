@@ -211,10 +211,18 @@ var Courses = function (_React$Component) {
       var me = this;
       //TODO: add student array to section
       $.post('section/create/', { title: section.title, course: me.state.course.id }).then(function (section) {
-        console.log("section", section);
+        console.log("created section", section);
         var sections = me.state.sections;
         sections.push(section);
         me.setState({ sections: sections });
+        me.closeModal();
+      });
+    }
+  }, {
+    key: 'addCourseToProfessor',
+    value: function addCourseToProfessor(course) {
+      var me = this;
+      this.props.addCourseToProfessor(course).then(function () {
         me.closeModal();
       });
     }
@@ -223,6 +231,8 @@ var Courses = function (_React$Component) {
     value: function deleteSectionFromCourse(sectionIndex) {
       var me = this;
       var sections = me.state.sections;
+      if (sections[sectionIndex] == undefined) return $.when(null);
+
       $.post('section/destroy/', { id: sections[sectionIndex].id }).then(function (section) {
         console.log("section", section);
         sections.splice(sectionIndex, 1);
@@ -256,9 +266,10 @@ var Courses = function (_React$Component) {
   }, {
     key: 'getName',
     value: function getName() {
-      $.post('/user').then(function (user) {
-        console.log("user", user);
-      });
+      // $.post('/user')
+      // .then(function(user) {
+      //   console.log("user", user);
+      // });
     }
   }, {
     key: 'render',
@@ -271,18 +282,24 @@ var Courses = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { id: 'courses', className: 'quizzlyContent', onClick: this.getName.bind(this) },
-          _react2.default.createElement(_Course2.default, {
-            course: this.state.course,
-            isCourse: true,
-            ref: 'course',
-            showQuizModal: this.showQuizModal.bind(this),
-            showQuizInModal: this.showQuizInModal.bind(this),
-            showMetricModal: this.showMetricModal.bind(this),
-            deleteQuizFromCourse: this.deleteQuizFromCourse.bind(this),
-            sectionIndex: -1,
-            deleteSectionFromCourse: this.deleteSectionFromCourse.bind(this)
-          }),
+          function () {
+            if (_this2.state.course.id > -1) {
+              return _react2.default.createElement(_Course2.default, {
+                course: _this2.state.course,
+                isCourse: true,
+                ref: 'course',
+                showQuizModal: _this2.showQuizModal.bind(_this2),
+                showQuizInModal: _this2.showQuizInModal.bind(_this2),
+                showMetricModal: _this2.showMetricModal.bind(_this2),
+                deleteQuizFromCourse: _this2.deleteQuizFromCourse.bind(_this2),
+                sectionIndex: -1,
+                deleteCourseFromProfessor: _this2.props.deleteCourseFromProfessor.bind(_this2),
+                deleteSectionFromCourse: _this2.deleteSectionFromCourse.bind(_this2)
+              });
+            }
+          }(),
           this.state.sections.map(function (section, sectionIndex) {
+            // this is sections, not course!
             return _react2.default.createElement(_Course2.default, {
               section: section,
               sectionIndex: sectionIndex,
@@ -309,6 +326,7 @@ var Courses = function (_React$Component) {
             key: _this2.state.showModal,
             closeModal: _this2.closeModal.bind(_this2),
             addQuizToCourse: _this2.addQuizToCourse.bind(_this2),
+            addCourseToProfessor: _this2.addCourseToProfessor.bind(_this2),
             addSectionToCourse: _this2.addSectionToCourse.bind(_this2)
           });
         }(),
@@ -550,6 +568,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRouter = require('react-router');
+
 var _Sidebar = require('../partials/Sidebar.js');
 
 var _Header = require('../partials/Header.js');
@@ -572,17 +592,54 @@ var Layout = function (_React$Component) {
 
     _this.state = {
       course: {
-        id: 1,
-        title: "CSCI 201",
+        id: -1,
+        title: "FAKE 101",
         quizzes: [],
         sections: []
       },
-      term: "Summer 2015"
+      term: "Summer 2015",
+      user: {
+        courses: [],
+        email: "",
+        firstName: "",
+        lastName: "",
+        facultyId: "",
+        school: "",
+        id: -1
+      }
     };
     return _this;
   }
 
   _createClass(Layout, [{
+    key: 'checkSession',
+    value: function checkSession() {
+      return $.post('/session').then(function (user) {
+        console.log(user);
+        return user;
+      }).fail(function () {
+        console.log("redirecting to entrance...");
+        _reactRouter.browserHistory.push('/entrance');
+      });
+    }
+  }, {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var me = this;
+      this.checkSession().then(function (user) {
+        console.log("user1", user);
+        return $.post("/professor/find/" + user.id);
+      }).then(function (user) {
+        console.log("user", user);
+        var course = {};
+        user.courses.length > 1 ? course = user.courses[0] : course = this.state.course;
+        me.setState({
+          user: user,
+          course: course
+        });
+      });
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.getCourseById(this.state.course.id);
@@ -613,6 +670,40 @@ var Layout = function (_React$Component) {
       });
     }
   }, {
+    key: 'addCourseToProfessor',
+    value: function addCourseToProfessor(course) {
+      var me = this;
+      //TODO: add student array to section
+      for (var i = 0; i < course.sections.length; ++i) {
+        // this removes empty answers from the array
+        if (course.sections[i].title.length == 0) {
+          course.sections.splice(i, 1);
+          --i;
+        }
+      }
+      console.log("user", this.state.user);
+      return $.post('course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections }).then(function (course) {
+        console.log("created course", course);
+        var user = me.state.user;
+        user.courses.push(course);
+        me.setState({ user: user });
+      });
+    }
+  }, {
+    key: 'deleteCourseFromProfessor',
+    value: function deleteCourseFromProfessor(course) {
+      var me = this;
+      $.post('course/destroy/', { id: course.id }).then(function (course) {
+        console.log("deleted course", course);
+        return $.post('professor/find/' + me.state.user.id);
+      }).then(function (user) {
+        me.setState({
+          course: user.courses[0],
+          user: user
+        });
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var me = this;
@@ -622,13 +713,16 @@ var Layout = function (_React$Component) {
         _react2.default.createElement(_Sidebar.Sidebar, null),
         _react2.default.createElement(_Header.Header, {
           data: this.state,
+          user: this.state.user,
           changeCourse: this.changeCourse.bind(this),
           changeTerm: this.changeTerm.bind(this)
         }),
         _react2.default.Children.map(me.props.children, function (child) {
           return _react2.default.cloneElement(child, {
             course: me.state.course,
-            term: me.state.term
+            term: me.state.term,
+            addCourseToProfessor: me.addCourseToProfessor.bind(me),
+            deleteCourseFromProfessor: me.deleteCourseFromProfessor.bind(me)
           });
         })
       );
@@ -640,7 +734,7 @@ var Layout = function (_React$Component) {
 
 exports.default = Layout;
 
-},{"../partials/Header.js":12,"../partials/Sidebar.js":17,"react":232}],5:[function(require,module,exports){
+},{"../partials/Header.js":12,"../partials/Sidebar.js":17,"react":232,"react-router":47}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -860,7 +954,6 @@ var Quizzes = function (_React$Component) {
         me.setState({ quizzes: quizzes });
       }).then(function () {
         Promise.each(question.answers, function (answer) {
-          console.log("creating answer?", answer);
           if (answer.id == undefined && answer.text.length == 0) {
             return $.when(null);
           } else if (answer.id == undefined) {
@@ -890,10 +983,8 @@ var Quizzes = function (_React$Component) {
       }
 
       $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers }).then(function (createdQuestion) {
-        console.log("I added this question: ", createdQuestion);
         quizzes[quizIndex].questions.push(createdQuestion);
         me.setState({ quizzes: quizzes });
-      }).then(function () {
         me.closeModal();
       });
     }
@@ -1282,7 +1373,7 @@ var AddCourseBody = function (_React$Component) {
         );
         addButton = _react2.default.createElement(
           "div",
-          { className: "modalButton" },
+          { className: "modalButton", onClick: this.props.addCourseToProfessor.bind(this, this.state.course) },
           "ADD COURSE"
         );
         footerButton = _react2.default.createElement(
@@ -1684,7 +1775,6 @@ var _class = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, props));
 
-    console.log("Course props: ", props);
     _this.state = {
       title: "Course Title"
     };
@@ -1711,7 +1801,7 @@ var _class = function (_React$Component) {
             this.props.isCourse ? this.props.course.title : this.props.section.title,
             _react2.default.createElement(
               "span",
-              { className: "floatR pointer", onClick: this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
+              { className: "floatR pointer", onClick: this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
               _react2.default.createElement("img", { src: "images/close.png", style: { "width": "12px" } })
             )
           ),
@@ -1826,16 +1916,13 @@ var Header = exports.Header = function (_React$Component) {
           _react2.default.createElement(
             'select',
             { value: this.state.course.id, className: 'dropdown mr10', onChange: this.changeCourse.bind(this) },
-            _react2.default.createElement(
-              'option',
-              { value: '1' },
-              'CSCI 201'
-            ),
-            _react2.default.createElement(
-              'option',
-              { value: '2' },
-              'CSCI 104'
-            )
+            this.props.user.courses.map(function (course, courseIndex) {
+              return _react2.default.createElement(
+                'option',
+                { key: courseIndex, value: course.id },
+                course.title
+              );
+            })
           ),
           _react2.default.createElement(
             'select',
@@ -2174,6 +2261,7 @@ var Modal = function (_React$Component) {
       var body = {};
       if (this.state.modalType == "ADD_COURSE") {
         body = _react2.default.createElement(_AddCourseBody2.default, {
+          addCourseToProfessor: this.props.addCourseToProfessor.bind(this),
           addSectionToCourse: this.props.addSectionToCourse.bind(this) });
       } else if (this.state.modalType == "ADD_QUIZ") {
         body = _react2.default.createElement(_AddQuizBody2.default, {

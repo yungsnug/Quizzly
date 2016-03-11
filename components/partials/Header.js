@@ -46,8 +46,9 @@ export class Header extends React.Component {
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
         <div className="ml10">
           <select value={this.state.course.id} className="dropdown mr10" onChange={this.changeCourse.bind(this)}>
-            <option value="1">CSCI 201</option>
-            <option value="2">CSCI 104</option>
+            {this.props.user.courses.map(function(course, courseIndex) {
+              return <option key={courseIndex} value={course.id}>{course.title}</option>
+            })}
           </select>
           <select value={this.state.term} className="dropdown" onChange={this.changeTerm.bind(this)}>
             <option value="Fall 2016">Fall 2016</option>
