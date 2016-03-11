@@ -695,6 +695,11 @@ var Layout = function (_React$Component) {
       var me = this;
       $.post('course/destroy/', { id: course.id }).then(function (course) {
         console.log("deleted course", course);
+        var sectionIds = course.sections.map(function (section) {
+          return section.id;
+        });
+        return $.post('/section/destroy', { id: sectionIds });
+      }).then(function () {
         return $.post('professor/find/' + me.state.user.id);
       }).then(function (user) {
         me.setState({
