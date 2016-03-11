@@ -16,7 +16,7 @@ export default class AddQuestionBody extends React.Component {
     };
 
     this.state = {
-      isFreeResponse: "multipleChoice",
+      isFreeResponse: false,
       question: question
     };
   }
@@ -24,6 +24,7 @@ export default class AddQuestionBody extends React.Component {
   componentWillMount() {
     var me = this;
     var question = this.props.quizzes[this.props.quizIndex].questions[this.props.questionIndex];
+    console.log("sfa dsasdf", this.state.isFreeResponse);
     if(question == undefined) {
       return;
     }

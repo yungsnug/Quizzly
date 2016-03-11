@@ -1,6 +1,7 @@
 "use strict";
 
 import React from 'react'
+import Question from '../partials/Question.js'
 
 export default class extends React.Component {
   constructor(props) {
@@ -22,11 +23,15 @@ export default class extends React.Component {
           <div className="body">
             {this.props.quiz.questions.map(function(question, questionIndex) {
               return (
-                <div key={questionIndex} className="item">
-                  <span className="pointer" onClick={this.props.showQuestionInModal.bind(this, this.props.quizIndex, questionIndex)}>{question.text}</span>
-                  <span className="floatR pointer opacity40" onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, questionIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span>
-                  <span className="small pointer floatR" onClick={this.props.askQuestion.bind(this, this.props.quizIndex, questionIndex)}>ask&nbsp;</span>
-                </div>
+                <Question
+                  key={questionIndex}
+                  quizIndex={this.props.quizIndex}
+                  questionIndex={questionIndex}
+                  question={question}
+                  showQuestionInModal={this.props.showQuestionInModal.bind(this)}
+                  deleteQuestionFromQuiz={this.props.deleteQuestionFromQuiz.bind(this)}
+                  askQuestion={this.props.askQuestion.bind(this)}
+                />
               );
             }, this)}
           </div>

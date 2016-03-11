@@ -43,10 +43,6 @@ export default class Quizzes extends React.Component {
       });
   }
 
-  handleClick(num) {
-    console.log("handle clik!", num);
-  }
-
   showQuizModal(quizIndex) {
     var modalInfo = this.state.modalInfo;
     modalInfo.title = "Add Quiz";
@@ -125,7 +121,6 @@ export default class Quizzes extends React.Component {
     })
     .then(function() {
       Promise.each(question.answers, function(answer) {
-        console.log("creating answer?", answer);
         if(answer.id == undefined && answer.text.length == 0) {
           return $.when(null);
         } else if(answer.id == undefined) {
@@ -145,23 +140,19 @@ export default class Quizzes extends React.Component {
   createQuestion(question, quizIndex, questionIndex) {
     var quizzes = this.state.quizzes;
     var me = this;
-    console.log("adding this quesiton: ", question);
-    $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id})
-    .then(function(question) {
-      quizzes[quizIndex].questions.push(question);
+
+    for(var i = 0; i < question.answers.length; ++i) { // this removes empty answers from the array
+      if(question.answers[i].text.length == 0) {
+        question.answers.splice(i, 1);
+        --i;
+      }
+    }
+
+    $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers})
+    .then(function(createdQuestion) {
+      quizzes[quizIndex].questions.push(createdQuestion);
       me.setState({quizzes: quizzes});
-    })
-    .then(function() {
-      Promise.each(question.answers, function(answer) {
-        if(answer.text.length == 0) {
-          return $.when(null);
-        } else {
-          return me.crudAnswer('create', answer, question);
-        }
-      })
-      .then(function() {
-        me.closeModal();
-      });
+      me.closeModal();
     });
   }
 
@@ -172,10 +163,11 @@ export default class Quizzes extends React.Component {
       case 'create':
         route = '/answer/create';
         break;
-      case 'create':
+      case 'update':
         route = '/answer/update/' + answer.id;
         break;
     }
+    console.log("this is the route", route);
     return $.post(route, {
       text: answer.text,
       correct: answer.correct,
@@ -192,10 +184,19 @@ export default class Quizzes extends React.Component {
       var questions = quizzes[quizIndex].questions;
       if(questions.length == 0) return $.when(null);
       var questionIds = [];
+      var answerIds = [];
       for(var i = 0; i < questions.length; ++i) {
         questionIds.push(questions[i].id);
+        if(question.answers != undefined) {
+          for(var j = 0; j < questions[i].answers.length; ++j) {
+            answerIds.push(questions[i].answers[j]);
+          }
+        }
       }
-      return $.post('/question/destroy', {id: questionIds});
+      return $.when(
+        $.post('/question/destroy', {id: questionIds}),
+        $.post('/answer/destroy', {id: answerIds})
+      );
     })
     .then(function() {
       quizzes.splice(quizIndex, 1);
@@ -207,7 +208,19 @@ export default class Quizzes extends React.Component {
   deleteQuestionFromQuiz(quizIndex, questionIndex) {
     var me = this;
     var quizzes = this.state.quizzes;
-    $.post('/question/destroy', {id: quizzes[quizIndex].questions[questionIndex].id})
+    var question = quizzes[quizIndex].questions[questionIndex];
+    $.post('/question/destroy', {id: question.id})
+    .then(function() {
+      console.log("deleting", question);
+      var answerIds = [];
+      if(question.answers != undefined) {
+        for(var i = 0; i < question.answers.length; ++i) {
+          answerIds.push(question.answers[i]);
+        }
+        return $.post('/answer/destroy', {id: answerIds});
+      }
+      return $.when(null);
+    })
     .then(function() {
       quizzes[quizIndex].questions.splice(questionIndex, 1);
       me.setState({quizzes: quizzes});
@@ -217,8 +230,7 @@ export default class Quizzes extends React.Component {
 
   askQuestion(quizIndex, questionIndex) {
     var question = this.state.quizzes[quizIndex].questions[questionIndex];
-    console.log(question);
-    $.post('question/ask/', { id: question.id })
+    return $.post('question/ask/', {id: question.id})
     .then(function() {
       console.log("asked question success!");
     });
