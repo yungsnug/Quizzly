@@ -183,16 +183,14 @@ export default class Quizzes extends React.Component {
     .then(function() {
       var questions = quizzes[quizIndex].questions;
       if(questions.length == 0) return $.when(null);
-      var questionIds = [];
       var answerIds = [];
-      for(var i = 0; i < questions.length; ++i) {
-        questionIds.push(questions[i].id);
+      var questionIds = [];
+      questions.map(function(question){
+        questionIds.push(question.id);
         if(question.answers != undefined) {
-          for(var j = 0; j < questions[i].answers.length; ++j) {
-            answerIds.push(questions[i].answers[j]);
-          }
+          question.answers.map(function(answer) {answerIds.push(answer.id);});
         }
-      }
+      });
       return $.when(
         $.post('/question/destroy', {id: questionIds}),
         $.post('/answer/destroy', {id: answerIds})
@@ -214,9 +212,7 @@ export default class Quizzes extends React.Component {
       console.log("deleting", question);
       var answerIds = [];
       if(question.answers != undefined) {
-        for(var i = 0; i < question.answers.length; ++i) {
-          answerIds.push(question.answers[i]);
-        }
+        answerIds = question.answers.map(function(answer){return answer.id;});
         return $.post('/answer/destroy', {id: answerIds});
       }
       return $.when(null);

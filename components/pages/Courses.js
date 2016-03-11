@@ -8,6 +8,7 @@ import MetricModal from '../partials/MetricModal.js'
 export default class Courses extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       course: props.course,
       sections: props.course.sections,
@@ -29,10 +30,11 @@ export default class Courses extends React.Component {
   }
 
   getCoursesAndSections(courseId) {
+    if(courseId == -1) return;
     var me = this;
     $.when(
-      $.post("/course/find", { id: courseId }),
-      $.post("/section/find", { course: courseId })
+      $.post("course/find", {id: courseId}),
+      $.post("section/find", {course: courseId})
     ).then(function(course, sections) {
       console.log("course", course[0]);
       console.log("sections", sections[0]);
@@ -123,8 +125,8 @@ export default class Courses extends React.Component {
   addSectionToCourse(section) {
     var me = this;
     //TODO: add student array to section
-    $.post('section/create/', { title: section.title, course: me.state.course.id }
-    ).then(function(section) {
+    $.post('section/create/', { title: section.title, course: me.state.course.id })
+    .then(function(section) {
       console.log("created section", section);
       var sections = me.state.sections;
       sections.push(section);
@@ -146,8 +148,8 @@ export default class Courses extends React.Component {
     var sections = me.state.sections;
     if(sections[sectionIndex] == undefined) return $.when(null);
 
-    $.post('section/destroy/', { id: sections[sectionIndex].id }
-    ).then(function(section) {
+    $.post('section/destroy/', { id: sections[sectionIndex].id })
+    .then(function(section) {
       console.log("section", section);
       sections.splice(sectionIndex, 1);
       me.setState({sections: sections});
@@ -163,12 +165,8 @@ export default class Courses extends React.Component {
       return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
     })
     .then(function(quiz) {
-      var questions = quiz.questions;
-      if(questions.length == 0) return $.when(null);
-      var questionIds = [];
-      for(var i = 0; i < questions.length; ++i) {
-        questionIds.push(questions[i].id);
-      }
+      if(quiz.questions.length == 0) return $.when(null);
+      var questionIds = quiz.questions.map(function(question){return question.id;});
       return $.post('/question/destroy', {id: questionIds});
     })
     .then(function() {

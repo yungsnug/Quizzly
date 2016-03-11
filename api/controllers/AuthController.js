@@ -24,8 +24,8 @@ module.exports = {
       return res.json(req.session.user);
     } else {
       console.log("redirect: session isn't set");
-      res.status(400);
-      return res.send('No session');
+      // return res.redirect('/entrance');
+      res.status(400).send('No session');
     }
   },
   login: function(req, res) {
@@ -42,8 +42,7 @@ module.exports = {
       } else if(student.length > 0) {
         user = student[0];
       } else {
-        res.status(400);
-        res.send('That user was not found!');
+        res.status(400).send('That user was not found!');
       }
 
       user.password = "";

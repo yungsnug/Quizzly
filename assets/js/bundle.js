@@ -116,8 +116,9 @@ var Courses = function (_React$Component) {
   }, {
     key: 'getCoursesAndSections',
     value: function getCoursesAndSections(courseId) {
+      if (courseId == -1) return;
       var me = this;
-      $.when($.post("/course/find", { id: courseId }), $.post("/section/find", { course: courseId })).then(function (course, sections) {
+      $.when($.post("course/find", { id: courseId }), $.post("section/find", { course: courseId })).then(function (course, sections) {
         console.log("course", course[0]);
         console.log("sections", sections[0]);
 
@@ -248,12 +249,10 @@ var Courses = function (_React$Component) {
       $.post('/quiz/find/' + quizzes[quizIndex].id).then(function (quiz) {
         return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
       }).then(function (quiz) {
-        var questions = quiz.questions;
-        if (questions.length == 0) return $.when(null);
-        var questionIds = [];
-        for (var i = 0; i < questions.length; ++i) {
-          questionIds.push(questions[i].id);
-        }
+        if (quiz.questions.length == 0) return $.when(null);
+        var questionIds = quiz.questions.map(function (question) {
+          return question.id;
+        });
         return $.post('/question/destroy', { id: questionIds });
       }).then(function () {
         quizzes.splice(quizIndex, 1);
@@ -623,26 +622,16 @@ var Layout = function (_React$Component) {
       });
     }
   }, {
-    key: 'componentWillMount',
-    value: function componentWillMount() {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
       var me = this;
       this.checkSession().then(function (user) {
-        console.log("user1", user);
         return $.post("/professor/find/" + user.id);
       }).then(function (user) {
         console.log("user", user);
-        var course = {};
-        user.courses.length > 1 ? course = user.courses[0] : course = this.state.course;
-        me.setState({
-          user: user,
-          course: course
-        });
+        me.setState({ user: user });
+        me.getCourseById(user.courses[0].id);
       });
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.getCourseById(this.state.course.id);
     }
   }, {
     key: 'changeCourse',
@@ -655,8 +644,7 @@ var Layout = function (_React$Component) {
       console.log("changeCourseId", courseId);
       var me = this;
 
-      $.post("/course/find", { id: courseId }).then(function (course) {
-        console.log("course", course);
+      $.post("course/find", { id: courseId }).then(function (course) {
         if (course == undefined) return; // if there are no courses, then there are no sections
         me.setState({ course: course });
       });
@@ -693,12 +681,26 @@ var Layout = function (_React$Component) {
     key: 'deleteCourseFromProfessor',
     value: function deleteCourseFromProfessor(course) {
       var me = this;
-      $.post('course/destroy/', { id: course.id }).then(function (course) {
-        console.log("deleted course", course);
-        var sectionIds = course.sections.map(function (section) {
-          return section.id;
+
+      var sectionIds = course.sections.map(function (section) {
+        return section.id;
+      });
+      var quizIds = course.quizzes.map(function (quiz) {
+        return quiz.id;
+      });
+      var questionIds = [];
+      var answerIds = [];
+
+      $.post('question/find', { quiz: quizIds }).then(function (questions) {
+        questionIds = questions.map(function (question) {
+          return question.id;
         });
-        return $.post('/section/destroy', { id: sectionIds });
+        return $.post('answer/find', { question: questionIds });
+      }).then(function (answers) {
+        answerIds = answers.map(function (answer) {
+          return answer.id;
+        });
+        return $.when($.post('course/destroy', { id: course.id }), $.post('section/destroy', { id: sectionIds }), $.post('quiz/destroy', { id: quizIds }), $.post('question/destroy', { id: questionIds }), $.post('answer/destroy', { id: answerIds }));
       }).then(function () {
         return $.post('professor/find/' + me.state.user.id);
       }).then(function (user) {
@@ -1022,16 +1024,16 @@ var Quizzes = function (_React$Component) {
       $.post('/quiz/destroy/' + quizzes[quizIndex].id).then(function () {
         var questions = quizzes[quizIndex].questions;
         if (questions.length == 0) return $.when(null);
-        var questionIds = [];
         var answerIds = [];
-        for (var i = 0; i < questions.length; ++i) {
-          questionIds.push(questions[i].id);
+        var questionIds = [];
+        questions.map(function (question) {
+          questionIds.push(question.id);
           if (question.answers != undefined) {
-            for (var j = 0; j < questions[i].answers.length; ++j) {
-              answerIds.push(questions[i].answers[j]);
-            }
+            question.answers.map(function (answer) {
+              answerIds.push(answer.id);
+            });
           }
-        }
+        });
         return $.when($.post('/question/destroy', { id: questionIds }), $.post('/answer/destroy', { id: answerIds }));
       }).then(function () {
         quizzes.splice(quizIndex, 1);
@@ -1049,9 +1051,9 @@ var Quizzes = function (_React$Component) {
         console.log("deleting", question);
         var answerIds = [];
         if (question.answers != undefined) {
-          for (var i = 0; i < question.answers.length; ++i) {
-            answerIds.push(question.answers[i]);
-          }
+          answerIds = question.answers.map(function (answer) {
+            return answer.id;
+          });
           return $.post('/answer/destroy', { id: answerIds });
         }
         return $.when(null);

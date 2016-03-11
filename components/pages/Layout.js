@@ -41,26 +41,17 @@ export default class Layout extends React.Component {
     });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     var me = this;
     this.checkSession()
     .then(function(user) {
-      console.log("user1", user);
       return $.post("/professor/find/" + user.id);
     })
     .then(function(user) {
       console.log("user", user);
-      var course = {};
-      user.courses.length > 1 ? course = user.courses[0] : course = this.state.course;
-      me.setState({
-        user: user,
-        course: course
-      });
+      me.setState({user: user});
+      me.getCourseById(user.courses[0].id);
     });
-  }
-
-  componentDidMount() {
-    this.getCourseById(this.state.course.id);
   }
 
   changeCourse(courseId) {
@@ -71,9 +62,8 @@ export default class Layout extends React.Component {
     console.log("changeCourseId", courseId);
     var me = this;
 
-    $.post("/course/find", { id: courseId })
+    $.post("course/find", { id: courseId })
     .then(function(course) {
-      console.log("course", course);
       if(course == undefined) return; // if there are no courses, then there are no sections
       me.setState({ course: course });
     });
@@ -96,7 +86,7 @@ export default class Layout extends React.Component {
       }
     }
     console.log("user", this.state.user);
-    return $.post('course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections })
+    return $.post('course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections})
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
@@ -107,11 +97,26 @@ export default class Layout extends React.Component {
 
   deleteCourseFromProfessor(course) {
     var me = this;
-    $.post('course/destroy/', { id: course.id })
-    .then(function(course) {
-      console.log("deleted course", course);
-      var sectionIds = course.sections.map(function(section){return section.id;});
-      return $.post('/section/destroy', {id: sectionIds});
+
+    var sectionIds = course.sections.map(function(section){return section.id;});
+    var quizIds = course.quizzes.map(function(quiz){return quiz.id;});
+    var questionIds = [];
+    var answerIds = [];
+
+    $.post('question/find', {quiz: quizIds})
+    .then(function(questions) {
+      questionIds = questions.map(function(question){return question.id;});
+      return $.post('answer/find', {question: questionIds})
+    })
+    .then(function(answers) {
+      answerIds = answers.map(function(answer){return answer.id;});
+      return $.when(
+        $.post('course/destroy', {id: course.id}),
+        $.post('section/destroy', {id: sectionIds}),
+        $.post('quiz/destroy', {id: quizIds}),
+        $.post('question/destroy', {id: questionIds}),
+        $.post('answer/destroy', {id: answerIds})
+      );
     })
     .then(function() {
       return $.post('professor/find/' + me.state.user.id);
