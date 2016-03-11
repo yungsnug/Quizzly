@@ -29,13 +29,26 @@ export default class Metrics extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.populateDropdowns(this.props.course);
+    // $.post('/getData', {studentid: 1})
+    // .then(function(metricsData) {
+    //   var ctx = document.getElementById("myChart").getContext("2d");
+    //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
+    // });
+  }
+
   componentWillReceiveProps(newProps) {
-    console.log("newProps", newProps.course);
-    if(newProps.course.id == -1) return;
+    this.populateDropdowns(newProps.course);
+  }
+
+  populateDropdowns(course) {
+    console.log("newProps", course);
+    if(course.id == -1) return;
     var me = this;
     $.when(
-      $.post('section/find', {course: newProps.course.id}),
-      $.post('quiz/find', {course: newProps.course.id})
+      $.post('section/find', {course: course.id}),
+      $.post('quiz/find', {course: course.id})
     )
     .then(function(sections, quizzes) {
       console.log("sections", sections);
@@ -49,14 +62,6 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
-  }
-
-  componentDidMount() {
-    // $.post('/getData', {studentid: 1})
-    // .then(function(metricsData) {
-    //   var ctx = document.getElementById("myChart").getContext("2d");
-    //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
-    // });
   }
 
   doMath(metricsData) {

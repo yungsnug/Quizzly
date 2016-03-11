@@ -796,12 +796,27 @@ var Metrics = function (_React$Component) {
   }
 
   _createClass(Metrics, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.populateDropdowns(this.props.course);
+      // $.post('/getData', {studentid: 1})
+      // .then(function(metricsData) {
+      //   var ctx = document.getElementById("myChart").getContext("2d");
+      //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
+      // });
+    }
+  }, {
     key: "componentWillReceiveProps",
     value: function componentWillReceiveProps(newProps) {
-      console.log("newProps", newProps.course);
-      if (newProps.course.id == -1) return;
+      this.populateDropdowns(newProps.course);
+    }
+  }, {
+    key: "populateDropdowns",
+    value: function populateDropdowns(course) {
+      console.log("newProps", course);
+      if (course.id == -1) return;
       var me = this;
-      $.when($.post('section/find', { course: newProps.course.id }), $.post('quiz/find', { course: newProps.course.id })).then(function (sections, quizzes) {
+      $.when($.post('section/find', { course: course.id }), $.post('quiz/find', { course: course.id })).then(function (sections, quizzes) {
         console.log("sections", sections);
         console.log("quizzes", quizzes);
         me.setState({
@@ -813,15 +828,6 @@ var Metrics = function (_React$Component) {
           isAllAnswers: true
         });
       });
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      // $.post('/getData', {studentid: 1})
-      // .then(function(metricsData) {
-      //   var ctx = document.getElementById("myChart").getContext("2d");
-      //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
-      // });
     }
   }, {
     key: "doMath",
@@ -2570,13 +2576,13 @@ var _class = function (_React$Component) {
       });
     }
   }, {
-    key: "mouseOver",
-    value: function mouseOver() {
+    key: "mouseEnter",
+    value: function mouseEnter() {
       this.setState({ hover: true });
     }
   }, {
-    key: "mouseOut",
-    value: function mouseOut() {
+    key: "mouseLeave",
+    value: function mouseLeave() {
       this.setState({ hover: false });
     }
   }, {
@@ -2586,7 +2592,7 @@ var _class = function (_React$Component) {
 
       return _react2.default.createElement(
         "div",
-        { className: "item relative", onMouseEnter: this.mouseOver.bind(this), onMouseLeave: this.mouseOut.bind(this) },
+        { className: "item relative", onMouseEnter: this.mouseEnter.bind(this), onMouseLeave: this.mouseLeave.bind(this) },
         this.state.successfullyAsked ? _react2.default.createElement(
           "div",
           { className: "width100 height100 flexCenter absolute greenBlueGradient white mont z20 bold", style: { "margin": "-10px" } },
@@ -2750,19 +2756,22 @@ var Sidebar = exports.Sidebar = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).call(this, props));
 
-    _this.state = { selected: '' };
+    _this.state = {
+      selected: window.location.pathname
+    };
     return _this;
   }
 
   _createClass(Sidebar, [{
     key: 'setFilter',
     value: function setFilter(filter) {
+      _reactRouter.browserHistory.push(filter);
       this.setState({ selected: filter });
     }
   }, {
     key: 'isActive',
     value: function isActive(value) {
-      return 'mt15 pt15 pb15 show ' + (value === this.state.selected ? 'greenBlueGradientLight' : '');
+      return 'sidebarElement mt15 pt15 pb15 show pointer p ' + (value === this.state.selected ? 'greenBlueGradientLight' : '');
     }
   }, {
     key: 'render',
@@ -2777,30 +2786,18 @@ var Sidebar = exports.Sidebar = function (_React$Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: this.isActive('courses'), onClick: this.setFilter.bind(this, 'courses') },
-          _react2.default.createElement(
-            _reactRouter.Link,
-            { to: 'courses' },
-            'Courses'
-          )
+          { className: this.isActive('/courses'), onClick: this.setFilter.bind(this, '/courses') },
+          'Courses'
         ),
         _react2.default.createElement(
           'div',
-          { className: this.isActive('quizzes'), onClick: this.setFilter.bind(this, 'quizzes') },
-          _react2.default.createElement(
-            _reactRouter.Link,
-            { to: 'quizzes' },
-            'Quizzes'
-          )
+          { className: this.isActive('/quizzes'), onClick: this.setFilter.bind(this, '/quizzes') },
+          'Quizzes'
         ),
         _react2.default.createElement(
           'div',
-          { className: this.isActive('metrics'), onClick: this.setFilter.bind(this, 'metrics') },
-          _react2.default.createElement(
-            _reactRouter.Link,
-            { to: 'metrics' },
-            'Metrics'
-          )
+          { className: this.isActive('/metrics'), onClick: this.setFilter.bind(this, '/metrics') },
+          'Metrics'
         )
       );
     }

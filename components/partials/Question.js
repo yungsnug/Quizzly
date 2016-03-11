@@ -21,17 +21,17 @@ export default class extends React.Component {
     });
   }
 
-  mouseOver() {
+  mouseEnter() {
     this.setState({hover: true});
   }
 
-  mouseOut() {
+  mouseLeave() {
     this.setState({hover: false});
   }
 
   render() {
     return (
-      <div className="item relative" onMouseEnter={this.mouseOver.bind(this)} onMouseLeave={this.mouseOut.bind(this)}>
+      <div className="item relative" onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
         {this.state.successfullyAsked ? <div className="width100 height100 flexCenter absolute greenBlueGradient white mont z20 bold" style={{"margin":"-10px"}}>ASKED</div> : null}
         <span className="pointer" onClick={this.props.showQuestionInModal.bind(this, this.props.quizIndex, this.props.questionIndex)}>{this.props.question.text}</span>
         {(() => {
