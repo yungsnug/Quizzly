@@ -21,6 +21,8 @@ I. For MySQL, get MySQLWorkbench and CSV files loaded in database: <a href="http
 
 Git commands trouble? Start here:<a href="https://github.com/freyconner24/Quizzly/blob/master/docs/githubStartup.md#github-guidecommands">Git Commands Guide</a>
 
+To change react files(located in /components/*) run 'sudo npm install -g browserify' then...
+
 You must run this command every time you change a React file: `browserify -t [ babelify --presets [ react ] ] components/app.js -o assets/js/bundle.js`
 
 
