@@ -39,7 +39,7 @@ export default class extends React.Component {
             return (
               <div className="floatR">
                 <span className="small pointer darkGreen mr10" onClick={this.askQuestion.bind(this, this.props.quizIndex, this.props.questionIndex)}>ask</span>
-                <span className="pointer opacity40" onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, this.props.questionIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span>
+                <span className="pointer opacity40" onClick={this.props.deleteQuestionFromQuiz.bind(this, this.props.quizIndex, this.props.questionIndex)}><img src={CLOSE_IMAGE_PATH} style={{"width":"8px"}}/></span>
               </div>
             );
           }

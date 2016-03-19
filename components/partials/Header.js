@@ -8,9 +8,9 @@ export class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      course: props.data.course,
-      term: props.data.term,
-      sections: props.data.course.sections,
+      course: props.course,
+      term: props.term,
+      sections: props.course.sections,
     }
   }
 

@@ -35,7 +35,16 @@ export default class extends React.Component {
     if(this.state.isSignIn) {
       $.post('/login', {email: email, password: password}, function(user) {
         console.log("User is logged in", user);
-        browserHistory.push('/courses');
+        var route = 'p';
+        switch(user.type) {
+          case 'PROFESSOR':
+            route = '/p/courses';
+            break;
+          case 'STUDENT':
+            route = '/s/quizzes';
+            break;
+        }
+        browserHistory.push(route);
       })
       .fail(function(err) {
         alert(err);
@@ -78,7 +87,7 @@ export default class extends React.Component {
         <div className="centerBlock alignC" style={{"paddingTop": "5%"}}>
           <div className="title mb10">QUIZZLY</div>
           <div className="subtitle mb20">The scholastic environment where clickers do not exist</div>
-          <img className="logo mb20" src="/images/logo.png"/>
+          <img className="logo mb20" src={LOGO_IMAGE_PATH} />
           <form className="loginForm" onSubmit={this.handleEntranceSubmit.bind(this)}>
             {(() => {
               if(!this.state.isSignIn) {

@@ -17,7 +17,7 @@ export default class extends React.Component {
         <div className="scrollRegion">
           <div className="header">
             {this.props.isCourse ? this.props.course.title : this.props.section.title}
-            <span className="floatR pointer" onClick={this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
+            <span className="floatR pointer" onClick={this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex)}><img src={CLOSE_IMAGE_PATH} style={{"width":"12px"}}/></span>
           </div>
 
           <div className="body">
@@ -25,7 +25,7 @@ export default class extends React.Component {
               return (
                 <div /*onClick={this.props.showMetricModal.bind(this, quiz)}*/ key={quizIndex} title={quiz} className="item">
                   <span className="pointer" onClick={this.props.showQuizInModal.bind(this, quizIndex)}>{quiz.title}</span>
-                  {this.props.isCourse ? <span className="floatR pointer opacity40" onClick={this.props.deleteQuizFromCourse.bind(this, quizIndex)}><img src="images/close.png" style={{"width":"8px"}}/></span> : null}
+                  {this.props.isCourse ? <span className="floatR pointer opacity40" onClick={this.props.deleteQuizFromCourse.bind(this, quizIndex)}><img src={CLOSE_IMAGE_PATH} style={{"width":"8px"}}/></span> : null}
                 </div>
               );
             }, this)}

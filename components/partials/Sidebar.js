@@ -3,7 +3,6 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
 
-// export class Sidebar extend {
 export class Sidebar extends React.Component {
   constructor(props) {
     super(props);
@@ -25,9 +24,9 @@ export class Sidebar extends React.Component {
     return (
       <div id="quizzlySidebar" className="lightGreenBackground floatL borderleft alignC borderRight" style={{"width": "192px", "height": "100vh"}}>
         <h1 className="alignC white greenBlueGradient flexCenter borderBottom mb30" style={{"height": "57px"}}>QUIZZLY</h1>
-        <div className={this.isActive('/courses')} onClick={this.setFilter.bind(this, '/courses')}>Courses</div>
-        <div className={this.isActive('/quizzes')} onClick={this.setFilter.bind(this, '/quizzes')}>Quizzes</div>
-        <div className={this.isActive('/metrics')} onClick={this.setFilter.bind(this, '/metrics')}>Metrics</div>
+        <div className={this.isActive('/p/courses')} onClick={this.setFilter.bind(this, '/p/courses')}>Courses</div>
+        <div className={this.isActive('/p/quizzes')} onClick={this.setFilter.bind(this, '/p/quizzes')}>Quizzes</div>
+        <div className={this.isActive('/p/metrics')} onClick={this.setFilter.bind(this, '/p/metrics')}>Metrics</div>
       </div>
     )
   }

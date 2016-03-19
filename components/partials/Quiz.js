@@ -18,7 +18,7 @@ export default class extends React.Component {
         <div className="scrollRegion">
           <div className="header">
             <span className="pointer" onClick={this.props.showQuizModal.bind(this, this.props.quizIndex)}>{this.props.quiz.title}</span>
-            <span className="floatR pointer" onClick={this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex)}><img src="images/close.png" style={{"width":"12px"}}/></span>
+            <span className="floatR pointer" onClick={this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex)}><img src={CLOSE_IMAGE_PATH} style={{"width":"12px"}}/></span>
             </div>
           <div className="body">
             {this.props.quiz.questions.map(function(question, questionIndex) {

@@ -79,7 +79,7 @@ export default class MetricModal extends React.Component {
         <div id="modal">
           <div id="header">
             {this.state.title}
-            <span className="floatR pointer" onClick={this.props.closeModal.bind(this)}><img src="images/close.png" style={{"width":"12px"}}/></span>
+            <span className="floatR pointer" onClick={this.props.closeModal.bind(this)}><img src={CLOSE_IMAGE_PATH} style={{"width":"12px"}}/></span>
           </div>
           <div id="body" className="p20">
             <div style={{"padding":"20px 170px"}}>

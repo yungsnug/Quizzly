@@ -8,13 +8,17 @@
 module.exports = {
   attributes: {
     // Primitives
+    type: {
+      type: 'string',
+      defaultsTo: 'PROFESSOR'
+    },
     email: {
       type: 'string',
       unique: true,
       required: true
     },
     password: {
-      type: 'string',
+      type: 'string'
     },
     facultyId: {
       type: 'string'

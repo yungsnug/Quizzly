@@ -47,8 +47,8 @@ export default class Metrics extends React.Component {
     if(course.id == -1) return;
     var me = this;
     $.when(
-      $.post('section/find', {course: course.id}),
-      $.post('quiz/find', {course: course.id})
+      $.post('/section/find', {course: course.id}),
+      $.post('/quiz/find', {course: course.id})
     )
     .then(function(sections, quizzes) {
       console.log("sections", sections);

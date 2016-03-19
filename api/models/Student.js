@@ -8,6 +8,10 @@
 module.exports = {
   attributes: {
     // Primitives
+    type: {
+      type: 'string',
+      defaultsTo: 'STUDENT'
+    },
     email: {
       type: 'string',
       unique: true
@@ -25,9 +29,6 @@ module.exports = {
       type: 'string'
     },
     school: {
-      type: 'string'
-    },
-    studentId: {
       type: 'string'
     },
 

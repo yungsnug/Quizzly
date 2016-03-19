@@ -24,7 +24,7 @@ export default class AddQuestionBody extends React.Component {
   componentWillMount() {
     var me = this;
     var question = this.props.quizzes[this.props.quizIndex].questions[this.props.questionIndex];
-    console.log("sfa dsasdf", this.state.isFreeResponse);
+    console.log("isFreeResponse", this.state.isFreeResponse);
     if(question == undefined) {
       return;
     }

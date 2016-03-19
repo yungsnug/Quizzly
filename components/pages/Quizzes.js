@@ -79,7 +79,7 @@ export default class Quizzes extends React.Component {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var me = this;
     if(quizIndex > -1) {
-      $.post('quiz/update/' + quiz.id, { title: quiz.title })
+      $.post('/quiz/update/' + quiz.id, { title: quiz.title })
       .then(function(quiz) {
         console.log(quiz);
         var quizzes = me.state.quizzes;
@@ -88,7 +88,7 @@ export default class Quizzes extends React.Component {
         me.closeModal();
       });
     } else {
-      $.post('quiz/create/', { title: quiz.title, course: me.props.course.id })
+      $.post('/quiz/create/', { title: quiz.title, course: me.props.course.id })
       .then(function(quiz) {
         console.log(quiz);
         quiz.questions = [];
@@ -226,7 +226,7 @@ export default class Quizzes extends React.Component {
 
   askQuestion(quizIndex, questionIndex) {
     var question = this.state.quizzes[quizIndex].questions[questionIndex];
-    return $.post('question/ask/', {id: question.id})
+    return $.post('/question/ask/', {id: question.id})
     .then(function() {
       console.log("asked question success!");
     });

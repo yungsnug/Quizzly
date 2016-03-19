@@ -6,13 +6,10 @@
  */
 
 module.exports = {
-  // getCourseById: function (req, res) {
-  //   var params = req.params.all();
-  //   Course.find({id: params.courseId}).exec(function (err result) {
-  //
-  //   });
-  //   return res.json({
-  //     todo: 'create() is not implemented yet!'
-  //   });
-  // },
+  findCoursesByIds: function(req, res) {
+    var data = req.params.all();
+    Course.find({id: data.ids}).exec(function(err, courses) {
+      res.json(courses);
+    });
+  }
 };

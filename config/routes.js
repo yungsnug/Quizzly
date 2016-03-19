@@ -35,19 +35,25 @@ module.exports.routes = {
   '/': {
     view: 'app'
   },
-  '/courses': {
-    view: 'app'
-  },
-  '/quizzes': {
-    view: 'app'
-  },
   '/entrance': {
     view: 'app'
   },
   '/style': {
     view: 'app'
   },
-  '/metrics': {
+  '/p/courses': {
+    view: 'app'
+  },
+  '/p/quizzes': {
+    view: 'app'
+  },
+  '/p/metrics': {
+    view: 'app'
+  },
+  '/s/quizzes': {
+    view: 'app'
+  },
+  '/s/metrics': {
     view: 'app'
   },
   'post /login': 'AuthController.login',
@@ -55,7 +61,8 @@ module.exports.routes = {
   'post /signup': 'AuthController.signup',
   'post /session': 'AuthController.session',
   // 'post /user': 'AuthController.user',
-  'post /courses/student/:id': 'StudentController.getStudentCourses'
+  'post /courses/student/:id': 'StudentController.getStudentCourses',
+  'post /course/multifind': 'CourseController.findCoursesByIds'
 
   /***************************************************************************
   *                                                                          *

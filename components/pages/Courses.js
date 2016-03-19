@@ -33,8 +33,8 @@ export default class Courses extends React.Component {
     if(courseId == -1) return;
     var me = this;
     $.when(
-      $.post("course/find", {id: courseId}),
-      $.post("section/find", {course: courseId})
+      $.post("/course/find", {id: courseId}),
+      $.post("/section/find", {course: courseId})
     ).then(function(course, sections) {
       console.log("course", course[0]);
       console.log("sections", sections[0]);
@@ -97,7 +97,7 @@ export default class Courses extends React.Component {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var me = this;
     if(quizIndex > -1) {
-      $.post('quiz/update/' + quiz.id, { title: quiz.title })
+      $.post('/quiz/update/' + quiz.id, { title: quiz.title })
       .then(function(quiz) {
         console.log(quiz);
         var course = me.state.course;
@@ -106,7 +106,7 @@ export default class Courses extends React.Component {
         me.closeModal();
       });
     } else {
-      $.post('quiz/create/',
+      $.post('/quiz/create/',
         {
           title: quiz.title,
           course: me.props.course.id
@@ -125,7 +125,7 @@ export default class Courses extends React.Component {
   addSectionToCourse(section) {
     var me = this;
     //TODO: add student array to section
-    $.post('section/create/', { title: section.title, course: me.state.course.id })
+    $.post('/section/create/', { title: section.title, course: me.state.course.id })
     .then(function(section) {
       console.log("created section", section);
       var sections = me.state.sections;
@@ -148,7 +148,7 @@ export default class Courses extends React.Component {
     var sections = me.state.sections;
     if(sections[sectionIndex] == undefined) return $.when(null);
 
-    $.post('section/destroy/', { id: sections[sectionIndex].id })
+    $.post('/section/destroy/', { id: sections[sectionIndex].id })
     .then(function(section) {
       console.log("section", section);
       sections.splice(sectionIndex, 1);

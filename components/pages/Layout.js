@@ -45,12 +45,31 @@ export default class Layout extends React.Component {
     var me = this;
     this.checkSession()
     .then(function(user) {
-      return $.post("/professor/find/" + user.id);
+      //TODO: might not be able to be /PROFESSOR/find/:id
+      return $.post('/' + user.type + '/find/' + user.id);
     })
     .then(function(user) {
-      console.log("user", user);
-      me.setState({user: user});
-      me.getCourseById(user.courses[0].id);
+      console.log('user', user);
+      switch(user.type) {
+        case 'STUDENT':
+          var courseIds = [];
+          user.sections.map(function(section) {
+            courseIds.push(section.course);
+          });
+          $.post('/course/multifind', {ids: courseIds})
+          .then(function(courses) {
+            console.log('courseIds', courseIds);
+            console.log('courses', courses);
+            me.getCourseById(courses[0].id);
+            user.courses = courses;
+            me.setState({user: user});
+          });
+          break;
+        case 'PROFESSOR':
+          me.getCourseById(user.courses[0].id);
+          me.setState({user: user});
+          break;
+      }
     });
   }
 
@@ -59,13 +78,13 @@ export default class Layout extends React.Component {
   }
 
   getCourseById(courseId) {
-    console.log("changeCourseId", courseId);
+    console.log('changeCourseId', courseId);
     var me = this;
 
-    $.post("course/find", { id: courseId })
+    $.post('/course/find/' + courseId)
     .then(function(course) {
       if(course == undefined) return; // if there are no courses, then there are no sections
-      me.setState({ course: course });
+      me.setState({course: course});
     });
   }
 
@@ -86,7 +105,7 @@ export default class Layout extends React.Component {
       }
     }
     console.log("user", this.state.user);
-    return $.post('course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections})
+    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections})
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
@@ -103,23 +122,23 @@ export default class Layout extends React.Component {
     var questionIds = [];
     var answerIds = [];
 
-    $.post('question/find', {quiz: quizIds})
+    $.post('/question/find', {quiz: quizIds})
     .then(function(questions) {
       questionIds = questions.map(function(question){return question.id;});
-      return $.post('answer/find', {question: questionIds})
+      return $.post('/answer/find', {question: questionIds})
     })
     .then(function(answers) {
       answerIds = answers.map(function(answer){return answer.id;});
       return $.when(
-        $.post('course/destroy', {id: course.id}),
-        $.post('section/destroy', {id: sectionIds}),
-        $.post('quiz/destroy', {id: quizIds}),
-        $.post('question/destroy', {id: questionIds}),
-        $.post('answer/destroy', {id: answerIds})
+        $.post('/course/destroy', {id: course.id}),
+        $.post('/section/destroy', {id: sectionIds}),
+        $.post('/quiz/destroy', {id: quizIds}),
+        $.post('/question/destroy', {id: questionIds}),
+        $.post('/answer/destroy', {id: answerIds})
       );
     })
     .then(function() {
-      return $.post('professor/find/' + me.state.user.id);
+      return $.post('/professor/find/' + me.state.user.id);
     })
     .then(function(user) {
       me.setState({
@@ -131,22 +150,32 @@ export default class Layout extends React.Component {
 
   render() {
     var me = this;
+    var props = {
+      course: me.state.course,
+      term: me.state.term,
+    };
+
+    switch(this.state.user.type) {
+      case 'STUDENT':
+        break;
+      case 'PROFESSOR':
+        props.addCourseToProfessor = me.addCourseToProfessor.bind(me);
+        props.deleteCourseFromProfessor = me.deleteCourseFromProfessor.bind(me);
+        break;
+    }
+
     return (
       <div id="quizzlyApp">
         <Sidebar />
         <Header
-          data={this.state}
+          course={this.state.course}
+          term={this.state.term}
           user={this.state.user}
           changeCourse={this.changeCourse.bind(this)}
           changeTerm={this.changeTerm.bind(this)}
         />
         {React.Children.map(me.props.children, function (child) {
-          return React.cloneElement(child, {
-            course: me.state.course,
-            term: me.state.term,
-            addCourseToProfessor: me.addCourseToProfessor.bind(me),
-            deleteCourseFromProfessor: me.deleteCourseFromProfessor.bind(me)
-          });
+          return React.cloneElement(child, props);
         })}
       </div>
     )
