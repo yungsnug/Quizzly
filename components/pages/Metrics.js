@@ -67,6 +67,29 @@ export default class Metrics extends React.Component {
   doMath(metricsData) {
     // asdf asd asdf sdf
     // return metricsData;
+    var data = {
+      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      datasets: [
+        {
+          label: "My First dataset",
+          fillColor: "rgba(220,220,220,0.5)",
+          strokeColor: "rgba(220,220,220,0.8)",
+          highlightFill: "rgba(220,220,220,0.75)",
+          highlightStroke: "rgba(220,220,220,1)",
+          data: [65, 59, 80, 81, 56, 55, 40]
+        },
+        {
+          label: "My Second dataset",
+          fillColor: "rgba(151,187,205,0.5)",
+          strokeColor: "rgba(151,187,205,0.8)",
+          highlightFill: "rgba(151,187,205,0.75)",
+          highlightStroke: "rgba(151,187,205,1)",
+          data: [28, 48, 40, 19, 86, 27, 90]
+        }
+      ]
+    };
+    return data;
+
   }
 
   changeSection(event) {
@@ -140,7 +163,27 @@ export default class Metrics extends React.Component {
 
   getMetrics() {
     console.log("getting metrics...");
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var myNewChart = new Chart(ctx).Bar(this.doMath(1));
+    
+
+    $("#myChart").click(function(evt){
+      var activeBars = myNewChart.getBarsAtEvent(evt);
+      console.log(activeBars[0]);
+      alert(activeBars[0].label);
+    });
   }
+
+
+  /*
+    //Calling getBarsAtEvent(event) on your Chart instance passing an argument of an event, or jQuery event, will return the bar elements that are at that the same
+    //position of that event.
+
+    canvas.onclick = function(evt){
+      var activeBars = myBarChart.getBarsAtEvent(evt);
+      // => activeBars is an array of bars on the canvas that are at the same position as the click event.
+    };
+  */
 
   render() {
     return (
@@ -185,7 +228,7 @@ export default class Metrics extends React.Component {
           <button onClick={this.getMetrics.bind(this)}>GET METRICS</button>
         </div>
 
-        {/*<canvas id="myChart" width="400" height="400"></canvas>*/}
+        {<canvas id="myChart" width="400" height="400"></canvas>}
       </div>
     );
   }
