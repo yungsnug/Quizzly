@@ -50,6 +50,12 @@ module.exports.routes = {
   '/p/metrics': {
     view: 'app'
   },
+  '/p/upload': {
+    view: 'app'
+  },
+  '/p/download': {
+    view: 'app'
+  },
   '/s/quizzes': {
     view: 'app'
   },

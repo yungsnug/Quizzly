@@ -31,7 +31,7 @@ export default class extends React.Component {
     if (!password || !email) {
       return;
     }
-
+console.log("this", this);
     if(this.state.isSignIn) {
       $.post('/login', {email: email, password: password}, function(user) {
         console.log("User is logged in", user);
