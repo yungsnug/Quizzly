@@ -68,7 +68,8 @@ module.exports.routes = {
   'post /session': 'AuthController.session',
   // 'post /user': 'AuthController.user',
   'post /courses/student/:id': 'StudentController.getStudentCourses',
-  'post /course/multifind': 'CourseController.findCoursesByIds'
+  'post /course/multifind': 'CourseController.findCoursesByIds',
+  'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId'
 
   /***************************************************************************
   *                                                                          *

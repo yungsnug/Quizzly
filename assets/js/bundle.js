@@ -1004,12 +1004,16 @@ var Metrics = function (_React$Component) {
       console.log("newProps", course);
       if (course.id == -1) return;
       var me = this;
-      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id })).then(function (sections, quizzes) {
+      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id })
+      // $.post('/question/findByCourseId', {course: course.id})
+      ).then(function (sections, quizzes) {
         console.log("sections", sections);
         console.log("quizzes", quizzes);
+        // console.log("quizzes", questions);
         me.setState({
           sections: sections[0],
           quizzes: quizzes[0],
+          // questions: questions[0],
 
           isAllQuizzes: true,
           isAllQuestions: true,
@@ -1022,6 +1026,21 @@ var Metrics = function (_React$Component) {
     value: function doMath(metricsData) {
       // asdf asd asdf sdf
       // return metricsData;
+      console.log("data:", metricsData);
+      // var data = {
+      //   [
+      //     {
+      //       section: 1,
+      //       quiz: 1,
+      //       question: 1,
+      //       answer: 2,
+      //       student: -1
+
+      //     },
+
+      //   ]
+      // }
+
       var data = {
         labels: ["January", "February", "March", "April", "May", "June", "July"],
         datasets: [{
@@ -1047,14 +1066,17 @@ var Metrics = function (_React$Component) {
     value: function changeSection(event) {
       var section = this.state.section;
       section.id = event.target.value;
-      this.setState({
+      var me = this;
+      me.setState({
         section: section,
+        quiz: { id: -1 },
         question: { id: -1 },
         answer: { id: -1 },
 
         questions: [],
         answers: [],
 
+        isAllQuizzes: true,
         isAllQuestions: true,
         isAllAnswers: true
       });
@@ -1062,10 +1084,10 @@ var Metrics = function (_React$Component) {
   }, {
     key: "changeQuiz",
     value: function changeQuiz(event) {
-      var me = this;
       var quiz = this.state.quiz;
       quiz.id = event.target.value;
-      $.post('question/find', { quiz: quiz.id }).then(function (questions) {
+      var me = this;
+      $.post('/question/find', { quiz: quiz.id }).then(function (questions) {
         me.setState({
           quiz: quiz,
           question: { id: -1 },
@@ -1079,14 +1101,16 @@ var Metrics = function (_React$Component) {
           isAllAnswers: true
         });
       });
+      console.log("this: ", this);
+      console.log("me: ", me);
     }
   }, {
     key: "changeQuestion",
     value: function changeQuestion(event) {
-      var me = this;
       var question = this.state.question;
       question.id = event.target.value;
-      $.post('answer/find', { question: question.id }).then(function (answers) {
+      var me = this;
+      $.post('/answer/find', { question: question.id }).then(function (answers) {
         me.setState({
           question: question,
           answer: { id: -1 },
@@ -1102,10 +1126,10 @@ var Metrics = function (_React$Component) {
   }, {
     key: "changeAnswer",
     value: function changeAnswer(event) {
-      var me = this;
       var answer = this.state.answer;
       answer.id = event.target.value;
-      this.setState({
+      var me = this;
+      me.setState({
         answer: answer,
 
         isAllQuizzes: false,

@@ -49,13 +49,15 @@ export default class Metrics extends React.Component {
     $.when(
       $.post('/section/find', {course: course.id}),
       $.post('/quiz/find', {course: course.id})
-    )
-    .then(function(sections, quizzes) {
+      // $.post('/question/findByCourseId', {course: course.id})
+    ).then(function(sections, quizzes) {
       console.log("sections", sections);
       console.log("quizzes", quizzes);
+      // console.log("quizzes", questions);
       me.setState({
         sections: sections[0],
         quizzes: quizzes[0],
+        // questions: questions[0],
 
         isAllQuizzes: true,
         isAllQuestions: true,
@@ -64,9 +66,28 @@ export default class Metrics extends React.Component {
     });
   }
 
+
+
   doMath(metricsData) {
     // asdf asd asdf sdf
     // return metricsData;
+    console.log("data:", metricsData);
+    // var data = {
+    //   [
+    //     {
+    //       section: 1,
+    //       quiz: 1,
+    //       question: 1,
+    //       answer: 2,
+    //       student: -1
+
+    //     },
+
+
+
+    //   ]
+    // }
+
     var data = {
       labels: ["January", "February", "March", "April", "May", "June", "July"],
       datasets: [
@@ -95,24 +116,27 @@ export default class Metrics extends React.Component {
   changeSection(event) {
     var section = this.state.section;
     section.id = event.target.value;
-    this.setState({
+    var me = this;
+    me.setState({
       section: section,
+      quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
 
       questions: [],
       answers: [],
-
+      
+      isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
     });
   }
 
   changeQuiz(event) {
-    var me = this;
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
-    $.post('question/find', {quiz: quiz.id})
+    var me = this;
+    $.post('/question/find', {quiz: quiz.id})
     .then(function(questions) {
       me.setState({
         quiz: quiz,
@@ -127,13 +151,15 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
+    console.log("this: ", this);
+    console.log("me: ", me);
   }
 
   changeQuestion(event) {
-    var me = this;
     var question = this.state.question;
     question.id = event.target.value;
-    $.post('answer/find', {question: question.id})
+    var me = this;
+    $.post('/answer/find', {question: question.id})
     .then(function(answers) {
       me.setState({
         question: question,
@@ -149,10 +175,10 @@ export default class Metrics extends React.Component {
   }
 
   changeAnswer(event) {
-    var me = this;
     var answer = this.state.answer;
     answer.id = event.target.value;
-    this.setState({
+    var me = this;
+    me.setState({
       answer: answer,
 
       isAllQuizzes: false,
