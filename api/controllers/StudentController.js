@@ -34,5 +34,52 @@ module.exports = {
         res.json(courses);
       });
     });
+  },
+  getStudentsByCourseId: function(req,res) {
+    console.log("--------------getStudentsByCourseId");
+    var data = req.params.all();
+    var students = [];
+    // var allStudents= Students.find().populate('sections');
+    Section.find({course: data.id}).exec(function (err, sections) {
+      // console.log("sections", sections);
+      Promise.each(sections,function(section) {
+        // console.log("section",section);
+        return Student.find().populate('sections').then(function (all_students) {
+          // console.log("all_students", all_students);
+          return all_students;
+        }).then(function(all_students) {
+          // console.log("all_students_length", all_students.length);
+          return Promise.each(all_students, function(student){
+            // console.log("all_students_length", student.sections.length);
+            for (i = 0; i < student.sections.length; i++) {
+              // console.log("section.id",section.id);
+              // console.log("student.sections[i]",student.sections[i]);
+              if (student.sections[i].id == section.id) {
+                // console.log("YOLO");
+                students.push(student);
+                return;
+              }
+            }
+          });
+        });
+      }).then(function() {
+        console.log("finished!", students.length);
+        // console.log("finished!", students);
+        res.json(students);
+      });
+    });
+  },
+
+  getStudentsBySectionId: function(req,res) {
+    console.log("--------------getStudentsBySectionId");
+    var data = req.params.all();
+    var courses = [];
   }
+  // getStudentAnswer: function(req,res) {
+  //   console.log("--------------getStudentAnswer");
+  //   var data = req.params.all();
+  //   var courses = [];
+  // }
+
+
 };

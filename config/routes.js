@@ -69,8 +69,12 @@ module.exports.routes = {
   // 'post /user': 'AuthController.user',
   'post /courses/student/:id': 'StudentController.getStudentCourses',
   'post /course/multifind': 'CourseController.findCoursesByIds',
-  'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId'
-
+  'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
+  'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
+  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId'
+   
+  
+  
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

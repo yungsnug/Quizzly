@@ -97,15 +97,18 @@ export default class Metrics extends React.Component {
           //all quizzes
           if (this.state.sections.id == -1) {
               //all sections
+              /*Show average of each section*/
             } else {
               //section else
-
+              /*Show average of each quiz*/
             }
         } else {
             //Quiz else
+            /*Show average correct of each question*/
         }
     } else {
         //Question else
+        /*Show all answers and number of students who answered question*/
     }
 
     //Get average correct when 
