@@ -73,7 +73,31 @@ module.exports = {
   getStudentsBySectionId: function(req,res) {
     console.log("--------------getStudentsBySectionId");
     var data = req.params.all();
-    var courses = [];
+    var students = [];
+    Student.find().populate('sections').then(function (all_students) {
+          // console.log("all_students", all_students);
+          return all_students;
+        }).then(function(all_students) {
+          // console.log("all_students_length", all_students.length);
+          return Promise.each(all_students, function(student){
+            // console.log("all_students_length", student.sections.length);
+            for (i = 0; i < student.sections.length; i++) {
+              // console.log("section.id",section.id);
+              // console.log("student.sections[i]",student.sections[i]);
+              if (student.sections[i].id == data.id) {
+                // console.log("YOLO");
+                students.push(student);
+                return;
+              }
+            }
+          });
+        }).then(function() {
+        console.log("finished!", students.length);
+        // console.log("finished!", students);
+        res.json(students);
+      });
+
+
   }
   // getStudentAnswer: function(req,res) {
   //   console.log("--------------getStudentAnswer");
