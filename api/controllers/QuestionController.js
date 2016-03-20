@@ -35,11 +35,9 @@ module.exports = {
   getQuestionsByCourseId: function (req, res) {
     console.log("--------------getQuestionsByCourseId");
     var data = req.params.all();
+    
     var questions = [];
-    // Quiz.query('SELECT quiz.id FROM quiz WHERE quiz.course = data.id', function(err, results) {
-    //   // if (err) return res.serverError(err);
-    //     // return res.ok(results.rows);
-    // });
+
     Quiz.find({course: data.id}).exec(function (err, quizzes) {
       console.log("quizzes: ", quizzes);
       Promise.each(quizzes, function(quiz) {

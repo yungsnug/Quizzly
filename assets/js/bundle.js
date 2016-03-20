@@ -987,11 +987,6 @@ var Metrics = function (_React$Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.populateDropdowns(this.props.course);
-      // $.post('/getData', {studentid: 1})
-      // .then(function(metricsData) {
-      //   var ctx = document.getElementById("myChart").getContext("2d");
-      //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
-      // });
     }
   }, {
     key: "componentWillReceiveProps",
@@ -1004,16 +999,14 @@ var Metrics = function (_React$Component) {
       console.log("newProps", course);
       if (course.id == -1) return;
       var me = this;
-      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id })
-      // $.post('/question/findByCourseId', {course: course.id})
-      ).then(function (sections, quizzes) {
+      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id }), $.post('/question/getQuestionsByCourseId', { id: course.id })).then(function (sections, quizzes, questions) {
         console.log("sections", sections);
         console.log("quizzes", quizzes);
-        // console.log("quizzes", questions);
+        console.log("questions", questions);
         me.setState({
           sections: sections[0],
           quizzes: quizzes[0],
-          // questions: questions[0],
+          questions: questions[0],
 
           isAllQuizzes: true,
           isAllQuestions: true,
@@ -1073,7 +1066,7 @@ var Metrics = function (_React$Component) {
         question: { id: -1 },
         answer: { id: -1 },
 
-        questions: [],
+        // questions: [],
         answers: [],
 
         isAllQuizzes: true,
