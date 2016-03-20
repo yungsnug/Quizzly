@@ -1017,22 +1017,30 @@ var Metrics = function (_React$Component) {
   }, {
     key: "doMath",
     value: function doMath(metricsData) {
-      // asdf asd asdf sdf
-      // return metricsData;
-      console.log("data:", metricsData);
-      // var data = {
-      //   [
-      //     {
-      //       section: 1,
-      //       quiz: 1,
-      //       question: 1,
-      //       answer: 2,
-      //       student: -1
+      console.log("metricsData:", metricsData);
 
-      //     },
+      function get_selected(selection_array, selection_id) {
+        var selection = [];
+        if (selection_id == -1) {
+          selection = selection_array;
+        } else {
+          selection = selection_array[selection_id];
+        }
+        return selection;
+      }
 
-      //   ]
-      // }
+      var selected_course = this.state.course;
+      var selected_section = get_selected(this.state.sections, this.state.section.id);
+      var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
+      var selected_question = get_selected(this.state.questions, this.state.question.id);
+
+      console.log("this:", this);
+      console.log("selected_course:", this.state.course);
+      console.log("selected_section:", selected_section);
+      console.log("selected_quiz:", selected_quiz);
+      console.log("selected_question:", selected_question);
+
+      //Get average correct when
 
       var data = {
         labels: ["January", "February", "March", "April", "May", "June", "July"],
