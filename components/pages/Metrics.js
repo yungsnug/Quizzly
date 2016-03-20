@@ -88,9 +88,11 @@ export default class Metrics extends React.Component {
     console.log("selected_quiz:", selected_quiz);
     console.log("selected_question:", selected_question);
 
-    //Bottom up approach (if question selected then quizzes and section already taken into account).
-    //Likewise, if quiz selected the section is already taken into account
+    //Logic:
+      //Bottom up approach (if question selected then quizzes and section already taken into account).
+      //Likewise, if quiz selected the section is already taken into account
     
+    //TODO data for graphs (only where /*Show*/)
     if (this.state.questions.id == -1) {
       //all questions
       if (this.state.quizzes.id == -1) {
@@ -98,22 +100,26 @@ export default class Metrics extends React.Component {
           if (this.state.sections.id == -1) {
               //all sections
               /*Show average of each section*/
+              //Labels will be sections
             } else {
               //section else
               /*Show average of each quiz*/
+              //Labels will be quizzes
             }
         } else {
             //Quiz else
             /*Show average correct of each question*/
+            //Labels will be questions
         }
     } else {
         //Question else
         /*Show all answers and number of students who answered question*/
+        //Labels will be answers (put correct bar as green)
     }
 
-    //Get average correct when 
 
-
+    //Explanations of data below
+      //labels: x axis labels (y axis is just numbers for data values)
     var data = {
       labels: ["January", "February", "March", "April", "May", "June", "July"],
       datasets: [
