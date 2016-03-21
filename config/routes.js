@@ -21,17 +21,6 @@
  */
 
 module.exports.routes = {
-
-  /***************************************************************************
-  *                                                                          *
-  * Make the view located at `views/homepage.ejs` (or `views/homepage.jade`, *
-  * etc. depending on your default view engine) your home page.              *
-  *                                                                          *
-  * (Alternatively, remove this and add an `index.html` file in your         *
-  * `assets` directory)                                                      *
-  *                                                                          *
-  ***************************************************************************/
-
   '/': {
     view: 'app'
   },
@@ -56,6 +45,9 @@ module.exports.routes = {
   '/s/metrics': {
     view: 'app'
   },
+  '/s/question/:id': {
+    view: 'app'
+  },
   'post /login': 'AuthController.login',
   'post /logout': 'AuthController.logout',
   'post /signup': 'AuthController.signup',
@@ -63,15 +55,4 @@ module.exports.routes = {
   // 'post /user': 'AuthController.user',
   'post /courses/student/:id': 'StudentController.getStudentCourses',
   'post /course/multifind': 'CourseController.findCoursesByIds'
-
-  /***************************************************************************
-  *                                                                          *
-  * Custom routes here...                                                    *
-  *                                                                          *
-  * If a request to a URL doesn't match any of the custom routes above, it   *
-  * is matched against Sails route blueprints. See `config/blueprints.js`    *
-  * for configuration options and examples.                                  *
-  *                                                                          *
-  ***************************************************************************/
-
 };

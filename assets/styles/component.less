@@ -64,7 +64,7 @@ button, .button {
     letter-spacing: 1.77px;
     line-height: 38px;
 
-    .placeholder(white);
+    .placeholder(@white);
   }
 
   .placeholder(@white);
@@ -325,4 +325,117 @@ button, .button {
   height: 150px;
   .round;
   .outerShadow;
+}
+
+#studentQuestionContainer {
+  .gradientBody;
+  overflow: scroll;
+
+  #logo {
+    padding: 15px;
+    width: 45px;
+    .pointer;
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  #timer {
+    .floatR;
+    padding-top: 10px;
+    padding-right: 15px;
+    font-family: Roboto-Thin;
+    font-weight: 100;
+    font-size: 48px;
+    color: @white;
+  }
+
+  #studentQuestion {
+    max-width: 640px;
+    .round;
+    background-color: rgba(0,0,0,0.15);
+    .outerShadow;
+    .centerBlock;
+    position: relative;
+    .width100;
+    margin-bottom:40px;
+    padding: 40px;
+
+    .quizTitle {
+      .mont;
+      .alignC;
+      font-size: 20px;
+      font-weight: 700;
+      .pb20;
+    }
+
+    .question {
+      .alignC;
+      .roboto;
+      font-size: 26px;
+      font-weight: 200;
+      .pb40;
+    }
+
+    .questionBorder {
+      width: 100%;
+      height: 2px;
+      background-color: white;
+      margin-bottom: 20px;
+    }
+
+    .answerRow {
+      .roboto;
+      font-size: 22px;
+      font-weight: 200;
+    }
+
+    .answer {
+      margin-left: 7px;
+      .p10;
+      .pointer;
+    }
+
+    .selected {
+      .round;
+      background-color: rgba(255,255,255,0.2);
+      border: 2px solid white;
+    }
+
+    .freeResponse {
+      .roboto;
+      font-size: 22px;
+      font-weight: 200;
+      width: 100%;
+      background: none;
+      border: 2px solid white;
+      .round;
+      resize: none;
+      box-sizing: border-box;
+      height: 128px;
+      .p10;
+      .placeholder(@white);
+    }
+
+    .charCount {
+      font-weight: 200;
+      .roboto;
+      font-size: 12px;
+      float: right;
+      margin-top: 7px;
+    }
+
+    .submit {
+      .mt10;
+      .mont;
+      .alignC;
+      font-size: 17px;
+      font-weight: 700;
+      .pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }

@@ -166,7 +166,9 @@ export default class Layout extends React.Component {
 
     return (
       <div id="quizzlyApp">
-        <Sidebar />
+        <Sidebar
+          user={this.state.user}
+        />
         <Header
           course={this.state.course}
           term={this.state.term}

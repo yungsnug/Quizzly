@@ -9,6 +9,7 @@ import Quizzes from './pages/Quizzes.js'
 import Metrics from './pages/Metrics.js'
 import StudentQuizzes from './pages/StudentQuizzes.js'
 import StudentMetrics from './pages/StudentMetrics.js'
+import AskStudentQuestion from './pages/AskStudentQuestion.js'
 
 render((
   <Router history={browserHistory}>
@@ -19,6 +20,7 @@ render((
       <Route path="s/quizzes" component={StudentQuizzes} />
       <Route path="s/metrics" component={StudentMetrics} />
     </Route>
+    <Route path="/s/question/:id" component={AskStudentQuestion} />
     <Route path="/entrance" component={Entrance} />
     <Route path="/style" component={Style} />
   </Router>
