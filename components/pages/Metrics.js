@@ -31,11 +31,7 @@ export default class Metrics extends React.Component {
 
   componentDidMount() {
     this.populateDropdowns(this.props.course);
-    // $.post('/getData', {studentid: 1})
-    // .then(function(metricsData) {
-    //   var ctx = document.getElementById("myChart").getContext("2d");
-    //   var myNewChart = new Chart(ctx).PolarArea(this.doMath(metricsData));
-    // });
+    
   }
 
   componentWillReceiveProps(newProps) {
@@ -48,14 +44,16 @@ export default class Metrics extends React.Component {
     var me = this;
     $.when(
       $.post('/section/find', {course: course.id}),
-      $.post('/quiz/find', {course: course.id})
-    )
-    .then(function(sections, quizzes) {
+      $.post('/quiz/find', {course: course.id}),
+      $.post('/question/getQuestionsByCourseId', {id: course.id})
+    ).then(function(sections, quizzes, questions) {
       console.log("sections", sections);
       console.log("quizzes", quizzes);
+      console.log("questions", questions);
       me.setState({
         sections: sections[0],
         quizzes: quizzes[0],
+        questions: questions[0],
 
         isAllQuizzes: true,
         isAllQuestions: true,
@@ -64,9 +62,64 @@ export default class Metrics extends React.Component {
     });
   }
 
+
+
   doMath(metricsData) {
-    // asdf asd asdf sdf
-    // return metricsData;
+    console.log("metricsData:", metricsData);
+    
+    function get_selected(selection_array, selection_id) {
+        var selection = [];
+        if (selection_id == -1) {
+          selection = selection_array;
+        } else {
+          selection = selection_array[selection_id];
+        }
+        return selection;
+    }
+    
+    var selected_course = this.state.course;
+    var selected_section = get_selected(this.state.sections, this.state.section.id);
+    var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
+    var selected_question = get_selected(this.state.questions, this.state.question.id);
+
+    console.log("this:", this);
+    console.log("selected_course:", this.state.course);
+    console.log("selected_section:", selected_section);
+    console.log("selected_quiz:", selected_quiz);
+    console.log("selected_question:", selected_question);
+
+    //Logic:
+      //Bottom up approach (if question selected then quizzes and section already taken into account).
+      //Likewise, if quiz selected the section is already taken into account
+    
+    //TODO data for graphs (only where /*Show*/)
+    if (this.state.questions.id == -1) {
+      //all questions
+      if (this.state.quizzes.id == -1) {
+          //all quizzes
+          if (this.state.sections.id == -1) {
+              //all sections
+              /*Show average of each section*/
+              //Labels will be sections
+            } else {
+              //section else
+              /*Show average of each quiz*/
+              //Labels will be quizzes
+            }
+        } else {
+            //Quiz else
+            /*Show average correct of each question*/
+            //Labels will be questions
+        }
+    } else {
+        //Question else
+        /*Show all answers and number of students who answered question*/
+        //Labels will be answers (put correct bar as green)
+    }
+
+
+    //Explanations of data below
+      //labels: x axis labels (y axis is just numbers for data values)
     var data = {
       labels: ["January", "February", "March", "April", "May", "June", "July"],
       datasets: [
@@ -95,24 +148,27 @@ export default class Metrics extends React.Component {
   changeSection(event) {
     var section = this.state.section;
     section.id = event.target.value;
-    this.setState({
+    var me = this;
+    me.setState({
       section: section,
+      quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
 
-      questions: [],
+      // questions: [],
       answers: [],
 
+      isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
     });
   }
 
   changeQuiz(event) {
-    var me = this;
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
-    $.post('question/find', {quiz: quiz.id})
+    var me = this;
+    $.post('/question/find', {quiz: quiz.id})
     .then(function(questions) {
       me.setState({
         quiz: quiz,
@@ -127,13 +183,15 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
+    console.log("this: ", this);
+    console.log("me: ", me);
   }
 
   changeQuestion(event) {
-    var me = this;
     var question = this.state.question;
     question.id = event.target.value;
-    $.post('answer/find', {question: question.id})
+    var me = this;
+    $.post('/answer/find', {question: question.id})
     .then(function(answers) {
       me.setState({
         question: question,
@@ -149,10 +207,10 @@ export default class Metrics extends React.Component {
   }
 
   changeAnswer(event) {
-    var me = this;
     var answer = this.state.answer;
     answer.id = event.target.value;
-    this.setState({
+    var me = this;
+    me.setState({
       answer: answer,
 
       isAllQuizzes: false,

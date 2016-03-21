@@ -39,6 +39,12 @@ module.exports.routes = {
   '/p/metrics': {
     view: 'app'
   },
+  '/p/upload': {
+    view: 'app'
+  },
+  '/p/download': {
+    view: 'app'
+  },
   '/s/quizzes': {
     view: 'app'
   },
@@ -54,5 +60,8 @@ module.exports.routes = {
   'post /session': 'AuthController.session',
   // 'post /user': 'AuthController.user',
   'post /courses/student/:id': 'StudentController.getStudentCourses',
-  'post /course/multifind': 'CourseController.findCoursesByIds'
+  'post /course/multifind': 'CourseController.findCoursesByIds',
+  'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
+  'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
+  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId'
 };
