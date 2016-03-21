@@ -148,7 +148,7 @@ export default class Courses extends React.Component {
     var sections = me.state.sections;
     if(sections[sectionIndex] == undefined) return $.when(null);
 
-    $.post('/section/destroy/', { id: sections[sectionIndex].id })
+    $.post('/section/destroy/' + sections[sectionIndex].id)
     .then(function(section) {
       console.log("section", section);
       sections.splice(sectionIndex, 1);
@@ -167,7 +167,7 @@ export default class Courses extends React.Component {
     .then(function(quiz) {
       if(quiz.questions.length == 0) return $.when(null);
       var questionIds = quiz.questions.map(function(question){return question.id;});
-      return $.post('/question/destroy', {id: questionIds});
+      return $.post('/question/multidestroy', {ids: questionIds});
     })
     .then(function() {
       quizzes.splice(quizIndex, 1);

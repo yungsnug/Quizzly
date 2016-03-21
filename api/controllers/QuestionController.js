@@ -20,14 +20,12 @@ var UrbanAirshipPush = require('urban-airship-push');
 var Promise = require('bluebird');
 
 module.exports = {
-  /**
-   * `QuestionController.getAnswers()`
-   */
-  getAnswers: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
+   destroyQuestionsByIds: function(req, res) {
+     var data = req.params.all();
+     Question.destroy({id: data.ids}).exec(function(err, questions) {
+       res.json(questions);
+     });
+   },
 
   /**
    * `QuestionController.getQuestionsByCourseId()`
@@ -35,7 +33,7 @@ module.exports = {
   getQuestionsByCourseId: function (req, res) {
     console.log("--------------getQuestionsByCourseId");
     var data = req.params.all();
-    
+
     var questions = [];
 
     Quiz.find({course: data.id}).exec(function (err, quizzes) {
@@ -50,30 +48,12 @@ module.exports = {
             console.log("question: ", question);
             questions.push(question);
           });
-        });      
+        });
       }).then(function() {
         console.log("finished!", questions.length);
         console.log("finished!", questions);
         res.json(questions);
       });
-    });
-  },
-
-  /**
-   * `QuestionController.getCorrectAnswer()`
-   */
-  getCorrectAnswer: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
-
-  /**
-   * `QuestionController.askQuestion()`
-   */
-  askQuestion: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
     });
   },
 
@@ -181,11 +161,7 @@ module.exports = {
 
           return res.json(studentAnswer);
         });
-
       });
-
-
     });
-
   }
 };

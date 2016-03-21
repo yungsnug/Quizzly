@@ -63,5 +63,10 @@ module.exports.routes = {
   'post /course/multifind': 'CourseController.findCoursesByIds',
   'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
   'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
-  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId'
+  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId',
+
+  'post /section/multidestroy': 'SectionController.destroySectionsByIds',
+  'post /quiz/multidestroy': 'QuizController.destroyQuizzesByIds',
+  'post /question/multidestroy': 'QuestionController.destroyQuestionsByIds',
+  'post /answer/multidestroy': 'AnswerController.destroyAnswersByIds'
 };

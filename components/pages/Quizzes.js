@@ -192,8 +192,8 @@ export default class Quizzes extends React.Component {
         }
       });
       return $.when(
-        $.post('/question/destroy', {id: questionIds}),
-        $.post('/answer/destroy', {id: answerIds})
+        $.post('/question/multidestroy', {ids: questionIds}),
+        $.post('/answer/multidestroy', {ids: answerIds})
       );
     })
     .then(function() {
@@ -213,7 +213,7 @@ export default class Quizzes extends React.Component {
       var answerIds = [];
       if(question.answers != undefined) {
         answerIds = question.answers.map(function(answer){return answer.id;});
-        return $.post('/answer/destroy', {id: answerIds});
+        return $.post('/answer/multidestroy', {ids: answerIds});
       }
       return $.when(null);
     })

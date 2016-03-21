@@ -131,10 +131,10 @@ export default class Layout extends React.Component {
       answerIds = answers.map(function(answer){return answer.id;});
       return $.when(
         $.post('/course/destroy', {id: course.id}),
-        $.post('/section/destroy', {id: sectionIds}),
-        $.post('/quiz/destroy', {id: quizIds}),
-        $.post('/question/destroy', {id: questionIds}),
-        $.post('/answer/destroy', {id: answerIds})
+        $.post('/section/multidestroy', {ids: sectionIds}),
+        $.post('/quiz/multidestroy', {ids: quizIds}),
+        $.post('/question/multidestroy', {ids: questionIds}),
+        $.post('/answer/multidestroy', {ids: answerIds})
       );
     })
     .then(function() {
