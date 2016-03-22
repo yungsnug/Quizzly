@@ -938,7 +938,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -949,6 +949,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Promise = require('bluebird');
 
 var Metrics = function (_React$Component) {
   _inherits(Metrics, _React$Component);
@@ -979,30 +981,31 @@ var Metrics = function (_React$Component) {
       isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
+
     };
     return _this;
   }
 
   _createClass(Metrics, [{
-    key: "componentDidMount",
+    key: 'componentDidMount',
     value: function componentDidMount() {
       this.populateDropdowns(this.props.course);
     }
   }, {
-    key: "componentWillReceiveProps",
+    key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
       this.populateDropdowns(newProps.course);
     }
   }, {
-    key: "populateDropdowns",
+    key: 'populateDropdowns',
     value: function populateDropdowns(course) {
       console.log("newProps", course);
       if (course.id == -1) return;
       var me = this;
       $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id }), $.post('/question/getQuestionsByCourseId', { id: course.id })).then(function (sections, quizzes, questions) {
-        console.log("sections", sections);
-        console.log("quizzes", quizzes);
-        console.log("questions", questions);
+        // console.log("sections", sections);
+        // console.log("quizzes", quizzes);
+        // console.log("questions", questions);
         me.setState({
           sections: sections[0],
           quizzes: quizzes[0],
@@ -1015,9 +1018,10 @@ var Metrics = function (_React$Component) {
       });
     }
   }, {
-    key: "doMath",
-    value: function doMath(metricsData) {
+    key: 'doMath',
+    value: function doMath(metricsData, res) {
       console.log("metricsData:", metricsData);
+      var data;
 
       function get_selected(selection_array, selection_id) {
         var selection = [];
@@ -1043,7 +1047,6 @@ var Metrics = function (_React$Component) {
       //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
-
       //TODO data for graphs (only where /*Show*/)
       if (this.state.questions.id == -1) {
         //all questions
@@ -1051,48 +1054,181 @@ var Metrics = function (_React$Component) {
           //all quizzes
           if (this.state.sections.id == -1) {
             //all sections
-            /*Show average of each section*/
+            /*Show percent correct of each section*/
             //Labels will be sections
+
           } else {
               //section else
-              /*Show average of each quiz*/
+              /*Show percent correct of each quiz*/
               //Labels will be quizzes
+
             }
         } else {
             //Quiz else
-            /*Show average correct of each question*/
+            /*Show percent correct of each question*/
             //Labels will be questions
+
           }
-      } else {}
-        //Question else
-        /*Show all answers and number of students who answered question*/
-        //Labels will be answers (put correct bar as green)
+      } else {
+          //Question else
+          /*Show all answers and number of students who answered question*/
+          //Labels will be answers (put correct bar as green)
+          console.log("question else statement!");
+          //Get labels (answers for question)
 
+          // var answers =[];
+          // console.log("selected_question: ", selected_question);
+          // console.log("selected_question.id: ", selected_question.id);
+          // $.post('/answer/find', {question: selected_question.id})
+          //   .then(function(answers_from_post) {
+          //     console.log("answers_from_post: ", answers_from_post);
+          //     var me = this;
+          //     me.setState({
+          //       graph_answers: answers_from_post
 
-        //Explanations of data below
-        //labels: x axis labels (y axis is just numbers for data values)
+          //     }.bind(this));
+          //     console.log("answers: ", answers);
+          //   });
+
+          // var answers = this.getAnswers(selected_question);
+
+          // console.log("answers-outside: ", answers);
+          // console.log("this: ", this);
+
+          // this.getAnswers(selected_question).then(function(answers){
+          //   console.log("answers-outside: ", answers);
+          //   this.getStudentCount(answers).then(function(counts){
+          //     console.log("counts-outside: ", counts);
+
+          //     this.setData(this.getAnswers(selected_question),counts).then(function(data){
+          //       return data;
+          //     });
+          //   });
+          // });
+          var answer_store = [];
+          this.getAnswers(selected_question, function (answers) {
+            console.log("answers-outside: ", answers);
+            answer_store = answers;
+            var counts = [];
+            var data = {};
+            Promise.each(answers, function (answer) {
+              return $.post('/studentanswer/getStudentCountByAnswerId', { id: answer.id }).then(function (count) {
+                counts.push(count);
+              });
+            }).then(function () {
+              console.log("counts3: ", counts);
+              console.log("answers_beforedata: ", answers);
+
+              var key = "data";
+              var obj = {
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.5)",
+                strokeColor: "rgba(220,220,220,0.8)",
+                highlightFill: "rgba(220,220,220,0.75)",
+                highlightStroke: "rgba(220,220,220,1)"
+
+              };
+              obj[key] = counts;
+              var datasets = [];
+              datasets.push(obj);
+              return datasets;
+            }).then(function (datasets) {
+              var labelArray = [];
+              for (var i in answers) {
+                labelArray.push(answers[i].option);
+              }
+              data = {
+                labels: labelArray,
+                datasets: datasets
+              };
+
+              console.log("data: ", data);
+              return data;
+            }).then(function (data) {
+              return res(data);
+            });
+
+            // this.getStudentCounts(answers,function(counts){
+            //   console.log("answers-inside: ", answers);
+            //   console.log("counts: ", counts);
+            //     this.setData(answer_store, counts, function(data){
+            //       console.log("data: ", data);
+            //         return data;
+            //     });
+            // });
+          });
+        }
+
+      //http://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs to change color
+
+      //Explanations of data below
+      //labels: x axis labels (y axis is just numbers for data values)
+      // var data = {
+      //   labels: ["January", "February", "March", "April", "May", "June", "July"],
+      //   datasets: [
+      //     {
+      //       label: "My First dataset",
+      //       fillColor: "rgba(220,220,220,0.5)",
+      //       strokeColor: "rgba(220,220,220,0.8)",
+      //       highlightFill: "rgba(220,220,220,0.75)",
+      //       highlightStroke: "rgba(220,220,220,1)",
+      //       data: [65, 59, 80, 81, 56, 55, 40]
+      //     },
+      //     {
+      //       label: "My Second dataset",
+      //       fillColor: "rgba(151,187,205,0.5)",
+      //       strokeColor: "rgba(151,187,205,0.8)",
+      //       highlightFill: "rgba(151,187,205,0.75)",
+      //       highlightStroke: "rgba(151,187,205,1)",
+      //       data: [28, 48, 40, 19, 86, 27, 90]
+      //     }
+      //   ]
+      // };
+      // return this.state.data;
+    }
+  }, {
+    key: 'setData',
+    value: function setData(labels, data, res) {
       var data = {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        labels: labels,
         datasets: [{
           label: "My First dataset",
           fillColor: "rgba(220,220,220,0.5)",
           strokeColor: "rgba(220,220,220,0.8)",
           highlightFill: "rgba(220,220,220,0.75)",
           highlightStroke: "rgba(220,220,220,1)",
-          data: [65, 59, 80, 81, 56, 55, 40]
-        }, {
-          label: "My Second dataset",
-          fillColor: "rgba(151,187,205,0.5)",
-          strokeColor: "rgba(151,187,205,0.8)",
-          highlightFill: "rgba(151,187,205,0.75)",
-          highlightStroke: "rgba(151,187,205,1)",
-          data: [28, 48, 40, 19, 86, 27, 90]
+          data: data
         }]
       };
-      return data;
+      return res(data);
     }
   }, {
-    key: "changeSection",
+    key: 'getStudentCounts',
+    value: function getStudentCounts(answers, res) {
+      var counts = [];
+
+      Promise.each(answers, function (answer) {
+
+        return $.post('/studentanswer/getStudentCountByAnswerId', { id: answer.id }).then(function (count) {
+          counts.push(count);
+        });
+      }).then(function () {
+        console.log("counts3: ", counts);
+        //     }
+        res(counts);
+      });
+    }
+  }, {
+    key: 'getAnswers',
+    value: function getAnswers(selected_question, res) {
+      $.post('/answer/find', { question: selected_question.id }).then(function (answers_from_post) {
+        console.log("answers_from_post: ", answers_from_post);
+        return res(answers_from_post);
+        // console.log("answers: ", answers);
+      });
+    }
+  }, {
+    key: 'changeSection',
     value: function changeSection(event) {
       var section = this.state.section;
       section.id = event.target.value;
@@ -1112,7 +1248,7 @@ var Metrics = function (_React$Component) {
       });
     }
   }, {
-    key: "changeQuiz",
+    key: 'changeQuiz',
     value: function changeQuiz(event) {
       var quiz = this.state.quiz;
       quiz.id = event.target.value;
@@ -1135,7 +1271,7 @@ var Metrics = function (_React$Component) {
       console.log("me: ", me);
     }
   }, {
-    key: "changeQuestion",
+    key: 'changeQuestion',
     value: function changeQuestion(event) {
       var question = this.state.question;
       question.id = event.target.value;
@@ -1154,7 +1290,7 @@ var Metrics = function (_React$Component) {
       });
     }
   }, {
-    key: "changeAnswer",
+    key: 'changeAnswer',
     value: function changeAnswer(event) {
       var answer = this.state.answer;
       answer.id = event.target.value;
@@ -1168,11 +1304,25 @@ var Metrics = function (_React$Component) {
       });
     }
   }, {
-    key: "getMetrics",
+    key: 'getMetrics',
     value: function getMetrics() {
       console.log("getting metrics...");
+      // if (myNewChart) {
+      //   myNewChart.destroy();
+      // }
+      $('#DivChartContainer').empty();
+      $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
       var ctx = document.getElementById("myChart").getContext("2d");
-      var myNewChart = new Chart(ctx).Bar(this.doMath(1));
+      ctx.canvas.width = 400;
+      ctx.canvas.height = 400;
+
+      var options = {
+        maintainAspectRatio: false,
+        responsive: true
+      };
+      this.doMath(1, function (data) {
+        var myNewChart = new Chart(ctx).Bar(data, options);
+      });
 
       $("#myChart").click(function (evt) {
         var activeBars = myNewChart.getBarsAtEvent(evt);
@@ -1191,33 +1341,33 @@ var Metrics = function (_React$Component) {
     */
 
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        "div",
-        { id: "metrics", className: "quizzlyContent" },
+        'div',
+        { id: 'metrics', className: 'quizzlyContent' },
         _react2.default.createElement(
-          "div",
-          { className: "flexHorizontal" },
+          'div',
+          { className: 'flexHorizontal' },
           _react2.default.createElement(
-            "div",
+            'div',
             null,
             _react2.default.createElement(
-              "div",
-              { className: "small ml10" },
-              "Sections"
+              'div',
+              { className: 'small ml10' },
+              'Sections'
             ),
             _react2.default.createElement(
-              "select",
-              { value: this.state.section.id, className: "dropdown mr10", onChange: this.changeSection.bind(this) },
+              'select',
+              { value: this.state.section.id, className: 'dropdown mr10', onChange: this.changeSection.bind(this) },
               _react2.default.createElement(
-                "option",
+                'option',
                 { value: this.state.allSections.id },
                 this.state.allSections.title
               ),
               this.state.sections.map(function (section, sectionIndex) {
                 return _react2.default.createElement(
-                  "option",
+                  'option',
                   { key: sectionIndex, value: section.id },
                   section.title
                 );
@@ -1225,24 +1375,24 @@ var Metrics = function (_React$Component) {
             )
           ),
           _react2.default.createElement(
-            "div",
+            'div',
             null,
             _react2.default.createElement(
-              "div",
-              { className: "small ml10" },
-              "Quizzes"
+              'div',
+              { className: 'small ml10' },
+              'Quizzes'
             ),
             _react2.default.createElement(
-              "select",
-              { value: this.state.quiz.id, className: "dropdown mr10", onChange: this.changeQuiz.bind(this) },
+              'select',
+              { value: this.state.quiz.id, className: 'dropdown mr10', onChange: this.changeQuiz.bind(this) },
               _react2.default.createElement(
-                "option",
+                'option',
                 { value: this.state.allQuizzes.id },
                 this.state.allQuizzes.title
               ),
               this.state.quizzes.map(function (quiz, quizIndex) {
                 return _react2.default.createElement(
-                  "option",
+                  'option',
                   { key: quizIndex, value: quiz.id },
                   quiz.title
                 );
@@ -1250,24 +1400,24 @@ var Metrics = function (_React$Component) {
             )
           ),
           _react2.default.createElement(
-            "div",
+            'div',
             null,
             _react2.default.createElement(
-              "div",
-              { className: "small ml10" },
-              "Questions"
+              'div',
+              { className: 'small ml10' },
+              'Questions'
             ),
             _react2.default.createElement(
-              "select",
-              { value: this.state.question.id, className: "dropdown mr10", onChange: this.changeQuestion.bind(this) },
+              'select',
+              { value: this.state.question.id, className: 'dropdown mr10', onChange: this.changeQuestion.bind(this) },
               _react2.default.createElement(
-                "option",
+                'option',
                 { value: this.state.allQuestions.id },
                 this.state.allQuestions.title
               ),
               this.state.questions.map(function (question, questionIndex) {
                 return _react2.default.createElement(
-                  "option",
+                  'option',
                   { key: questionIndex, value: question.id },
                   question.text
                 );
@@ -1275,24 +1425,24 @@ var Metrics = function (_React$Component) {
             )
           ),
           _react2.default.createElement(
-            "div",
+            'div',
             null,
             _react2.default.createElement(
-              "div",
-              { className: "small ml10" },
-              "Answers"
+              'div',
+              { className: 'small ml10' },
+              'Answers'
             ),
             _react2.default.createElement(
-              "select",
-              { value: this.state.answer.id, className: "dropdown mr10", onChange: this.changeAnswer.bind(this) },
+              'select',
+              { value: this.state.answer.id, className: 'dropdown mr10', onChange: this.changeAnswer.bind(this) },
               _react2.default.createElement(
-                "option",
+                'option',
                 { value: this.state.allAnswers.id },
                 this.state.allAnswers.title
               ),
               this.state.answers.map(function (answer, answerIndex) {
                 return _react2.default.createElement(
-                  "option",
+                  'option',
                   { key: answerIndex, value: answer.id },
                   answer.text
                 );
@@ -1300,12 +1450,16 @@ var Metrics = function (_React$Component) {
             )
           ),
           _react2.default.createElement(
-            "button",
+            'button',
             { onClick: this.getMetrics.bind(this) },
-            "GET METRICS"
+            'GET METRICS'
           )
         ),
-        _react2.default.createElement("canvas", { id: "myChart", width: "400", height: "400" })
+        _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement('div', { id: 'DivChartContainer' })
+        )
       );
     }
   }]);
@@ -1315,7 +1469,7 @@ var Metrics = function (_React$Component) {
 
 exports.default = Metrics;
 
-},{"react":234}],7:[function(require,module,exports){
+},{"bluebird":22,"react":234}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

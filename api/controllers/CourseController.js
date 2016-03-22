@@ -9,7 +9,7 @@ module.exports = {
   findCoursesByIds: function(req, res) {
     var data = req.params.all();
     Course.find({id: data.ids}).exec(function(err, courses) {
-      res.json(courses);
+      return res.json(courses);
     });
   }
 };

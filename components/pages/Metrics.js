@@ -2,6 +2,8 @@
 
 import React from 'react'
 
+var Promise = require('bluebird');
+
 export default class Metrics extends React.Component {
   constructor(props) {
     super(props);
@@ -26,6 +28,7 @@ export default class Metrics extends React.Component {
       isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
+
     }
   }
 
@@ -47,9 +50,9 @@ export default class Metrics extends React.Component {
       $.post('/quiz/find', {course: course.id}),
       $.post('/question/getQuestionsByCourseId', {id: course.id})
     ).then(function(sections, quizzes, questions) {
-      console.log("sections", sections);
-      console.log("quizzes", quizzes);
-      console.log("questions", questions);
+      // console.log("sections", sections);
+      // console.log("quizzes", quizzes);
+      // console.log("questions", questions);
       me.setState({
         sections: sections[0],
         quizzes: quizzes[0],
@@ -64,9 +67,10 @@ export default class Metrics extends React.Component {
 
 
 
-  doMath(metricsData) {
+  doMath(metricsData, res) {
     console.log("metricsData:", metricsData);
-    
+    var data;
+
     function get_selected(selection_array, selection_id) {
         var selection = [];
         if (selection_id == -1) {
@@ -91,7 +95,6 @@ export default class Metrics extends React.Component {
     //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
-    
     //TODO data for graphs (only where /*Show*/)
     if (this.state.questions.id == -1) {
       //all questions
@@ -99,51 +102,208 @@ export default class Metrics extends React.Component {
           //all quizzes
           if (this.state.sections.id == -1) {
               //all sections
-              /*Show average of each section*/
-              //Labels will be sections
+              /*Show percent correct of each section*/
+                //Labels will be sections
+
             } else {
               //section else
-              /*Show average of each quiz*/
+              /*Show percent correct of each quiz*/
               //Labels will be quizzes
+
             }
         } else {
             //Quiz else
-            /*Show average correct of each question*/
-            //Labels will be questions
+            /*Show percent correct of each question*/
+              //Labels will be questions
+
         }
     } else {
         //Question else
         /*Show all answers and number of students who answered question*/
-        //Labels will be answers (put correct bar as green)
-    }
+          //Labels will be answers (put correct bar as green)
+          console.log("question else statement!");
+        //Get labels (answers for question)
+        
+        
+          // var answers =[];
+          // console.log("selected_question: ", selected_question);
+          // console.log("selected_question.id: ", selected_question.id);
+          // $.post('/answer/find', {question: selected_question.id})
+          //   .then(function(answers_from_post) {
+          //     console.log("answers_from_post: ", answers_from_post);
+          //     var me = this;
+          //     me.setState({
+          //       graph_answers: answers_from_post
+          
+          //     }.bind(this)); 
+          //     console.log("answers: ", answers);
+          //   });
+          
 
+          // var answers = this.getAnswers(selected_question);
+
+          // console.log("answers-outside: ", answers);
+          // console.log("this: ", this);
+          
+          // this.getAnswers(selected_question).then(function(answers){
+          //   console.log("answers-outside: ", answers);
+          //   this.getStudentCount(answers).then(function(counts){
+          //     console.log("counts-outside: ", counts);
+
+          //     this.setData(this.getAnswers(selected_question),counts).then(function(data){
+          //       return data;
+          //     });
+          //   });
+          // });
+        var answer_store = [];
+        this.getAnswers(selected_question,function(answers){
+          console.log("answers-outside: ", answers);
+            answer_store = answers;
+        var counts = [];
+          var data = {};
+          Promise.each(answers, function(answer) {
+            return $.post('/studentanswer/getStudentCountByAnswerId', {id: answer.id})
+              .then(function(count){
+                counts.push(count);
+                
+                });
+                  
+                }).then(function() {
+                  console.log("counts3: ",counts);
+                     console.log("answers_beforedata: ", answers);
+                     
+
+                  var key = "data";
+                  var obj = {
+                              label: "My First dataset",
+                              fillColor: "rgba(220,220,220,0.5)",
+                              strokeColor: "rgba(220,220,220,0.8)",
+                              highlightFill: "rgba(220,220,220,0.75)",
+                              highlightStroke: "rgba(220,220,220,1)"
+                              
+                              };
+                  obj[key] = counts;
+                  var datasets = [];
+                  datasets.push(obj);
+                  return datasets;
+                }).then(function(datasets){
+                  var labelArray = [];
+                     for(var i in answers) {
+                          labelArray.push(answers[i].option);
+                      }
+                    data = {
+                        labels: labelArray,
+                        datasets: datasets
+                            };
+
+                  console.log("data: ", data);
+                    return data;
+                }).then(function(data){
+                    return res(data);
+                });
+            
+            // this.getStudentCounts(answers,function(counts){
+            //   console.log("answers-inside: ", answers);
+            //   console.log("counts: ", counts);
+            //     this.setData(answer_store, counts, function(data){
+            //       console.log("data: ", data);
+            //         return data;
+            //     });
+            // });
+        });
+
+        
+    }
+      
+  
+    //http://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs to change color
 
     //Explanations of data below
       //labels: x axis labels (y axis is just numbers for data values)
-    var data = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [
-        {
-          label: "My First dataset",
-          fillColor: "rgba(220,220,220,0.5)",
-          strokeColor: "rgba(220,220,220,0.8)",
-          highlightFill: "rgba(220,220,220,0.75)",
-          highlightStroke: "rgba(220,220,220,1)",
-          data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-          label: "My Second dataset",
-          fillColor: "rgba(151,187,205,0.5)",
-          strokeColor: "rgba(151,187,205,0.8)",
-          highlightFill: "rgba(151,187,205,0.75)",
-          highlightStroke: "rgba(151,187,205,1)",
-          data: [28, 48, 40, 19, 86, 27, 90]
-        }
-      ]
-    };
-    return data;
+    // var data = {
+    //   labels: ["January", "February", "March", "April", "May", "June", "July"],
+    //   datasets: [
+    //     {
+    //       label: "My First dataset",
+    //       fillColor: "rgba(220,220,220,0.5)",
+    //       strokeColor: "rgba(220,220,220,0.8)",
+    //       highlightFill: "rgba(220,220,220,0.75)",
+    //       highlightStroke: "rgba(220,220,220,1)",
+    //       data: [65, 59, 80, 81, 56, 55, 40]
+    //     },
+    //     {
+    //       label: "My Second dataset",
+    //       fillColor: "rgba(151,187,205,0.5)",
+    //       strokeColor: "rgba(151,187,205,0.8)",
+    //       highlightFill: "rgba(151,187,205,0.75)",
+    //       highlightStroke: "rgba(151,187,205,1)",
+    //       data: [28, 48, 40, 19, 86, 27, 90]
+    //     }
+    //   ]
+    // };
+    // return this.state.data;
 
   }
+
+
+  
+
+
+  setData(labels, data, res) {
+    var data = {
+                        labels: labels,
+                        datasets: [
+                             {
+                              label: "My First dataset",
+                              fillColor: "rgba(220,220,220,0.5)",
+                              strokeColor: "rgba(220,220,220,0.8)",
+                              highlightFill: "rgba(220,220,220,0.75)",
+                              highlightStroke: "rgba(220,220,220,1)",
+                              data: data
+                              }
+                              ]
+                            };
+                            return res(data);
+        
+  }
+
+  getStudentCounts(answers, res){
+          var counts = [];
+          
+          Promise.each(answers, function(answer) {
+
+            return $.post('/studentanswer/getStudentCountByAnswerId', {id: answer.id})
+              .then(function(count){
+                counts.push(count);
+                
+                });
+                  
+                }).then(function() {
+                  console.log("counts3: ",counts);
+          //     }
+                    res(counts);
+                });
+            
+
+            
+  }
+
+  
+
+ 
+  
+
+  getAnswers(selected_question,res) {
+    $.post('/answer/find', {question: selected_question.id})
+            .then(function(answers_from_post) {
+              console.log("answers_from_post: ", answers_from_post);
+              return res(answers_from_post);
+              // console.log("answers: ", answers);
+            });
+            
+  }
+
+  
 
   changeSection(event) {
     var section = this.state.section;
@@ -221,8 +381,23 @@ export default class Metrics extends React.Component {
 
   getMetrics() {
     console.log("getting metrics...");
+    // if (myNewChart) {
+    //   myNewChart.destroy();
+    // }
+    $('#DivChartContainer').empty();
+    $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
     var ctx = document.getElementById("myChart").getContext("2d");
-    var myNewChart = new Chart(ctx).Bar(this.doMath(1));
+    ctx.canvas.width = 400;
+    ctx.canvas.height = 400;
+
+    var options = {
+        maintainAspectRatio: false,
+        responsive: true
+    };
+    this.doMath(1,function(data){
+      var myNewChart = new Chart(ctx).Bar(data,options);
+    });
+    
     
 
     $("#myChart").click(function(evt){
@@ -286,7 +461,11 @@ export default class Metrics extends React.Component {
           <button onClick={this.getMetrics.bind(this)}>GET METRICS</button>
         </div>
 
-        {<canvas id="myChart" width="400" height="400"></canvas>}
+        {<div>
+          <div id="DivChartContainer"></div>
+          
+          </div>
+        }
       </div>
     );
   }

@@ -31,7 +31,7 @@ module.exports = {
       .then(function() {
         console.log("finished!", courses.length);
         console.log("finished!", courses);
-        res.json(courses);
+        return res.json(courses);
       });
     });
   },
@@ -65,7 +65,7 @@ module.exports = {
       }).then(function() {
         console.log("finished!", students.length);
         // console.log("finished!", students);
-        res.json(students);
+        return res.json(students);
       });
     });
   },
@@ -94,7 +94,7 @@ module.exports = {
         }).then(function() {
         console.log("finished!", students.length);
         // console.log("finished!", students);
-        res.json(students);
+        return res.json(students);
       });
 
 

@@ -35,26 +35,26 @@ module.exports = {
   getQuestionsByCourseId: function (req, res) {
     console.log("--------------getQuestionsByCourseId");
     var data = req.params.all();
-    
+
     var questions = [];
 
     Quiz.find({course: data.id}).exec(function (err, quizzes) {
-      console.log("quizzes: ", quizzes);
+      // console.log("quizzes: ", quizzes);
       Promise.each(quizzes, function(quiz) {
-        console.log("quiz: ", quiz);
+        // console.log("quiz: ", quiz);
         return Question.find({quiz: quiz.id}).then(function (quiz_questions) {
-          console.log("quiz_questions: ", quiz_questions);
+          // console.log("quiz_questions: ", quiz_questions);
           return quiz_questions;
         }).then(function(quiz_questions) {
           return Promise.each(quiz_questions, function(question) {
-            console.log("question: ", question);
+            // console.log("question: ", question);
             questions.push(question);
           });
         });      
       }).then(function() {
         console.log("finished!", questions.length);
-        console.log("finished!", questions);
-        res.json(questions);
+        // console.log("finished!", questions);
+        return res.json(questions);
       });
     });
   },

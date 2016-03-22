@@ -71,7 +71,8 @@ module.exports.routes = {
   'post /course/multifind': 'CourseController.findCoursesByIds',
   'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
   'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
-  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId'
+  'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId',
+  'post /student/getStudentCountByAnswerId/:id': 'StudentAnswerController.getStudentCountByAnswerId'
    
   
   
