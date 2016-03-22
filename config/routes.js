@@ -21,17 +21,6 @@
  */
 
 module.exports.routes = {
-
-  /***************************************************************************
-  *                                                                          *
-  * Make the view located at `views/homepage.ejs` (or `views/homepage.jade`, *
-  * etc. depending on your default view engine) your home page.              *
-  *                                                                          *
-  * (Alternatively, remove this and add an `index.html` file in your         *
-  * `assets` directory)                                                      *
-  *                                                                          *
-  ***************************************************************************/
-
   '/': {
     view: 'app'
   },
@@ -62,6 +51,9 @@ module.exports.routes = {
   '/s/metrics': {
     view: 'app'
   },
+  '/s/question/:id': {
+    view: 'app'
+  },
   'post /login': 'AuthController.login',
   'post /logout': 'AuthController.logout',
   'post /signup': 'AuthController.signup',
@@ -72,7 +64,8 @@ module.exports.routes = {
   'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
   'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
   'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId',
-  'post /student/getStudentCountByAnswerId/:id': 'StudentAnswerController.getStudentCountByAnswerId'
+
+  'post /student/getStudentCountByAnswerId/:id': 'StudentAnswerController.getStudentCountByAnswerId',
    
   
   
@@ -86,4 +79,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+
+  'post /section/multidestroy': 'SectionController.destroySectionsByIds',
+  'post /quiz/multidestroy': 'QuizController.destroyQuizzesByIds',
+  'post /question/multidestroy': 'QuestionController.destroyQuestionsByIds',
+  'post /answer/multidestroy': 'AnswerController.destroyAnswersByIds'
 };

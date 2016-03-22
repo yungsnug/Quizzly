@@ -11,5 +11,11 @@ module.exports = {
     Course.find({id: data.ids}).exec(function(err, courses) {
       return res.json(courses);
     });
+  },
+  destroyCoursesByIds: function(req, res) {
+    var data = req.params.all();
+    Course.destroy({id: data.ids}).exec(function(err, courses) {
+      res.json(courses);
+    });
   }
 };

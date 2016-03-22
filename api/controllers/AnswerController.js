@@ -6,39 +6,10 @@
  */
 
 module.exports = {
-  /**
-   * `AnswerController.getQuestion()`
-   */
-  getQuestion: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
+  destroyAnswersByIds: function(req, res) {
+    var data = req.params.all();
+    Answer.destroy({id: data.ids}).exec(function(err, answers) {
+      res.json(answers);
     });
-  },
-
-  /**
-   * `AnswerController.getProfessors()`
-   */
-  getProfessors: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
-
-  /**
-   * `AnswerController.getProfessor()`
-   */
-  getProfessor: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
-
-  /**
-   * `AnswerController.getProfessorAnswer()`
-   */
-  getProfessorAnswer: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
+  }
 };

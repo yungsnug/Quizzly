@@ -6,12 +6,10 @@
  */
 
 module.exports = {
-  /**
-   * `QuizController.startQuiz()`
-   */
-  startQuiz: function (req, res) {
-    return res.json({
-      todo: 'startQuiz() is not implemented yet!'
+  destroyQuizzesByIds: function(req, res) {
+    var data = req.params.all();
+    Quiz.destroy({id: data.ids}).exec(function(err, quizzes) {
+      res.json(quizzes);
     });
   }
 };
