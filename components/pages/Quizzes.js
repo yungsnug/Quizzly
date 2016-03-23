@@ -103,6 +103,7 @@ export default class Quizzes extends React.Component {
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
     if(question.text.trim().length == 0) return;
+    if(!this.correctAnswerIsSet(question)) return; // if correct answer is not set
 
     if(questionIndex > -1) {
       this.updateQuestion(question, quizIndex, questionIndex);
@@ -174,6 +175,17 @@ export default class Quizzes extends React.Component {
       option: answer.option,
       question: question.id
     });
+  }
+
+  correctAnswerIsSet(question) {
+    var correctAnswerIsSet = false;
+    question.answers.map(function(answer) {
+      if(answer.correct) {
+        correctAnswerIsSet = true;
+      }
+    });
+
+    return correctAnswerIsSet;
   }
 
   deleteQuizFromCourse(quizIndex) {

@@ -84,6 +84,13 @@ export default class AddQuestionBody extends React.Component {
     });
   }
 
+  setAsCorrectAnswer(answerIndex) {
+    var question = this.state.question;
+    question.answers.map(function(answer) { return answer.correct = false });
+    question.answers[answerIndex].correct = true;
+    this.setState({question: question});
+  }
+
   render() {
     var me = this;
     var questionAnswer = (
@@ -100,17 +107,16 @@ export default class AddQuestionBody extends React.Component {
 
     var answers = null;
     if(!this.state.isFreeResponse) {
-      answers = this.state.question.answers.map(function(answer, i) {
+      answers = this.state.question.answers.map(function(answer, answerIndex) {
         return (
-          <div className="flex mb20 flexVertical" key={i}>
-            <span className="mr15">{answer.option}.)</span>
+          <div className="flex mb20 flexVertical" key={answerIndex}>
+            <span className="mr15 pointer" onClick={me.setAsCorrectAnswer.bind(me, answerIndex)}>{answer.option}.)</span>
             <input
               type="text"
-              className="addCourseInput"
+              className={"addCourseInput " + (answer.correct ? "lightGreenBackground" : "")}
               value={answer.text}
               placeholder="Option..."
-              onChange={me.handleChange.bind(me, i)}
-              key={i}
+              onChange={me.handleChange.bind(me, answerIndex)}
             />
           </div>
         );
