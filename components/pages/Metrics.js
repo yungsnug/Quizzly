@@ -92,15 +92,19 @@ export default class Metrics extends React.Component {
     console.log("selected_quiz:", selected_quiz);
     console.log("selected_question:", selected_question);
 
+    var question_id = this.state.question.id;
+    var quizzes_id = this.state.quiz.id;
+    var section_id = this.state.section.id;
+
     //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
     //TODO data for graphs (only where /*Show*/)
-    if (this.state.questions.id == -1) {
+    if (this.state.question.id == -1) {
       //all questions
-      if (this.state.quizzes.id == -1) {
+      if (this.state.quiz.id == -1) {
           //all quizzes
-          if (this.state.sections.id == -1) {
+          if (this.state.section.id == -1) {
               //all sections
               /*Show percent correct of each section*/
                 //Labels will be sections
@@ -124,37 +128,6 @@ export default class Metrics extends React.Component {
           console.log("question else statement!");
         //Get labels (answers for question)
         
-        
-          // var answers =[];
-          // console.log("selected_question: ", selected_question);
-          // console.log("selected_question.id: ", selected_question.id);
-          // $.post('/answer/find', {question: selected_question.id})
-          //   .then(function(answers_from_post) {
-          //     console.log("answers_from_post: ", answers_from_post);
-          //     var me = this;
-          //     me.setState({
-          //       graph_answers: answers_from_post
-          
-          //     }.bind(this)); 
-          //     console.log("answers: ", answers);
-          //   });
-          
-
-          // var answers = this.getAnswers(selected_question);
-
-          // console.log("answers-outside: ", answers);
-          // console.log("this: ", this);
-          
-          // this.getAnswers(selected_question).then(function(answers){
-          //   console.log("answers-outside: ", answers);
-          //   this.getStudentCount(answers).then(function(counts){
-          //     console.log("counts-outside: ", counts);
-
-          //     this.setData(this.getAnswers(selected_question),counts).then(function(data){
-          //       return data;
-          //     });
-          //   });
-          // });
         var answer_store = [];
         this.getAnswers(selected_question,function(answers){
           console.log("answers-outside: ", answers);
@@ -162,7 +135,7 @@ export default class Metrics extends React.Component {
         var counts = [];
           var data = {};
           Promise.each(answers, function(answer) {
-            return $.post('/studentanswer/getStudentCountByAnswerId', {id: answer.id})
+            return $.post('/studentanswer/getStudentCountByAnswerId/', {id: answer.id,section: section_id})
               .then(function(count){
                 counts.push(count);
                 
@@ -217,31 +190,6 @@ export default class Metrics extends React.Component {
       
   
     //http://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs to change color
-
-    //Explanations of data below
-      //labels: x axis labels (y axis is just numbers for data values)
-    // var data = {
-    //   labels: ["January", "February", "March", "April", "May", "June", "July"],
-    //   datasets: [
-    //     {
-    //       label: "My First dataset",
-    //       fillColor: "rgba(220,220,220,0.5)",
-    //       strokeColor: "rgba(220,220,220,0.8)",
-    //       highlightFill: "rgba(220,220,220,0.75)",
-    //       highlightStroke: "rgba(220,220,220,1)",
-    //       data: [65, 59, 80, 81, 56, 55, 40]
-    //     },
-    //     {
-    //       label: "My Second dataset",
-    //       fillColor: "rgba(151,187,205,0.5)",
-    //       strokeColor: "rgba(151,187,205,0.8)",
-    //       highlightFill: "rgba(151,187,205,0.75)",
-    //       highlightStroke: "rgba(151,187,205,1)",
-    //       data: [28, 48, 40, 19, 86, 27, 90]
-    //     }
-    //   ]
-    // };
-    // return this.state.data;
 
   }
 
