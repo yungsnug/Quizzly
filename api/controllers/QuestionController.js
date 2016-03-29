@@ -10,9 +10,12 @@ var UrbanAirshipPush = require('urban-airship-push');
  // Your app access configuration. You will find this stuff in your App
  // Settings under App Key, App Secret and App Master Secret.
  var config = {
-     key: 'UWBj9II1Tc-GBn4aioUHUw',
+/*     key: 'UWBj9II1Tc-GBn4aioUHUw',
      secret: 'q4q2I2DNQw2URglIRPkC-Q',
-     masterSecret: 'mL0uDhSPThSrfQyGp4kw0w'
+     masterSecret: 'mL0uDhSPThSrfQyGp4kw0w'*/
+    key: 'RpquxajkQKeLnupkBrvWtw',
+    secret: 'O8p2HuxVQBOrYaTersE5CA',
+    masterSecret: 'Lcay6AUkQXapKaztfYSJGw'
  };
 
  // Create a push object
@@ -83,19 +86,49 @@ module.exports = {
                  "type": question.type,
                  "answer0": answers[0].text,
                  "answer1": answers[1].text,
-              //   "answer2": answers[2].text,
-              //   "answer3": answers[3].text,
+                 "time_limit": 50,
+               }
+             },
+             "ios": {
+               "extra": {
+                 "question": question.text,
+                 "quiz_id": question.quiz,
+                 "quest_id": question.id,
+                 "type": question.type,
+                 "answer0": answers[0].text,
+                 "answer1": answers[1].text,
                  "time_limit": 50,
                }
              }
           },
-          "device_types": ["android"]
+          "device_types": ["android", "ios"]
         };
+/*
+        var iosPush = {
+          audience: "all",
+          notification: {
+            alert: "Question Available",
+            ios: {
+              extra: {
+                question: question.text,
+                quiz_id: question.quiz,
+                quest_id: question.id,
+                type: question.type,
+                answer0: answers[0].text,
+                answer1: answers[1].text,
+                time_limit: 50,
+              }
+            }
+          },
+          device_types: ["ios"]
+        };*/
         if(answers.length > 2) {
           pushInfo.notification.android.extra.answer2 = answers[2].text;
+          pushInfo.notification.ios.extra.answer2 = answers[2].text;
         }
         if(answers.length > 3) {
           pushInfo.notification.android.extra.answer3 = answers[3].text;
+          pushInfo.notification.ios.extra.answer3 = answers[3].text;
         }
 
         console.log(pushInfo);
@@ -153,12 +186,14 @@ module.exports = {
           quiz: req.param('quiz_id'),
         };
         StudentAnswer.create(data).exec(function(err, studentAnswer) {
+
           if(err) {
+            console.log("error");
             return res.json({
               hello: 'did it work'
             });
           }
-
+          console.log("created")
           return res.json(studentAnswer);
         });
       });

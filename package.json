@@ -27,6 +27,7 @@
     "grunt-sails-linker": "~0.10.1",
     "grunt-sync": "0.2.4",
     "include-all": "~0.1.6",
+    "quiche": "0.0.10",
     "rc": "1.0.1",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
