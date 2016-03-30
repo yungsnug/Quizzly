@@ -76,7 +76,7 @@ export default class Metrics extends React.Component {
         if (selection_id == -1) {
           selection = selection_array;
         } else {
-          selection = selection_array[selection_id];
+          selection = selection_array[selection_id-1];
         }
         return selection;
     }
@@ -119,7 +119,7 @@ export default class Metrics extends React.Component {
             //Quiz else
             /*Show percent correct of each question*/
               //Labels will be questions
-
+              
         }
     } else {
         //Question else
