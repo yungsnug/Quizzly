@@ -34,7 +34,6 @@ export default class Metrics extends React.Component {
 
   componentDidMount() {
     this.populateDropdowns(this.props.course);
-    
   }
 
   componentWillReceiveProps(newProps) {
@@ -80,7 +79,7 @@ export default class Metrics extends React.Component {
         }
         return selection;
     }
-    
+
     var selected_course = this.state.course;
     var selected_section = get_selected(this.state.sections, this.state.section.id);
     var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
@@ -123,8 +122,8 @@ export default class Metrics extends React.Component {
           //Labels will be answers (put correct bar as green)
           console.log("question else statement!");
         //Get labels (answers for question)
-        
-        
+
+
           // var answers =[];
           // console.log("selected_question: ", selected_question);
           // console.log("selected_question.id: ", selected_question.id);
@@ -134,17 +133,17 @@ export default class Metrics extends React.Component {
           //     var me = this;
           //     me.setState({
           //       graph_answers: answers_from_post
-          
-          //     }.bind(this)); 
+
+          //     }.bind(this));
           //     console.log("answers: ", answers);
           //   });
-          
+
 
           // var answers = this.getAnswers(selected_question);
 
           // console.log("answers-outside: ", answers);
           // console.log("this: ", this);
-          
+
           // this.getAnswers(selected_question).then(function(answers){
           //   console.log("answers-outside: ", answers);
           //   this.getStudentCount(answers).then(function(counts){
@@ -165,13 +164,13 @@ export default class Metrics extends React.Component {
             return $.post('/studentanswer/getStudentCountByAnswerId', {id: answer.id})
               .then(function(count){
                 counts.push(count);
-                
+
                 });
-                  
+
                 }).then(function() {
                   console.log("counts3: ",counts);
                      console.log("answers_beforedata: ", answers);
-                     
+
 
                   var key = "data";
                   var obj = {
@@ -180,7 +179,7 @@ export default class Metrics extends React.Component {
                               strokeColor: "rgba(220,220,220,0.8)",
                               highlightFill: "rgba(220,220,220,0.75)",
                               highlightStroke: "rgba(220,220,220,1)"
-                              
+
                               };
                   obj[key] = counts;
                   var datasets = [];
@@ -201,7 +200,7 @@ export default class Metrics extends React.Component {
                 }).then(function(data){
                     return res(data);
                 });
-            
+
             // this.getStudentCounts(answers,function(counts){
             //   console.log("answers-inside: ", answers);
             //   console.log("counts: ", counts);
@@ -212,10 +211,10 @@ export default class Metrics extends React.Component {
             // });
         });
 
-        
+
     }
-      
-  
+
+
     //http://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs to change color
 
     //Explanations of data below
@@ -246,7 +245,7 @@ export default class Metrics extends React.Component {
   }
 
 
-  
+
 
 
   setData(labels, data, res) {
@@ -264,34 +263,34 @@ export default class Metrics extends React.Component {
                               ]
                             };
                             return res(data);
-        
+
   }
 
   getStudentCounts(answers, res){
           var counts = [];
-          
+
           Promise.each(answers, function(answer) {
 
             return $.post('/studentanswer/getStudentCountByAnswerId', {id: answer.id})
               .then(function(count){
                 counts.push(count);
-                
+
                 });
-                  
+
                 }).then(function() {
                   console.log("counts3: ",counts);
           //     }
                     res(counts);
                 });
-            
 
-            
+
+
   }
 
-  
 
- 
-  
+
+
+
 
   getAnswers(selected_question,res) {
     $.post('/answer/find', {question: selected_question.id})
@@ -300,10 +299,10 @@ export default class Metrics extends React.Component {
               return res(answers_from_post);
               // console.log("answers: ", answers);
             });
-            
+
   }
 
-  
+
 
   changeSection(event) {
     var section = this.state.section;
@@ -384,6 +383,9 @@ export default class Metrics extends React.Component {
     // if (myNewChart) {
     //   myNewChart.destroy();
     // }
+
+
+
     $('#DivChartContainer').empty();
     $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
     var ctx = document.getElementById("myChart").getContext("2d");
@@ -397,8 +399,8 @@ export default class Metrics extends React.Component {
     this.doMath(1,function(data){
       var myNewChart = new Chart(ctx).Bar(data,options);
     });
-    
-    
+
+
 
     $("#myChart").click(function(evt){
       var activeBars = myNewChart.getBarsAtEvent(evt);
@@ -463,7 +465,7 @@ export default class Metrics extends React.Component {
 
         {<div>
           <div id="DivChartContainer"></div>
-          
+
           </div>
         }
       </div>

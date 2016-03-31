@@ -1,15 +1,21 @@
 "use strict";
 
 import React from 'react'
-import { browserHistory } from 'react-router'
+import {browserHistory} from 'react-router'
+import {Conner} from '../partials/Conner.js'
 import {Sidebar} from '../partials/Sidebar.js'
 import {Header} from '../partials/Header.js'
+import {ProfileModal} from '../partials/ProfileModal.js'
+// import {UrbanAirshipPush} from 'urban-airship-push'
+
 
 export default class Layout extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      urbanAirshipPush: {},
+      showProfileModal: false,
       course: {
         id: -1,
         title: "FAKE 101",
@@ -43,6 +49,7 @@ export default class Layout extends React.Component {
 
   componentDidMount() {
     var me = this;
+    this.initPush();
     this.checkSession()
     .then(function(user) {
       //TODO: might not be able to be /PROFESSOR/find/:id
@@ -71,6 +78,29 @@ export default class Layout extends React.Component {
           break;
       }
     });
+  }
+
+  initPush() {
+    var config = {
+      key: 'RpquxajkQKeLnupkBrvWtw',
+      secret: 'O8p2HuxVQBOrYaTersE5CA',
+      masterSecret: 'Lcay6AUkQXapKaztfYSJGw'
+    };
+
+    // Create a push object
+    // var urbanAirshipPush = new UrbanAirshipPush(config);
+    // this.setState({urbanAirshipPush: urbanAirshipPush});
+  }
+
+  getQuestion() {
+    var urbanAirshipPush = this.state.urbanAirshipPush;
+    UrbanAirship.getNotification(function(object) {
+      browserHistory("//" + object.question.id);
+    });
+  }
+
+  showProfileModal() {
+    this.setState({showProfileModal: true});
   }
 
   changeCourse(courseId) {
@@ -148,6 +178,14 @@ export default class Layout extends React.Component {
     });
   }
 
+  updateUser(user) {
+    this.setState({user: user});
+  }
+
+  closeModal() {
+    this.setState({showProfileModal: false});
+  }
+
   render() {
     var me = this;
     var props = {
@@ -164,6 +202,8 @@ export default class Layout extends React.Component {
         break;
     }
 
+    console.log("ProfileModal", ProfileModal);
+
     return (
       <div id="quizzlyApp">
         <Sidebar
@@ -175,10 +215,23 @@ export default class Layout extends React.Component {
           user={this.state.user}
           changeCourse={this.changeCourse.bind(this)}
           changeTerm={this.changeTerm.bind(this)}
+          showProfileModal={this.showProfileModal.bind(this)}
         />
+        <Conner />
         {React.Children.map(me.props.children, function (child) {
           return React.cloneElement(child, props);
         })}
+        {(() => {
+          if(this.state.showProfileModal) {
+            return (
+              <ProfileModal
+                user={this.state.user}
+                updateUser={this.updateUser.bind(this)}
+                closeModal={this.closeModal.bind(this)}
+              />
+            );
+          }
+        })()}
       </div>
     )
   }

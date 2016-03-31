@@ -54,14 +54,50 @@ export default class extends React.Component {
   }
 
   resetSelectedAnswers(answers) {
-    for(var i = 0; i < answers.length; ++i) {
-      answers[i].isSelected = false;
-    }
+    answers.map(function(answer) {
+      return answer.isSelected = false;
+    });
+
     return answers;
+  }
+
+  getSelectedAnswer() {
+    var question = this.state.question;
+    var selectedAnswer = {};
+    question.answers.map(function(answer) {
+      if(answer.correct) {
+        selectedAnswer = answer;
+      }
+    });
+    return selectedAnswer;
   }
 
   submitAnswer() {
     console.log("submitting answer!");
+    var currentUser = {};
+    var quiz = this.state.question.quiz;
+    var question = this.state.question;
+    var answer = this.getSelectedAnswer();
+    var student = {};
+
+    $.post('/session')
+    .then(function(user) {
+      student = user;
+      return $.post('/section/getSectionByStudentAndCourse', {studentId: student.id, courseId: quiz.course});
+    })
+    .then(function(section) {
+      return $.post('/studentanswer/create', {
+        student: student.id,
+        course: quiz.course,
+        section: section.id,
+        quiz: quiz.id,
+        question: question.id,
+        answer: answer.id
+      });
+    })
+    .then(function(studentAnswer) {
+      console.log("studentAnswer saved", studentAnswer);
+    });
   }
 
   render() {
