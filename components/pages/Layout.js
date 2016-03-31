@@ -1,10 +1,10 @@
 "use strict";
 
-import React from 'react';
-import {browserHistory} from 'react-router';
-import {Sidebar} from '../partials/Sidebar.js';
-import {Header} from '../partials/Header.js';
-import {ProfileModal} from '../partials/ProfileModal.js';
+import React from 'react'
+import {browserHistory} from 'react-router'
+import {Sidebar} from '../partials/Sidebar.js'
+import {Header} from '../partials/Header.js'
+import {ProfileModal} from '../partials/ProfileModal.js'
 // import {UrbanAirshipPush} from 'urban-airship-push'
 
 
