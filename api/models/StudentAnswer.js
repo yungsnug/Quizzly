@@ -31,6 +31,9 @@ module.exports = {
     quiz: {
       model: 'quiz'
     },
+    course: {
+      model: 'course'
+    },
     // Methods
   }
 };

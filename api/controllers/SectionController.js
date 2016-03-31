@@ -11,5 +11,21 @@ module.exports = {
     Section.destroy({id: data.ids}).exec(function(err, sections) {
       res.json(sections);
     });
+  },
+  getSectionByStudentAndCourse: function(req, res) { // needs {courseId, studentId}
+    var data = req.params.all();
+
+    Section.find({course: data.courseId}).populate("students").exec(function(err, sections) {
+      var section = {};
+      for(var i = 0; i < sections.length; ++i) {
+        for(var j = 0; j < sections[i].students.length; ++j) {
+          if(sections[i].students[j].id == data.studentId) {
+            section = sections[i];
+            break;
+          }
+        }
+      }
+      res.json(section);
+    });
   }
 };
