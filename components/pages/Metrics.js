@@ -287,25 +287,31 @@ export default class Metrics extends React.Component {
     var section = this.state.section;
     section.id = event.target.value;
     var me = this;
-    me.setState({
+    
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
       section: section,
       quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
 
-      // questions: [],
+      questions: questions,
       answers: [],
 
       isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
     });
+    });
+  
   }
 
   changeQuiz(event) {
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
     var me = this;
+    if (quiz.id != -1){
     $.post('/question/find', {quiz: quiz.id})
     .then(function(questions) {
       me.setState({
@@ -321,6 +327,23 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
+  } else {
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
+        quiz: quiz,
+        question: {id: -1},
+        answer: {id: -1},
+
+        questions: questions,
+        answers: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: true,
+        isAllAnswers: true
+      });
+    });
+  }
     console.log("this: ", this);
     console.log("me: ", me);
   }
