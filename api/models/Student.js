@@ -31,7 +31,12 @@ module.exports = {
     school: {
       type: 'string'
     },
-
+    channelID: {
+      type: 'string'
+    },
+    deviceType: {
+      type: 'string'
+    },
     // Associations
     sections: {
       collection: 'section',
