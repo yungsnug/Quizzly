@@ -1,11 +1,10 @@
 "use strict";
 
-import React from 'react'
-import {browserHistory} from 'react-router'
-import {Conner} from '../partials/Conner.js'
-import {Sidebar} from '../partials/Sidebar.js'
-import {Header} from '../partials/Header.js'
-import {ProfileModal} from '../partials/ProfileModal.js'
+import React from 'react';
+import {browserHistory} from 'react-router';
+import {Sidebar} from '../partials/Sidebar.js';
+import {Header} from '../partials/Header.js';
+import {ProfileModal} from '../partials/ProfileModal.js';
 // import {UrbanAirshipPush} from 'urban-airship-push'
 
 
@@ -179,6 +178,8 @@ export default class Layout extends React.Component {
   }
 
   updateUser(user) {
+    var courses = this.state.user.courses;
+    user.courses = courses;
     this.setState({user: user});
   }
 
@@ -202,8 +203,6 @@ export default class Layout extends React.Component {
         break;
     }
 
-    console.log("ProfileModal", ProfileModal);
-
     return (
       <div id="quizzlyApp">
         <Sidebar
@@ -217,11 +216,11 @@ export default class Layout extends React.Component {
           changeTerm={this.changeTerm.bind(this)}
           showProfileModal={this.showProfileModal.bind(this)}
         />
-        <Conner />
         {React.Children.map(me.props.children, function (child) {
           return React.cloneElement(child, props);
         })}
         {(() => {
+          var me = this;
           if(this.state.showProfileModal) {
             return (
               <ProfileModal

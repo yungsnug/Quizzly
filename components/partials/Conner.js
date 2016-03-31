@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default class Conner extends React.Component {
+export class Conner extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
