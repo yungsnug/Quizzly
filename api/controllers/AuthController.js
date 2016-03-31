@@ -41,9 +41,12 @@ module.exports = {
         user = professor[0];
       } else if(student.length > 0) {
         user = student[0];
-        Student.update({email: data.email}, {channelID: data.channelID, deviceType: data.deviceType}).exec(function(err, updated) {
-          console.log("Updated " + updated[0]);
-        });
+        if(data.channelID) {
+          Student.update({email: data.email}, {channelID: data.channelID, deviceType: data.deviceType}).exec(function(err, updated) {
+            console.log("Updated " + updated[0]);
+          });
+        }
+
       } else {
         res.status(400).send('That user was not found!');
       }
