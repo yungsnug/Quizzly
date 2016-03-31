@@ -76,11 +76,14 @@ export default class Metrics extends React.Component {
         if (selection_id == -1) {
           selection = selection_array;
         } else {
-          selection = selection_array[selection_id-1];
+          //array starts at 0 position
+          selection = selection_array[selection_id];
         }
         return selection;
     }
     
+    console.log("questions: ", this.state.questions);
+    console.log("question id: ", this.state.question.id);
     var selected_course = this.state.course;
     var selected_section = get_selected(this.state.sections, this.state.section.id);
     var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
@@ -92,7 +95,7 @@ export default class Metrics extends React.Component {
     console.log("selected_quiz:", selected_quiz);
     console.log("selected_question:", selected_question);
 
-    var question_id = this.state.question.id;
+    var question_id = this.state.question.value.id;
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
 
@@ -125,7 +128,7 @@ export default class Metrics extends React.Component {
         //Question else
         /*Show all answers and number of students who answered question*/
           //Labels will be answers (put correct bar as green)
-          console.log("question else statement!");
+        console.log("question else statement!");
         //Get labels (answers for question)
         
         var answer_store = [];
@@ -298,11 +301,12 @@ export default class Metrics extends React.Component {
   changeQuestion(event) {
     var question = this.state.question;
     question.id = event.target.value;
+    var event_target = event.target;
     var me = this;
     $.post('/answer/find', {question: question.id})
     .then(function(answers) {
       me.setState({
-        question: question,
+        question: event_target,
         answer: {id: -1},
 
         answers: answers,
@@ -393,7 +397,7 @@ export default class Metrics extends React.Component {
             <select value={this.state.question.id} className="dropdown mr10" onChange={this.changeQuestion.bind(this)}>
               <option value={this.state.allQuestions.id}>{this.state.allQuestions.title}</option>
               {this.state.questions.map(function(question, questionIndex) {
-                return <option key={questionIndex} value={question.id}>{question.text}</option>
+                return <option key={questionIndex} value={questionIndex}>{question.text}</option>
               })}
             </select>
           </div>

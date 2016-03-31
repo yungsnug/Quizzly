@@ -1219,11 +1219,14 @@ var Metrics = function (_React$Component) {
         if (selection_id == -1) {
           selection = selection_array;
         } else {
-          selection = selection_array[selection_id - 1];
+          //array starts at 0 position
+          selection = selection_array[selection_id];
         }
         return selection;
       }
 
+      console.log("questions: ", this.state.questions);
+      console.log("question id: ", this.state.question.id);
       var selected_course = this.state.course;
       var selected_section = get_selected(this.state.sections, this.state.section.id);
       var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
@@ -1235,7 +1238,7 @@ var Metrics = function (_React$Component) {
       console.log("selected_quiz:", selected_quiz);
       console.log("selected_question:", selected_question);
 
-      var question_id = this.state.question.id;
+      var question_id = this.state.question.value.id;
       var quizzes_id = this.state.quiz.id;
       var section_id = this.state.section.id;
 
@@ -1416,10 +1419,11 @@ var Metrics = function (_React$Component) {
     value: function changeQuestion(event) {
       var question = this.state.question;
       question.id = event.target.value;
+      var event_target = event.target;
       var me = this;
       $.post('/answer/find', { question: question.id }).then(function (answers) {
         me.setState({
-          question: question,
+          question: event_target,
           answer: { id: -1 },
 
           answers: answers,
@@ -1559,7 +1563,7 @@ var Metrics = function (_React$Component) {
               this.state.questions.map(function (question, questionIndex) {
                 return _react2.default.createElement(
                   'option',
-                  { key: questionIndex, value: question.id },
+                  { key: questionIndex, value: questionIndex },
                   question.text
                 );
               })
