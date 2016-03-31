@@ -70,8 +70,6 @@ module.exports.routes = {
 
   'post /section/getSectionByStudentAndCourse': 'SectionController.getSectionByStudentAndCourse',
 
-
-
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *
