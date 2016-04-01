@@ -18,7 +18,7 @@ module.exports = {
     },
 
     duration: {
-      type: 'string'
+      type: 'integer'
     },
 
     // Associations
