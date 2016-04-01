@@ -1688,7 +1688,7 @@ var Metrics = function (_React$Component) {
       $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
       var ctx = document.getElementById("myChart").getContext("2d");
       ctx.canvas.width = 400;
-      ctx.canvas.height = 400;
+      ctx.canvas.height = 200;
 
       var options = getBarChartValueOptions();
       this.doMath(1, function (data) {
