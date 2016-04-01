@@ -4,6 +4,91 @@ import React from 'react'
 
 var Promise = require('bluebird');
 
+/*
+  Create Array of Colors to Shuffle Through
+  When Displaying Chart Data
+*/
+var colorObjs = [];
+var index = -1;
+initColors();
+
+
+function addColorObject(red, green, blue) {
+  var color = {
+    fillColor:   "rgba("+red+","+green+","+blue+",0.5)",
+    strokeColor:    "rgba("+red+","+green+","+blue+",0.8)",
+    highlightFill:    "rgba("+red+","+green+","+blue+",0.75)",
+    highlightStroke:  "rgba("+red+","+green+","+blue+",1)",
+  };
+  // Add to Array
+  colorObjs.push(color); // add to Color array
+}
+function initColors(){
+  addColorObject(247, 70, 74); // red
+  addColorObject(0, 255, 255); // turquoise
+  addColorObject(252, 145, 16); // orange
+  addColorObject(175, 116, 177); // purple
+  addColorObject(27, 16, 252); // blue
+  addColorObject(252, 16, 123); // rasberry
+  addColorObject(16, 252, 145); // lime
+}
+function getNextIndex(){
+  index++;
+  if (index == colorObjs.length) {
+    index = 0;
+  }
+  return index;
+}
+function getBarChartDataSets(barLabels, dataArrays) {
+  var datasets = [];
+  for (var i = 0; i < barLabels.length; i++) {
+    var set = {
+      label: barLabels[i],
+      fillColor : colorObjs[getNextIndex()].fillColor,
+      strokeColor : colorObjs[index].strokeColor,
+      highlightFill: colorObjs[index].highlightFill,
+      highlightStroke: colorObjs[index].highlightStroke,
+      data : dataArrays[i],
+    };
+    datasets.push(set);
+  }
+  return datasets;
+}
+function getBarChartData(mainLabels, barLabels, dataArrays) {
+  if (barLabels.length != dataArrays.length) {
+    console.log("Invalid Parameters to getBarChartData(): barLabels.length & dataArrays.length need to match");
+    return;
+  }
+  var chartData = {
+    labels : mainLabels,
+    datasets : getBarChartDataSets(barLabels, dataArrays),
+  };
+  return chartData;
+}
+function getSingleItemBarChartData(mainLabelString, barLabels, dataArray) {
+  // Create Double Array from dataArray
+  var doubleArray = [];
+  for (var i = 0; i < dataArray.length; i++){
+    var singleArray = [dataArray[i]];
+    doubleArray.push(singleArray);
+  }
+  // Create Array from Main Label String
+  var mainLabelArray = [mainLabelString];
+  // Call getBarChartData() to Create Chart Data
+  return getBarChartData(mainLabelArray, barLabels, doubleArray);
+}
+function getBarChartValueOptions(){
+ var options = {
+   responsive : true,
+   maintainAspectRatio: true,
+   animation: true,
+   barValueSpacing : 5,
+   barDatasetSpacing : 1,
+   tooltipFillColor: "rgba(0,0,0,0.8)",                
+   multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>"
+ };
+ return options;
+}
 export default class Metrics extends React.Component {
   constructor(props) {
     super(props);
@@ -65,6 +150,9 @@ export default class Metrics extends React.Component {
   }
 
 
+  
+
+
 
   doMath(metricsData, res) {
     console.log("metricsData:", metricsData);
@@ -75,26 +163,24 @@ export default class Metrics extends React.Component {
         if (selection_id == -1) {
           selection = selection_array;
         } else {
+          //array starts at 0 position
           selection = selection_array[selection_id-1];
         }
         return selection;
     }
-
+    var me = this;
     var selected_course = this.state.course;
     var selected_section = get_selected(this.state.sections, this.state.section.id);
     var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
     var selected_question = get_selected(this.state.questions, this.state.question.id);
-
-    console.log("this:", this);
-    console.log("selected_course:", this.state.course);
-    console.log("selected_section:", selected_section);
-    console.log("selected_quiz:", selected_quiz);
-    console.log("selected_question:", selected_question);
-
-    var question_id = this.state.question.id;
+    console.log("selected_quiz: ", selected_quiz);
+    
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
+    var questions = this.state.questions;
 
+
+    var datas;
     //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
@@ -107,56 +193,143 @@ export default class Metrics extends React.Component {
               //all sections
               /*Show percent correct of each section*/
                 //Labels will be sections
+                console.log("section if statement!");
 
             } else {
               //section else
               /*Show percent correct of each quiz*/
               //Labels will be quizzes
+              console.log("section else statement!");
 
             }
         } else {
             //Quiz else
             /*Show percent correct of each question*/
               //Labels will be questions
+              console.log("quiz else statement!");
+              var countsTotal = [];
+               var labelsTotal = [];
+              var count_i =0;
+              var counter = 0;
+              var questions_length = questions.length;
+              var data = [];
+              Promise.each(questions, function(question) {
+                  count_i++;
 
+                  me.getAnswers(question,function(answers){
+          console.log("answers-outside: ", answers);
+           
+        var counts = [];
+          var data = {};
+          var counts_i=0;
+          Promise.each(answers, function(answer) {
+            return $.post('/studentanswer/getStudentCountByAnswerId/', {id: answer.id,section: section_id})
+              .then(function(count){
+                // if (counts_i==0){
+                //   countsTotal.push(0);
+                // }
+                counts.push(count);
+                
+                counts_i++;
+                // if(counts_i==answers.length) {
+                //   countsTotal.push(0);
+                //   counts_i =0;
+                // }
+                });
+
+                }).then(function() {
+                  console.log("counts3: ",counts);
+                     console.log("answers_beforedata: ", answers);
+
+
+                  var key = "data";
+                  var obj = {
+                              label: "My First dataset",
+                              fillColor: "rgba(220,220,220,0.5)",
+                              strokeColor: "rgba(220,220,220,0.8)",
+                              highlightFill: "rgba(220,220,220,0.75)",
+                              highlightStroke: "rgba(220,220,220,1)"
+
+                              };
+                  obj[key] = counts;
+                  var datasets = [];
+                  datasets.push(obj);
+                  return datasets;
+                }).then(function(datasets){
+
+                      var labelsTemp = [];
+                      var countsTemp = [];
+                      for(var i in labelsTotal) {
+                          labelsTemp.push(labelsTotal[i]);
+                          countsTemp.push(countsTotal[i]);
+                          
+                      }
+                      labelsTotal=[];
+                      countsTotal=[];
+                  var labelArray = [];
+                    
+                     for(var i in answers) {
+                      // if (i_counts == 0) {
+                      //   labelsTotal.push("Q"+(counter+1));
+                      // }
+                          labelArray.push(answers[i].option);
+                          labelsTotal.push(answers[i].option);
+                          countsTotal.push(counts[i]);
+                          
+                          
+                          // if (i_counts == answers.length){
+                          //   counter++;
+                          //   labelsTotal.push(" ");
+                          //   i_counts = 0;
+                          // }
+                      }
+                      
+                      console.log("labelsTotal: ", labelsTotal);
+                      console.log("countsTotal: ", countsTotal);
+                      for(var i in labelsTemp){
+                        labelsTotal.push(labelsTemp[i]);
+                        countsTotal.push(countsTemp[i]);
+                        
+                      }
+
+
+                        // var chartData = {
+                        //     labels : mainLabels,
+                        //     datasets : getBarChartDataSets(barLabels, dataArrays),
+                        //   };
+                          // return chartData;
+                          console.log("counter: ", counter);
+                          console.log("count_i: ", count_i);
+                          counter++;
+                        if (counter == questions_length){
+                      var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
+                  data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
+                      
+
+                 console.log("data: ", data);
+                    return res(data);
+                  }
+
+                });
+                
+                
+        }); 
+});
+
+  
+
+  
+  
+              
         }
     } else {
         //Question else
         /*Show all answers and number of students who answered question*/
           //Labels will be answers (put correct bar as green)
-          console.log("question else statement!");
+        console.log("question else statement!");
         //Get labels (answers for question)
+        
 
-          // var answers =[];
-          // console.log("selected_question: ", selected_question);
-          // console.log("selected_question.id: ", selected_question.id);
-          // $.post('/answer/find', {question: selected_question.id})
-          //   .then(function(answers_from_post) {
-          //     console.log("answers_from_post: ", answers_from_post);
-          //     var me = this;
-          //     me.setState({
-          //       graph_answers: answers_from_post
-
-          //     }.bind(this));
-          //     console.log("answers: ", answers);
-          //   });
-
-
-          // var answers = this.getAnswers(selected_question);
-
-          // console.log("answers-outside: ", answers);
-          // console.log("this: ", this);
-
-          // this.getAnswers(selected_question).then(function(answers){
-          //   console.log("answers-outside: ", answers);
-          //   this.getStudentCount(answers).then(function(counts){
-          //     console.log("counts-outside: ", counts);
-
-          //     this.setData(this.getAnswers(selected_question),counts).then(function(data){
-          //       return data;
-          //     });
-          //   });
-          // });
         var answer_store = [];
         this.getAnswers(selected_question,function(answers){
           console.log("answers-outside: ", answers);
@@ -193,25 +366,16 @@ export default class Metrics extends React.Component {
                      for(var i in answers) {
                           labelArray.push(answers[i].option);
                       }
-                    data = {
-                        labels: labelArray,
-                        datasets: datasets
-                            };
 
+                      var questionName = selected_question.text; /* GET NAME OF QUESTION */
+                  data = getSingleItemBarChartData(questionName, labelArray, counts);
+                  
                   console.log("data: ", data);
                     return data;
                 }).then(function(data){
                     return res(data);
                 });
 
-            // this.getStudentCounts(answers,function(counts){
-            //   console.log("answers-inside: ", answers);
-            //   console.log("counts: ", counts);
-            //     this.setData(answer_store, counts, function(data){
-            //       console.log("data: ", data);
-            //         return data;
-            //     });
-            // });
         });
 
 
@@ -280,31 +444,38 @@ export default class Metrics extends React.Component {
 
   }
 
+  
 
 
   changeSection(event) {
     var section = this.state.section;
     section.id = event.target.value;
     var me = this;
-    me.setState({
+    
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
       section: section,
       quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
 
-      // questions: [],
+      questions: questions,
       answers: [],
 
       isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
     });
+    });
+  
   }
 
   changeQuiz(event) {
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
     var me = this;
+    if (quiz.id != -1){
     $.post('/question/find', {quiz: quiz.id})
     .then(function(questions) {
       me.setState({
@@ -320,6 +491,23 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
+  } else {
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
+        quiz: quiz,
+        question: {id: -1},
+        answer: {id: -1},
+
+        questions: questions,
+        answers: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: true,
+        isAllAnswers: true
+      });
+    });
+  }
     console.log("this: ", this);
     console.log("me: ", me);
   }
@@ -327,11 +515,12 @@ export default class Metrics extends React.Component {
   changeQuestion(event) {
     var question = this.state.question;
     question.id = event.target.value;
+    var event_target = event.target;
     var me = this;
     $.post('/answer/find', {question: question.id})
     .then(function(answers) {
       me.setState({
-        question: question,
+        question: event_target,
         answer: {id: -1},
 
         answers: answers,
@@ -365,15 +554,12 @@ export default class Metrics extends React.Component {
 
 
     $('#DivChartContainer').empty();
-    $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
+    $('#DivChartContainer').append('<canvas id="myChart" width="400" height="200"></canvas>');
     var ctx = document.getElementById("myChart").getContext("2d");
     ctx.canvas.width = 400;
-    ctx.canvas.height = 400;
+    ctx.canvas.height = 200;
 
-    var options = {
-        maintainAspectRatio: false,
-        responsive: true
-    };
+    var options = getBarChartValueOptions();
     this.doMath(1,function(data){
       var myNewChart = new Chart(ctx).Bar(data,options);
     });
@@ -425,7 +611,7 @@ export default class Metrics extends React.Component {
             <select value={this.state.question.id} className="dropdown mr10" onChange={this.changeQuestion.bind(this)}>
               <option value={this.state.allQuestions.id}>{this.state.allQuestions.title}</option>
               {this.state.questions.map(function(question, questionIndex) {
-                return <option key={questionIndex} value={question.id}>{question.text}</option>
+                return <option key={questionIndex} value={questionIndex+1}>{question.text}</option>
               })}
             </select>
           </div>

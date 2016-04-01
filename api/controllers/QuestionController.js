@@ -103,25 +103,7 @@ module.exports = {
           },
           "device_types": ["android", "ios"]
         };
-/*
-        var iosPush = {
-          audience: "all",
-          notification: {
-            alert: "Question Available",
-            ios: {
-              extra: {
-                question: question.text,
-                quiz_id: question.quiz,
-                quest_id: question.id,
-                type: question.type,
-                answer0: answers[0].text,
-                answer1: answers[1].text,
-                time_limit: 50,
-              }
-            }
-          },
-          device_types: ["ios"]
-        };*/
+        
         if(answers.length > 2) {
           pushInfo.notification.android.extra.answer2 = answers[2].text;
           pushInfo.notification.ios.extra.answer2 = answers[2].text;

@@ -17,6 +17,10 @@ module.exports = {
       required: true
     },
 
+    duration: {
+      type: 'integer'
+    },
+
     // Associations
     quiz: {
       model: 'quiz'
