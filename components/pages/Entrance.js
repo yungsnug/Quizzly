@@ -60,8 +60,14 @@ console.log("this", this);
       }
 
       $.post('/signup', {email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor}, function(user) {
-        console.log("User has signed up", user);
-        browserHistory.push('/courses');
+        console.log("User is logged in", user);
+        var route = 'p';
+        if(isProfessor) {
+          route = '/p/courses';
+        } else {
+          route = '/s/quizzes';
+        }
+        browserHistory.push(route);
       })
       .fail(function(err) {
         alert(err);

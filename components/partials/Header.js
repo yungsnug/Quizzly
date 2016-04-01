@@ -60,7 +60,7 @@ export class Header extends React.Component {
         </div>
         <div className="flexVertical" style={{"marginLeft":"auto"}}>
           <a className="ml30 pointer" onClick={this.handleLogout.bind(this)}>Log Out</a>
-          <div className="ml30 mr10 circle avatar" onClick={this.props.showProfileModal.bind(this)}></div>
+          <a className="ml30 pointer mr20" onClick={this.props.showProfileModal.bind(this)}>Profile</a>
         </div>
       </div>
     )

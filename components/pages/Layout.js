@@ -5,7 +5,7 @@ import {browserHistory} from 'react-router'
 import {Sidebar} from '../partials/Sidebar.js'
 import {Header} from '../partials/Header.js'
 import {ProfileModal} from '../partials/ProfileModal.js'
-// import {UrbanAirshipPush} from 'urban-airship-push'
+import {UrbanAirshipPush} from 'urban-airship-push'
 
 
 export default class Layout extends React.Component {
@@ -66,13 +66,17 @@ export default class Layout extends React.Component {
           .then(function(courses) {
             console.log('courseIds', courseIds);
             console.log('courses', courses);
-            me.getCourseById(courses[0].id);
+            if(courses[0] != undefined) {
+              me.getCourseById(courses[0].id);
+            }
             user.courses = courses;
             me.setState({user: user});
           });
           break;
         case 'PROFESSOR':
-          me.getCourseById(user.courses[0].id);
+          if(user.courses[0] != undefined) {
+            me.getCourseById(user.courses[0].id);
+          }
           me.setState({user: user});
           break;
       }
@@ -138,8 +142,13 @@ export default class Layout extends React.Component {
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
+      course.sections = [];
+      course.quizzes = [];
       user.courses.push(course);
-      me.setState({user: user});
+      me.setState({
+        user: user,
+        course: course
+      });
     });
   }
 
@@ -151,7 +160,7 @@ export default class Layout extends React.Component {
     var questionIds = [];
     var answerIds = [];
 
-    $.post('/question/find', {quiz: quizIds})
+    return $.post('/question/find', {quiz: quizIds})
     .then(function(questions) {
       questionIds = questions.map(function(question){return question.id;});
       return $.post('/answer/find', {question: questionIds})
@@ -170,8 +179,20 @@ export default class Layout extends React.Component {
       return $.post('/professor/find/' + me.state.user.id);
     })
     .then(function(user) {
+      console.log("DELETED------------", user);
+      var course = {};
+      if(user.courses.length == 0) {
+        course = {
+          id: -1,
+          title: "FAKE 101",
+          quizzes: [],
+          sections: []
+        };
+      } else {
+        course = user.courses[0];
+      }
       me.setState({
-        course: user.courses[0],
+        course: course,
         user: user
       });
     });

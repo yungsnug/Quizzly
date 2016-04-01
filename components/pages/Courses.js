@@ -26,7 +26,9 @@ export default class Courses extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    this.getCoursesAndSections(newProps.course.id);
+    if(newProps.course != undefined) {
+      this.getCoursesAndSections(newProps.course.id);
+    }
   }
 
   getCoursesAndSections(courseId) {
@@ -139,6 +141,7 @@ export default class Courses extends React.Component {
     var me = this;
     this.props.addCourseToProfessor(course)
     .then(function() {
+      me.setState({course: course});
       me.closeModal();
     });
   }
@@ -178,6 +181,20 @@ export default class Courses extends React.Component {
     });
   }
 
+  deleteCourseFromProfessor(course) {
+    var me = this;
+    this.props.deleteCourseFromProfessor(course)
+    .then(function() {
+      var course = {
+        id: -1,
+        title: "FAKE 101",
+        quizzes: [],
+        sections: []
+      };
+      me.setState({course: course});
+    });
+  }
+
   getName() {
     // $.post('/user')
     // .then(function(user) {
@@ -201,7 +218,7 @@ export default class Courses extends React.Component {
                   showMetricModal={this.showMetricModal.bind(this)}
                   deleteQuizFromCourse={this.deleteQuizFromCourse.bind(this)}
                   sectionIndex={-1}
-                  deleteCourseFromProfessor={this.props.deleteCourseFromProfessor.bind(this)}
+                  deleteCourseFromProfessor={this.deleteCourseFromProfessor.bind(this)}
                   deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
                 />
               );
