@@ -39,7 +39,7 @@ module.exports = {
   getStudentCoursesByEmail: function(req, res) {
     var data = req.params.all();
     var courses = [];
-    Student.findOne({email: data.email}).populate('sections')
+    Student.findOne({email: data.user}).populate('sections')
     .exec(function(err, student) {
       console.log("execing with student", student.firstName);
       console.log("student sections", student.sections);
