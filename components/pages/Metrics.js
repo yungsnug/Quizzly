@@ -4,6 +4,90 @@ import React from 'react'
 
 var Promise = require('bluebird');
 
+/*
+  Create Array of Colors to Shuffle Through
+  When Displaying Chart Data
+*/
+var colorObjs = [];
+var index = -1;
+initColors();
+
+function addColorObject(red, green, blue) {
+  var color = {
+    fillColor:   "rgba("+red+","+green+","+blue+",0.5)",
+    strokeColor:    "rgba("+red+","+green+","+blue+",0.8)",
+    highlightFill:    "rgba("+red+","+green+","+blue+",0.75)",
+    highlightStroke:  "rgba("+red+","+green+","+blue+",1)",
+  };
+  // Add to Array
+  colorObjs.push(color); // add to Color array
+}
+function initColors(){
+  addColorObject(247, 70, 74); // red
+  addColorObject(0, 255, 255); // turquoise
+  addColorObject(252, 145, 16); // orange
+  addColorObject(175, 116, 177); // purple
+  addColorObject(27, 16, 252); // blue
+  addColorObject(252, 16, 123); // rasberry
+  addColorObject(16, 252, 145); // lime
+}
+function getNextIndex(){
+  index++;
+  if (index == colorObjs.length) {
+    index = 0;
+  }
+  return index;
+}
+function getBarChartDataSets(barLabels, dataArrays) {
+  var datasets = [];
+  for (var i = 0; i < barLabels.length; i++) {
+    var set = {
+      label: barLabels[i],
+      fillColor : colorObjs[getNextIndex()].fillColor,
+      strokeColor : colorObjs[index].strokeColor,
+      highlightFill: colorObjs[index].highlightFill,
+      highlightStroke: colorObjs[index].highlightStroke,
+      data : dataArrays[i],
+    };
+    datasets.push(set);
+  }
+  return datasets;
+}
+function getBarChartData(mainLabels, barLabels, dataArrays) {
+  if (barLabels.length != dataArrays.length) {
+    console.log("Invalid Parameters to getBarChartData(): barLabels.length & dataArrays.length need to match");
+    return;
+  }
+  var chartData = {
+    labels : mainLabels,
+    datasets : getBarChartDataSets(barLabels, dataArrays),
+  };
+  return chartData;
+}
+function getSingleItemBarChartData(mainLabelString, barLabels, dataArray) {
+  // Create Double Array from dataArray
+  var doubleArray = [];
+  for (var i = 0; i < dataArray.length; i++){
+    var singleArray = [dataArray[i]];
+    doubleArray.push(singleArray);
+  }
+  // Create Array from Main Label String
+  var mainLabelArray = [mainLabelString];
+  // Call getBarChartData() to Create Chart Data
+  return getBarChartData(mainLabelArray, barLabels, doubleArray);
+}
+function getBarChartValueOptions(){
+ var options = {
+   responsive : true,
+   maintainAspectRatio: true,
+   animation: true,
+   barValueSpacing : 5,
+   barDatasetSpacing : 1,
+   tooltipFillColor: "rgba(0,0,0,0.8)",                
+   multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>"
+ };
+ return options;
+}
 export default class Metrics extends React.Component {
   constructor(props) {
     super(props);
@@ -65,6 +149,9 @@ export default class Metrics extends React.Component {
   }
 
 
+  
+
+
 
   doMath(metricsData, res) {
     console.log("metricsData:", metricsData);
@@ -75,7 +162,8 @@ export default class Metrics extends React.Component {
         if (selection_id == -1) {
           selection = selection_array;
         } else {
-          selection = selection_array[selection_id-1];
+          //array starts at 0 position
+          selection = selection_array[selection_id];
         }
         return selection;
     }
@@ -91,9 +179,10 @@ export default class Metrics extends React.Component {
     console.log("selected_quiz:", selected_quiz);
     console.log("selected_question:", selected_question);
 
-    var question_id = this.state.question.id;
+    var question_id = this.state.question.value.id;
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
+    var questions = this.state.questions;
 
     //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
@@ -107,24 +196,27 @@ export default class Metrics extends React.Component {
               //all sections
               /*Show percent correct of each section*/
                 //Labels will be sections
+                console.log("section if statement!");
 
             } else {
               //section else
               /*Show percent correct of each quiz*/
               //Labels will be quizzes
+              console.log("section else statement!");
 
             }
         } else {
             //Quiz else
             /*Show percent correct of each question*/
               //Labels will be questions
-
+              console.log("quiz else statement!");
+              
         }
     } else {
         //Question else
         /*Show all answers and number of students who answered question*/
           //Labels will be answers (put correct bar as green)
-          console.log("question else statement!");
+        console.log("question else statement!");
         //Get labels (answers for question)
 
           // var answers =[];
@@ -193,10 +285,13 @@ export default class Metrics extends React.Component {
                      for(var i in answers) {
                           labelArray.push(answers[i].option);
                       }
-                    data = {
-                        labels: labelArray,
-                        datasets: datasets
-                            };
+
+                      var questionName = selected_question.text; /* GET NAME OF QUESTION */
+                  data = getSingleItemBarChartData(questionName, labelArray, counts);
+                    // data = {
+                    //     labels: labelArray,
+                    //     datasets: datasets
+                    //         };
 
                   console.log("data: ", data);
                     return data;
@@ -286,25 +381,31 @@ export default class Metrics extends React.Component {
     var section = this.state.section;
     section.id = event.target.value;
     var me = this;
-    me.setState({
+    
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
       section: section,
       quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
 
-      // questions: [],
+      questions: questions,
       answers: [],
 
       isAllQuizzes: true,
       isAllQuestions: true,
       isAllAnswers: true
     });
+    });
+  
   }
 
   changeQuiz(event) {
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
     var me = this;
+    if (quiz.id != -1){
     $.post('/question/find', {quiz: quiz.id})
     .then(function(questions) {
       me.setState({
@@ -320,6 +421,23 @@ export default class Metrics extends React.Component {
         isAllAnswers: true
       });
     });
+  } else {
+    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
+    .then(function(questions) {
+      me.setState({
+        quiz: quiz,
+        question: {id: -1},
+        answer: {id: -1},
+
+        questions: questions,
+        answers: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: true,
+        isAllAnswers: true
+      });
+    });
+  }
     console.log("this: ", this);
     console.log("me: ", me);
   }
@@ -327,11 +445,12 @@ export default class Metrics extends React.Component {
   changeQuestion(event) {
     var question = this.state.question;
     question.id = event.target.value;
+    var event_target = event.target;
     var me = this;
     $.post('/answer/find', {question: question.id})
     .then(function(answers) {
       me.setState({
-        question: question,
+        question: event_target,
         answer: {id: -1},
 
         answers: answers,
@@ -368,12 +487,9 @@ export default class Metrics extends React.Component {
     $('#DivChartContainer').append('<canvas id="myChart" width="400" height="400"></canvas>');
     var ctx = document.getElementById("myChart").getContext("2d");
     ctx.canvas.width = 400;
-    ctx.canvas.height = 400;
+    ctx.canvas.height = 200;
 
-    var options = {
-        maintainAspectRatio: false,
-        responsive: true
-    };
+    var options = getBarChartValueOptions();
     this.doMath(1,function(data){
       var myNewChart = new Chart(ctx).Bar(data,options);
     });
@@ -425,7 +541,7 @@ export default class Metrics extends React.Component {
             <select value={this.state.question.id} className="dropdown mr10" onChange={this.changeQuestion.bind(this)}>
               <option value={this.state.allQuestions.id}>{this.state.allQuestions.title}</option>
               {this.state.questions.map(function(question, questionIndex) {
-                return <option key={questionIndex} value={question.id}>{question.text}</option>
+                return <option key={questionIndex} value={questionIndex}>{question.text}</option>
               })}
             </select>
           </div>
