@@ -35,6 +35,34 @@ module.exports = {
       });
     });
   },
+
+  getStudentCoursesByEmail: function(req, res) {
+    var data = req.params.all();
+    var courses = [];
+    Student.findOne({email: data.user}).populate('sections')
+    .exec(function(err, student) {
+      console.log("execing with student", student.firstName);
+      console.log("student sections", student.sections);
+      Promise.each(student.sections, function(section){
+        console.log("in promise loop with section...", section);
+        return Section.findOne({id: section.id}).then(function(section){
+          console.log("section", section.title);
+          return section;
+        }).then(function(section) {
+          return Course.findOne({id: section.course}).then(function(course){
+            console.log("course", course.title);
+            courses.push(course);
+          });
+        });
+      })
+      .then(function() {
+        console.log("finished!", courses.length);
+        console.log("finished!", courses);
+        return res.json(courses);
+      });
+    });
+  },
+
   getStudentsByCourseId: function(req,res) {
     console.log("--------------getStudentsByCourseId");
     var data = req.params.all();
@@ -96,14 +124,26 @@ module.exports = {
         // console.log("finished!", students);
         return res.json(students);
       });
+  },
+  getStudentIdsFromEmails: function(req, res) {
+    var data = req.params.all();
+    var studentIds = [];
 
-
+    Promise.each(data.studentEmails, function(studentEmail){
+      return Student.findOne({email: studentEmail})
+      .then(function(student) {
+        if(student != undefined) {
+          studentIds.push(student.id);
+        }
+      });
+    })
+    .then(function() {
+      return res.json(studentIds);
+    });
   }
   // getStudentAnswer: function(req,res) {
   //   console.log("--------------getStudentAnswer");
   //   var data = req.params.all();
   //   var courses = [];
   // }
-
-
 };

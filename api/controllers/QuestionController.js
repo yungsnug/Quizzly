@@ -86,7 +86,7 @@ module.exports = {
                  "type": question.type,
                  "answer0": answers[0].text,
                  "answer1": answers[1].text,
-                 "time_limit": 50,
+                 "time_limit": question.duration,
                }
              },
              "ios": {
@@ -97,13 +97,13 @@ module.exports = {
                  "type": question.type,
                  "answer0": answers[0].text,
                  "answer1": answers[1].text,
-                 "time_limit": 50,
+                 "time_limit": question.duration,
                }
              }
           },
           "device_types": ["android", "ios"]
         };
-        
+
         if(answers.length > 2) {
           pushInfo.notification.android.extra.answer2 = answers[2].text;
           pushInfo.notification.ios.extra.answer2 = answers[2].text;

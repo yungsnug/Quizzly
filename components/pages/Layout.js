@@ -152,6 +152,14 @@ export default class Layout extends React.Component {
     });
   }
 
+  addStudentsToSection(sectionId, studentIds) {
+    var me = this;
+    return $.post('/section/updateStudents/' + sectionId, {studentIds: studentIds})
+    .then(function(section) {
+      console.log("Updated section", section);
+    });
+  }
+
   deleteCourseFromProfessor(course) {
     var me = this;
 
@@ -221,6 +229,7 @@ export default class Layout extends React.Component {
       case 'PROFESSOR':
         props.addCourseToProfessor = me.addCourseToProfessor.bind(me);
         props.deleteCourseFromProfessor = me.deleteCourseFromProfessor.bind(me);
+        props.addStudentsToSection = me.addStudentsToSection.bind(me);
         break;
     }
 

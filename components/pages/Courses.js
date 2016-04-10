@@ -95,6 +95,18 @@ export default class Courses extends React.Component {
     this.showQuizModal(quizIndex);
   }
 
+  showStudentsModal(section) {
+    var modalInfo = this.state.modalInfo;
+    modalInfo.modalType = "ADD_STUDENTS";
+    modalInfo.title = "Add Students";
+    modalInfo.section = section;
+    this.setState({
+      showModal: true,
+      showMetricModal: false,
+      modalInfo: modalInfo
+    });
+  }
+
   addQuizToCourse(quiz, quizIndex) {
     console.log("Adding quiz '" +  quiz.title + "' in course " + this.props.course.title);
     var me = this;
@@ -142,6 +154,14 @@ export default class Courses extends React.Component {
     this.props.addCourseToProfessor(course)
     .then(function() {
       me.setState({course: course});
+      me.closeModal();
+    });
+  }
+
+  addStudentsToSection(sectionId, studentIds) {
+    var me = this;
+    this.props.addStudentsToSection(sectionId, studentIds)
+    .then(function() {
       me.closeModal();
     });
   }
@@ -195,13 +215,6 @@ export default class Courses extends React.Component {
     });
   }
 
-  getName() {
-    // $.post('/user')
-    // .then(function(user) {
-    //   console.log("user", user);
-    // });
-  }
-
   render() {
     return (
       <div>
@@ -235,6 +248,7 @@ export default class Courses extends React.Component {
                 key={sectionIndex}
                 showQuizInModal={this.showQuizInModal.bind(this)}
                 showMetricModal={this.showMetricModal.bind(this)}
+                showStudentsModal={this.showStudentsModal.bind(this)}
                 deleteSectionFromCourse={this.deleteSectionFromCourse.bind(this)}
               />
             );
@@ -255,6 +269,7 @@ export default class Courses extends React.Component {
                 addQuizToCourse={this.addQuizToCourse.bind(this)}
                 addCourseToProfessor={this.addCourseToProfessor.bind(this)}
                 addSectionToCourse={this.addSectionToCourse.bind(this)}
+                addStudentsToSection={this.addStudentsToSection.bind(this)}
               />
             );
         })()}
