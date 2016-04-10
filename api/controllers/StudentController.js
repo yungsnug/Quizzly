@@ -124,14 +124,26 @@ module.exports = {
         // console.log("finished!", students);
         return res.json(students);
       });
+  },
+  getStudentIdsFromEmails: function(req, res) {
+    var data = req.params.all();
+    var studentIds = [];
 
-
+    Promise.each(data.studentEmails, function(studentEmail){
+      return Student.findOne({email: studentEmail})
+      .then(function(student) {
+        if(student != undefined) {
+          studentIds.push(student.id);
+        }
+      });
+    })
+    .then(function() {
+      return res.json(studentIds);
+    });
   }
   // getStudentAnswer: function(req,res) {
   //   console.log("--------------getStudentAnswer");
   //   var data = req.params.all();
   //   var courses = [];
   // }
-
-
 };

@@ -115,7 +115,6 @@ export default class AddCourseBody extends React.Component {
                   onChange={me.handleChange.bind(me, i)}
                   key={i}
                 />
-                <div className="greenButton ml15">Add Students</div>
               </div>
             );
           })}

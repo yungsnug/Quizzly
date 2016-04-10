@@ -40,7 +40,8 @@ module.exports = {
     // Associations
     sections: {
       collection: 'section',
-      via: 'students'
+      via: 'students',
+      unique: true
     },
 
     // Methods
