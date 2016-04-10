@@ -96,55 +96,67 @@ export default class Metrics extends React.Component {
     this.state = {
       course: props.course,
       sections: props.course.sections,
+      students: [],
       quizzes: [],
       questions: [],
       answers: [],
+      
 
       section: {id: -1},
       quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
+      student: {id: -1},
 
       allSections: {id: -1, title: "All"},
       allQuizzes: {id: -1, title: "All"},
       allQuestions: {id: -1, title: "All"},
       allAnswers: {id: -1, title: "All"},
+      allStudents: {id:-1, title: "All"},
 
       isAllQuizzes: true,
       isAllQuestions: true,
-      isAllAnswers: true
+      isAllAnswers: true,
+      isAllStudents: true
 
     }
   }
 
   componentDidMount() {
+    console.log("in componentDidMount");
     this.populateDropdowns(this.props.course);
   }
 
   componentWillReceiveProps(newProps) {
+    console.log("in componentWillReceiveProps");
     this.populateDropdowns(newProps.course);
   }
 
   populateDropdowns(course) {
     console.log("newProps", course);
     if(course.id == -1) return;
+    console.log("course.id: ", course.id);
     var me = this;
     $.when(
       $.post('/section/find', {course: course.id}),
       $.post('/quiz/find', {course: course.id}),
-      $.post('/question/getQuestionsByCourseId', {id: course.id})
-    ).then(function(sections, quizzes, questions) {
+      $.post('/question/getQuestionsByCourseId', {id: course.id}),
+      $.post('/student/getStudentsByCourseId', {id: course.id})
+    ).then(function(sections, quizzes, questions, students) {
       // console.log("sections", sections);
       // console.log("quizzes", quizzes);
-      // console.log("questions", questions);
+      console.log("questions", questions);
       me.setState({
         sections: sections[0],
+        students: students[0],
         quizzes: quizzes[0],
         questions: questions[0],
+        
 
         isAllQuizzes: true,
         isAllQuestions: true,
-        isAllAnswers: true
+        isAllAnswers: true,
+        isAllStudents: true
       });
     });
   }
@@ -173,11 +185,13 @@ export default class Metrics extends React.Component {
     var selected_section = get_selected(this.state.sections, this.state.section.id);
     var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
     var selected_question = get_selected(this.state.questions, this.state.question.id);
+    var selected_student = get_selected(this.state.students, this.state.student.id);
     console.log("selected_quiz: ", selected_quiz);
     
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
     var questions = this.state.questions;
+    var student_id=this.state.student.id;
 
 
     var datas;
@@ -185,6 +199,7 @@ export default class Metrics extends React.Component {
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
     //TODO data for graphs (only where /*Show*/)
+    if (this.state.student.id == -1) {
     if (this.state.question.id == -1) {
       //all questions
       if (this.state.quiz.id == -1) {
@@ -380,6 +395,11 @@ export default class Metrics extends React.Component {
 
 
     }
+  } else {
+    //Fill the section
+    
+
+  }
 
 
     //http://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs to change color
@@ -451,21 +471,26 @@ export default class Metrics extends React.Component {
     var section = this.state.section;
     section.id = event.target.value;
     var me = this;
-    
+    console.log("me.state.course.id: ",me.state.course.id);
     $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
     .then(function(questions) {
+      console.log("questions: ",questions);
       me.setState({
       section: section,
       quiz: {id: -1},
       question: {id: -1},
       answer: {id: -1},
+      // student: {id: -1},
+
 
       questions: questions,
       answers: [],
+      // students: [],
 
       isAllQuizzes: true,
       isAllQuestions: true,
-      isAllAnswers: true
+      isAllAnswers: true,
+      isAllStudents: true
     });
     });
   
@@ -482,13 +507,16 @@ export default class Metrics extends React.Component {
         quiz: quiz,
         question: {id: -1},
         answer: {id: -1},
+        // student: {id: -1},
 
         questions: questions,
         answers: [],
+        // students: [],
 
         isAllQuizzes: false,
         isAllQuestions: true,
-        isAllAnswers: true
+        isAllAnswers: true,
+        isAllStudents: true
       });
     });
   } else {
@@ -498,13 +526,16 @@ export default class Metrics extends React.Component {
         quiz: quiz,
         question: {id: -1},
         answer: {id: -1},
+        // student: {id: -1},
 
         questions: questions,
         answers: [],
+        // students: [],
 
         isAllQuizzes: false,
         isAllQuestions: true,
-        isAllAnswers: true
+        isAllAnswers: true,
+        isAllStudents: true
       });
     });
   }
@@ -522,12 +553,15 @@ export default class Metrics extends React.Component {
       me.setState({
         question: event_target,
         answer: {id: -1},
+        // student: {id: -1},
 
         answers: answers,
+        // students: [],
 
         isAllQuizzes: false,
         isAllQuestions: false,
-        isAllAnswers: true
+        isAllAnswers: true,
+        isAllStudents: true
       });
     });
   }
@@ -541,9 +575,34 @@ export default class Metrics extends React.Component {
 
       isAllQuizzes: false,
       isAllQuestions: false,
-      isAllAnswers: false
+      isAllAnswers: false,
+      isAllStudents: false
     });
   }
+
+  changeStudent(event) {
+    var student = this.state.student;
+    student.id = event.target.value;
+    var event_target = event.target;
+    var me = this;
+    // $.post('/student/getStudentsByCourseId', {question: question.id})
+    // .then(function(answers) {
+      me.setState({
+        // question: event_target,
+        // answer: {id: -1},
+        student: {student},
+
+        // answers: answers,
+        // students: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: false,
+        isAllAnswers: false,
+        isAllStudents: false
+      // });
+    // });
+  });
+}
 
   getMetrics() {
     console.log("getting metrics...");
@@ -598,6 +657,15 @@ export default class Metrics extends React.Component {
             </select>
           </div>
           <div>
+          <div className="small ml10">Students</div>
+            <select value={this.state.student.id} className="dropdown mr10" onChange={this.changeStudent.bind(this)}>
+              <option value={this.state.allStudents.id}>{this.state.allStudents.title}</option>
+              {this.state.students.map(function(student, studentIndex) {
+                return <option key={studentIndex} value={student.id}>{student.email}</option>
+              })}
+            </select>
+          </div>
+          <div>
             <div className="small ml10">Quizzes</div>
             <select value={this.state.quiz.id} className="dropdown mr10" onChange={this.changeQuiz.bind(this)}>
               <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option>
@@ -624,6 +692,9 @@ export default class Metrics extends React.Component {
               })}
             </select>
           </div>
+          
+          
+        
           <button onClick={this.getMetrics.bind(this)}>GET METRICS</button>
         </div>
 
