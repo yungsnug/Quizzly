@@ -303,7 +303,7 @@ export default class Metrics extends React.Component {
 
             var me = this;
             var quizMetric = [];
-            this.createMultiQuestionLabelsAndCounts(this.state.quiz.id)
+            this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id)
             .then(function(questionsMetric){
               console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
               setTimeout(function(){
@@ -320,7 +320,7 @@ export default class Metrics extends React.Component {
         /*Show all answers and number of students who answered question*/
         console.log("question else statement!");
         //Get labels (answers for question)
-         this.createLabelsAndCounts(this.state.section.id, this.state.question.id)
+         this.createLabelsAndCounts(selected_section.id, selected_question.id)
           .then(function(questionMetric){
               console.log("QUESTION METRIC ****************************", questionMetric);
               data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
@@ -408,7 +408,7 @@ createQuizMetricFromQuestionsMetric(questionsMetric){
 }
 
 
-createMultiQuestionLabelsAndCounts(quizId) {
+createMultiQuestionLabelsAndCounts(quizId, sectionId) {
   var me = this;
   var questionsMetric = {
     questionTitles: [],
@@ -424,7 +424,7 @@ createMultiQuestionLabelsAndCounts(quizId) {
     console.log("Before Promise, questions ", questions);
     Promise.each(questions, function(question) {
       if (question.type != "freeResponse") {
-        me.createLabelsAndCounts(me.state.section.id, question.id)
+        me.createLabelsAndCounts(sectionId, question.id)
         .then(function(questionMetric){
             questionsMetric.questionTitles.push(questionMetric.title);
             questionsMetric.barCounts.push(questionMetric.counts);
