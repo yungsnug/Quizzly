@@ -130,6 +130,93 @@ module.exports = {
     });
   },
 
+  askWithSection: function(req, res) {
+    var question_id = req.query.question;
+    var section_id = req.query.section;
+    Section.findOne({id: section_id}).populate('students').exec(function(err, section) {
+
+      var ios_channels = [];
+      var android_channels = [];
+
+      section.students.forEach(function(student) {
+        if(student.deviceType == "ios") {
+          ios_channels.push(student.channelID);
+        }
+        else if(student.deviceType == "android"){
+          android_channels.push(student.channelID);
+        }
+      });
+
+
+      Question.findOne({id:question_id}).exec(function (err, question) {
+        Answer.find({question: question.id}).exec(function(err, answers) {
+
+          var pushInfo = {
+            "audience": {},
+            "notification": {
+               "alert": "Question Available",
+               "android": {
+                 "extra": {
+                   "question": question.text,
+                   "quiz_id": question.quiz,
+                   "quest_id": question.id,
+                   "type": question.type,
+                   "answer0": answers[0].text,
+                   "answer1": answers[1].text,
+                   "time_limit": question.duration
+                 }
+               },
+               "ios": {
+                 "extra": {
+                   "question": question.text,
+                   "quiz_id": question.quiz,
+                   "quest_id": question.id,
+                   "type": question.type,
+                   "answer0": answers[0].text,
+                   "answer1": answers[1].text,
+                   "time_limit": question.duration
+                 }
+               }
+            },
+            "device_types": "all"
+          };
+
+          if(ios_channels.length != 0) {
+            pushInfo.audience.ios_channel = ios_channels;
+          }
+
+          if(android_channels.length != 0) {
+            pushInfo.audience.android_channel = android_channels;
+          }
+
+          if(answers.length > 2) {
+            pushInfo.notification.android.extra.answer2 = answers[2].text;
+            pushInfo.notification.ios.extra.answer2 = answers[2].text;
+          }
+          if(answers.length > 3) {
+            pushInfo.notification.android.extra.answer3 = answers[3].text;
+            pushInfo.notification.ios.extra.answer3 = answers[3].text;
+          }
+
+          urbanAirshipPush.push.send(pushInfo, function (err, data) {
+              if (err) {
+                  // Handle error
+                  console.log(err);
+                  return;
+              }
+              console.log(data);
+              return res.json({
+                success: "Push sent"
+              });
+
+          });
+        });
+      });
+
+
+    });
+  },
+
   answer: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
