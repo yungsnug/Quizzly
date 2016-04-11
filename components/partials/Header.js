@@ -11,6 +11,7 @@ export class Header extends React.Component {
       course: props.course,
       term: props.term,
       sections: props.course.sections,
+      terms: [],
     }
   }
 

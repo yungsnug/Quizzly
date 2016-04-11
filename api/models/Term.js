@@ -16,5 +16,8 @@ module.exports = {
     },
 
     // Methods
+    getFullTerm: function() {
+      return this.season + " " + this.year;
+    }
   }
 };

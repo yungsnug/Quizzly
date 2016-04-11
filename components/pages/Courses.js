@@ -238,7 +238,7 @@ export default class Courses extends React.Component {
             }
           })()}
           {this.state.sections.map(function(section, sectionIndex) {
-            // this is sections, not course!
+            // this is section, not course!
             return (
               <Course
                 section={section}
