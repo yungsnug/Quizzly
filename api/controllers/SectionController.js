@@ -27,5 +27,13 @@ module.exports = {
       }
       res.json(section);
     });
+  },
+  updateStudents: function(req, res) {
+    var data = req.params.all();
+    Section.update({id: data.sectionId}, {students: data.studentIds}).exec(function(err, section) {
+      return Section.findOne({id: data.sectionId}).populate('students').exec(function(err, section) {
+        res.json(section);
+      });
+    })
   }
 };

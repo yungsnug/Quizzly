@@ -397,7 +397,10 @@ export default class Metrics extends React.Component {
     }
   } else {
     //Fill the section
-    
+    // $('#sections_div').selected();
+    // var e= document.getElementById("sections_div");
+    // e.options[]
+
 
   }
 
@@ -475,6 +478,7 @@ export default class Metrics extends React.Component {
     $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
     .then(function(questions) {
       console.log("questions: ",questions);
+      
       me.setState({
       section: section,
       quiz: {id: -1},
@@ -590,6 +594,9 @@ export default class Metrics extends React.Component {
       me.setState({
         // question: event_target,
         // answer: {id: -1},
+        quiz: {id: -1},
+        question: {id: -1},
+        answer: {id: -1},
         student: {student},
 
         // answers: answers,
@@ -648,7 +655,7 @@ export default class Metrics extends React.Component {
       <div id="metrics" className="quizzlyContent">
         <div className="flexHorizontal">
           <div>
-            <div className="small ml10">Sections</div>
+            <div id="sections_div" className="small ml10">Sections</div>
             <select value={this.state.section.id} className="dropdown mr10" onChange={this.changeSection.bind(this)}>
               <option value={this.state.allSections.id}>{this.state.allSections.title}</option>
               {this.state.sections.map(function(section, sectionIndex) {

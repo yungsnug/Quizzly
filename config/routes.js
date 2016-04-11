@@ -67,8 +67,10 @@ module.exports.routes = {
   'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
   'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId',
   'post /student/getStudentCountByAnswerId/:id': 'StudentAnswerController.getStudentCountByAnswerId',
+  'post /student/getStudentIdsFromEmails': 'StudentController.getStudentIdsFromEmails',
 
   'post /section/getSectionByStudentAndCourse': 'SectionController.getSectionByStudentAndCourse',
+  'post /section/updateStudents/:sectionId': 'SectionController.updateStudents',
 
   /***************************************************************************
   *                                                                          *
