@@ -218,7 +218,7 @@ export default class Courses extends React.Component {
   render() {
     return (
       <div>
-        <div id="courses" className="quizzlyContent" onClick={this.getName.bind(this)}>
+        <div id="courses" className="quizzlyContent">
           {(() => {
             if(this.state.course.id > -1) {
               return (
