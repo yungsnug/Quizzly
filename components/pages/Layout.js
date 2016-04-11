@@ -225,6 +225,7 @@ export default class Layout extends React.Component {
 
     switch(this.state.user.type) {
       case 'STUDENT':
+        props.student = this.state.user
         break;
       case 'PROFESSOR':
         props.addCourseToProfessor = me.addCourseToProfessor.bind(me);

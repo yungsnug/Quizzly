@@ -20,11 +20,8 @@ export default class extends React.Component {
 
   render() {
     return (
-      <div className="item relative" onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
-        <span className="pointer">{this.props.studentQuestion.text}</span>
-        <div className="floatR">
-          <span className="small pointer darkGreen">3/36</span>
-        </div>
+      <div className={"item relative" + (this.props.studentAnswer.answer.correct ? " correct" : " wrong")} onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
+        <span className="pointer">{this.props.studentAnswer.question.text}</span>
       </div>
     );
   }

@@ -8,8 +8,19 @@ export default class extends React.Component {
     super(props);
     this.state = {
       title: "Quiz Title",
-      showModal: false
+      showModal: false,
     };
+  }
+
+  calculateCorrectAnswers() {
+    var studentAnswers = this.props.studentQuiz.studentAnswers;
+    var numCorrect = 0;
+    studentAnswers.map(function(studentAnswer) {
+      if(studentAnswer.answer.correct) {
+        numCorrect++;
+      }
+    });
+    return numCorrect;
   }
 
   render() {
@@ -20,18 +31,18 @@ export default class extends React.Component {
             <span className="pointer">{this.props.studentQuiz.title}</span>
             </div>
           <div className="body">
-            {this.props.studentQuiz.questions.map(function(studentQuestion, studentQuestionIndex) {
+            {this.props.studentQuiz.studentAnswers.map(function(studentAnswer, studentAnswerIndex) {
               return (
                 <StudentQuestion
-                  key={studentQuestionIndex}
+                  key={studentAnswerIndex}
                   studentQuizIndex={this.props.studentQuizIndex}
-                  studentQuestionIndex={studentQuestionIndex}
-                  studentQuestion={studentQuestion}
+                  studentAnswerIndex={studentAnswerIndex}
+                  studentAnswer={studentAnswer}
                 />
               );
             }, this)}
           </div>
-          <div className="footerButton">3/36</div>
+          <div className="studentFooterButton">{this.calculateCorrectAnswers() + "/" + this.props.studentQuiz.studentAnswers.length}</div>
         </div>
       </div>
     );

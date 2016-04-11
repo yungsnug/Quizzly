@@ -7,7 +7,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      studentQuizzes: [{title: "", questions: [], course: 0, id: 0}],
+      studentQuizzes: [{title: "", studentAnswers: [], course: 0, id: 0}],
       showModal: false,
       modalInfo: {
         modalType: "ADD_QUIZ",
@@ -19,22 +19,60 @@ export default class extends React.Component {
 
   componentDidMount() {
     console.log("componentDidMount");
+    console.log(this.props);
     this.getQuizzesFromCourseId(this.props.course.id);
   }
 
   componentWillReceiveProps(newProps) {
     console.log("componentWillReceiveProps");
+    console.log(newProps);
     this.getQuizzesFromCourseId(newProps.course.id);
   }
 
   getQuizzesFromCourseId(courseId) {
     var me = this;
-      $.post("/quiz/find", { course: courseId })
-      .then(function(studentQuizzes) {
-        console.log("studentQuizzes", studentQuizzes);
-        if(studentQuizzes == undefined) return; // if there are no courses, then there are no sections
-        me.setState({studentQuizzes: studentQuizzes});
+    // $.post("/quiz/find", { course: courseId })
+    // .then(function(studentQuizzes) {
+    //   console.log("studentQuizzes", studentQuizzes);
+    //   if(studentQuizzes == undefined) return; // if there are no courses, then there are no sections
+    //   me.setState({studentQuizzes: studentQuizzes});
+    // });
+    if(this.props.student == undefined) {
+      return;
+    }
+    var quizIds = [];
+    var studentAnswers = [];
+    $.post('/studentanswer/find', {course: courseId, student: this.props.student.id})
+    .then(function(studentAnswersResponse) {
+      // console.log("studentAnswers", studentAnswers);
+      studentAnswers = studentAnswersResponse;
+      studentAnswers.map(function(studentAnswer) {
+        quizIds.push(studentAnswer.quiz.id);
       });
+      console.log(quizIds);
+
+      quizIds = Utility.removeDuplicates(quizIds);
+      console.log(quizIds);
+      return $.post('/quiz/getQuizzesByQuizIds', {quizIds: quizIds});
+    })
+    .then(function(quizzes) {
+      console.log("quizzes", quizzes);
+      console.log("studentAnswers", studentAnswers);
+      quizzes.map(function(quiz) {
+        quiz.studentAnswers = [];
+        return quiz;
+      });
+
+      studentAnswers.map(function(studentAnswer) {
+        quizzes.map(function(quiz) {
+          if(studentAnswer.quiz.id == quiz.id) {
+            return quiz.studentAnswers.push(studentAnswer);
+          }
+        });
+      });
+      console.log("new quizzes", quizzes);
+      me.setState({studentQuizzes: quizzes});
+    });
   }
 
   render() {
