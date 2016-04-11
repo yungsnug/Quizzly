@@ -3318,25 +3318,27 @@ var AddStudentsBody = function (_React$Component) {
           { className: 'p20' },
           _react2.default.createElement(
             'div',
-            { className: 'flexVertical' },
+            { className: '' },
             _react2.default.createElement(
-              'span',
-              { className: 'mr15', style: { "width": "94px" } },
-              'Students'
+              'div',
+              { className: 'pb10 alignC' },
+              'Add a student\'s email per line in section: ',
+              this.state.section.title
             ),
             _react2.default.createElement('textarea', {
-              className: 'normalInput',
+              className: 'normalInput centerBlock alignC pr20',
               placeholder: 'Student emails...',
               value: this.state.studentEmails,
               onChange: this.handleChange.bind(this),
-              rows: 8
-            }),
-            _react2.default.createElement(
-              'div',
-              { className: 'plusButton ml15', onClick: this.addStudentsToSection.bind(this) },
-              '+'
-            )
+              rows: 10,
+              style: { resize: "vertical", maxWidth: "350px" }
+            })
           )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'footerButton', onClick: this.addStudentsToSection.bind(this), style: { fontWeight: "300" } },
+          'Update Students'
         )
       );
     }
@@ -3427,7 +3429,7 @@ var _class = function (_React$Component) {
             "+"
           ) : _react2.default.createElement(
             "div",
-            { className: "footerButton", onClick: this.props.showStudentsModal.bind(this, this.props.section) },
+            { className: "footerButton", onClick: this.props.showStudentsModal.bind(this, this.props.section), style: { fontWeight: "300 !important" } },
             "Update Students"
           )
         )
@@ -3518,21 +3520,10 @@ var Header = exports.Header = function (_React$Component) {
         { id: 'quizzlyHeader', className: 'lightBlueBackground borderBottom flexVertical', style: { "height": "57px" } },
         _react2.default.createElement(
           'div',
-          { className: 'ml10' },
+          null,
           _react2.default.createElement(
             'select',
-            { value: this.state.course.id, className: 'dropdown mr10', onChange: this.changeCourse.bind(this) },
-            this.props.user.courses.map(function (course, courseIndex) {
-              return _react2.default.createElement(
-                'option',
-                { key: courseIndex, value: course.id },
-                course.title
-              );
-            })
-          ),
-          _react2.default.createElement(
-            'select',
-            { value: this.state.term, className: 'dropdown', onChange: this.changeTerm.bind(this) },
+            { value: this.state.term, className: 'dropdown ml10', onChange: this.changeTerm.bind(this) },
             _react2.default.createElement(
               'option',
               { value: 'Fall 2016' },
@@ -3553,6 +3544,17 @@ var Header = exports.Header = function (_React$Component) {
               { value: 'Fall 2015' },
               'Fall 2015'
             )
+          ),
+          _react2.default.createElement(
+            'select',
+            { value: this.state.course.id, className: 'dropdown ml10', onChange: this.changeCourse.bind(this) },
+            this.props.user.courses.map(function (course, courseIndex) {
+              return _react2.default.createElement(
+                'option',
+                { key: courseIndex, value: course.id },
+                course.title
+              );
+            })
           )
         ),
         _react2.default.createElement(

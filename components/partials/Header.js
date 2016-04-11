@@ -46,17 +46,17 @@ export class Header extends React.Component {
   render() {
     return (
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
-        <div className="ml10">
-          <select value={this.state.course.id} className="dropdown mr10" onChange={this.changeCourse.bind(this)}>
-            {this.props.user.courses.map(function(course, courseIndex) {
-              return <option key={courseIndex} value={course.id}>{course.title}</option>
-            })}
-          </select>
-          <select value={this.state.term} className="dropdown" onChange={this.changeTerm.bind(this)}>
+        <div>
+          <select value={this.state.term} className="dropdown ml10" onChange={this.changeTerm.bind(this)}>
             <option value="Fall 2016">Fall 2016</option>
             <option value="Summer 2015">Summer 2015</option>
             <option value="Spring 2015">Spring 2015</option>
             <option value="Fall 2015">Fall 2015</option>
+          </select>
+          <select value={this.state.course.id} className="dropdown ml10" onChange={this.changeCourse.bind(this)}>
+            {this.props.user.courses.map(function(course, courseIndex) {
+              return <option key={courseIndex} value={course.id}>{course.title}</option>
+            })}
           </select>
         </div>
         <div className="flexVertical" style={{"marginLeft":"auto"}}>
