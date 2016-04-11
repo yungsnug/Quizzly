@@ -46,18 +46,19 @@ export default class AddStudentsBody extends React.Component {
     return (
       <div id="addStudentBody">
         <div className="p20">
-          <div className="flexVertical">
-            <span className="mr15" style={{"width":"94px"}}>Students</span>
+          <div className="">
+            <div className="pb10 alignC">Add a student's email per line in section: {this.state.section.title}</div>
             <textarea
-              className="normalInput"
+              className="normalInput centerBlock alignC pr20"
               placeholder="Student emails..."
               value={this.state.studentEmails}
               onChange={this.handleChange.bind(this)}
-              rows={8}
+              rows={10}
+              style={{resize: "vertical", maxWidth: "350px"}}
             />
-            <div className="plusButton ml15" onClick={this.addStudentsToSection.bind(this)}>+</div>
           </div>
         </div>
+        <div className="footerButton" onClick={this.addStudentsToSection.bind(this)} style={{fontWeight: "300"}}>Update Students</div>
       </div>
     );
   }

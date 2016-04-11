@@ -64,6 +64,8 @@ module.exports.routes = {
 
   'post /question/findByCourseId/:id': 'QuestionController.getQuestionsByCourseId',
 
+  'post /quiz/getQuizzesByQuizIds': 'QuizController.getQuizzesByQuizIds',
+
   'post /student/getStudentsByCourseId/:id': 'StudentController.getStudentsByCourseId',
   'post /student/getStudentsBySectionId/:id': 'StudentController.getStudentsBySectionId',
   'post /student/getStudentCountByAnswerId/:id': 'StudentAnswerController.getStudentCountByAnswerId',
@@ -71,6 +73,8 @@ module.exports.routes = {
 
   'post /section/getSectionByStudentAndCourse': 'SectionController.getSectionByStudentAndCourse',
   'post /section/updateStudents/:sectionId': 'SectionController.updateStudents',
+
+  'post /term/multifind': 'TermController.multifind',
 
   /***************************************************************************
   *                                                                          *

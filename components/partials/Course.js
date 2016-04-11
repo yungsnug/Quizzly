@@ -29,7 +29,7 @@ export default class extends React.Component {
               );
             }, this)}
           </div>
-          {this.props.isCourse ? <div className="footerButton" onClick={this.props.showQuizModal.bind(this)}>+</div> : <div className="footerButton" onClick={this.props.showStudentsModal.bind(this, this.props.section)}>Update Students</div>}
+          {this.props.isCourse ? <div className="footerButton" onClick={this.props.showQuizModal.bind(this)}>+</div> : <div className="footerButton" onClick={this.props.showStudentsModal.bind(this, this.props.section)} style={{fontWeight: "300 !important"}}>Update Students</div>}
         </div>
       </div>
     );

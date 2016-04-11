@@ -122,7 +122,7 @@ function getBarChartValueOptions(){
    animation: true,
    barValueSpacing : 5,
    barDatasetSpacing : 1,
-   tooltipFillColor: "rgba(0,0,0,0.8)",                
+   tooltipFillColor: "rgba(0,0,0,0.8)",
    multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>"
  };
  return options;
@@ -134,7 +134,7 @@ function getBarChartPercentOptions(){
     animation: true,
     barValueSpacing : 5,
     barDatasetSpacing : 1,
-    tooltipFillColor: "rgba(0,0,0,0.8)",                
+    tooltipFillColor: "rgba(0,0,0,0.8)",
     multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>" + "%",
   };
   return options;
@@ -190,26 +190,21 @@ export default class Metrics extends React.Component {
       students: [],
       quizzes: [],
       questions: [],
-      answers: [],
-      
 
       section: {id: -1},
+      student: {id: -1, getFullName: function() {return "Conner Jack"}, firstName: "Jake"},
       quiz: {id: -1},
       question: {id: -1},
-      answer: {id: -1},
-      student: {id: -1},
 
       allSections: {id: -1, title: "All"},
+      allStudents: {id: -1, title: "All"},
       allQuizzes: {id: -1, title: "All"},
       allQuestions: {id: -1, title: "All"},
-      allAnswers: {id: -1, title: "All"},
-      allStudents: {id:-1, title: "All"},
 
-      isAllQuizzes: true,
-      isAllQuestions: true,
-      isAllAnswers: true,
-      isAllStudents: true
-
+      isAllSectionsOptionAvailable: true,
+      isAllStudentsOptionAvailable: true,
+      isAllQuizzesOptionAvailable: true,
+      isAllQuestionsOptionAvailable: true,
     }
   }
 
@@ -230,24 +225,17 @@ export default class Metrics extends React.Component {
     var me = this;
     $.when(
       $.post('/section/find', {course: course.id}),
-      $.post('/quiz/find', {course: course.id}),
-      $.post('/question/getQuestionsByCourseId', {id: course.id}),
-      $.post('/student/getStudentsByCourseId', {id: course.id})
-    ).then(function(sections, quizzes, questions, students) {
+      $.post('/student/getStudentsByCourseId/' + course.id),
+      $.post('/quiz/find', {course: course.id})
+    ).then(function(sections, students, quizzes) {
       // console.log("sections", sections);
+      // console.log("students", students);
       // console.log("quizzes", quizzes);
-      console.log("questions", questions);
       me.setState({
         sections: sections[0],
         students: students[0],
         quizzes: quizzes[0],
-        questions: questions[0],
-        
-
-        isAllQuizzes: true,
-        isAllQuestions: true,
-        isAllAnswers: true,
-        isAllStudents: true
+        questions: [],
       });
     });
   }
@@ -274,7 +262,7 @@ export default class Metrics extends React.Component {
     var selected_question = get_selected(this.state.questions, this.state.question.id);
     var selected_student = get_selected(this.state.students, this.state.student.id);
     console.log("selected_quiz: ", selected_quiz);
-    
+
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
     var questions = this.state.questions;
@@ -382,7 +370,6 @@ export default class Metrics extends React.Component {
               });
           }); 
         });
-
             // var me = this;
             // var quizMetric = [];
             // this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id)
@@ -396,6 +383,7 @@ export default class Metrics extends React.Component {
             //     return res(data);
             //   },1000);  
             // });
+
       }
     } else {
         //Question else
@@ -496,7 +484,7 @@ createQuizMetricFromQuestionsMetric(questionsMetric){
   var answerCount = 1;
   var labelArray = [];
   questionsBarLabels = questionsMetric.barLabels;
- 
+
   for (var i = 0; i < questionsBarLabels.length; i++) {
     if (questionsBarLabels[i].length > answerCount) {
       answerCount = questionsBarLabels[i].length;
@@ -544,7 +532,7 @@ createMultiQuestionLabelsAndCounts(quizId, sectionId) {
     barLabels: [],
     barCounts: [],
     totalResponses: 0,
-    correctResponses: 0, 
+    correctResponses: 0,
     quizTitle: 0,
   };
 
@@ -563,7 +551,7 @@ createMultiQuestionLabelsAndCounts(quizId, sectionId) {
             questionsMetric.quizTitle = questionMetric.quizTitle;
             console.log("%%%%%%%%%%%%%%%%%%% questionsMetric", questionsMetric);
         });
-      } 
+      }
     })
     return questionsMetric;
   });
@@ -587,7 +575,7 @@ createLabelsAndCounts(sectionId, questionId) {
     var numCorrectResponses = 0;
 
     studentAnswers.map(function(studentAnswer) {
-      if (isNaN(barMetrics[studentAnswer.answer.option])) { 
+      if (isNaN(barMetrics[studentAnswer.answer.option])) {
         barMetrics[studentAnswer.answer.option] = parseInt(barMetrics[studentAnswer.answer.option]);
         barMetrics[studentAnswer.answer.option] = 1;
       } else {
@@ -631,35 +619,71 @@ createLabelsAndCounts(sectionId, questionId) {
       });
   }
 
-  
+
   changeSection(event) {
     var section = this.state.section;
     section.id = event.target.value;
     var me = this;
-    console.log("me.state.course.id: ",me.state.course.id);
-    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
-    .then(function(questions) {
-      console.log("questions: ",questions);
-      
-      me.setState({
-      section: section,
-      quiz: {id: -1},
-      question: {id: -1},
-      answer: {id: -1},
-      // student: {id: -1},
+
+    if(section.id != -1) { // specific section
+      $.post('/student/getStudentsBySectionId/' + section.id)
+      .then(function(students) {
+        me.setState({
+          section: section,
+          student: {id: -1},
+
+          students: students,
+
+          isAllSectionsOptionAvailable: true,
+          isAllStudentsOptionAvailable: true,
+        });
+      });
+    } else { // all sections
+      $.when(
+        $.post('/student/getStudentsByCourseId/' + this.state.course.id),
+        $.post('/section/find', {course: this.state.course.id})
+      )
+      .then(function(students, sections) {
+        me.setState({
+          section: {id: -1},
+          student: {id: -1},
+
+          sections: sections[0],
+          students: students[0],
+
+          isAllSectionsOptionAvailable: true,
+          isAllStudentsOptionAvailable: true,
+        });
+      });
+    }
+  }
 
 
-      questions: questions,
-      answers: [],
-      // students: [],
+  changeStudent(event) {
+    var student = this.state.student;
+    student.id = event.target.value;
+    var me = this;
 
-      isAllQuizzes: true,
-      isAllQuestions: true,
-      isAllAnswers: true,
-      isAllStudents: true
-    });
-    });
-  
+    if(student.id != -1) { // specific student
+      $.post('/section/getSectionByStudentAndCourse/', {courseId: this.state.course.id, studentId: student.id})
+      .then(function(section) {
+        me.setState({
+          section: section,
+          student: student,
+
+          sections: [section],
+        });
+      });
+    } else { // all students
+      $.post('/section/find', {course: this.state.course.id})
+      .then(function(sections) {
+        me.setState({
+          student: {id: -1},
+
+          sections: sections,
+        });
+      });
+    }
   }
 
   changeQuiz(event) {
@@ -667,82 +691,30 @@ createLabelsAndCounts(sectionId, questionId) {
     quiz.id = event.target.value;
     var me = this;
     if (quiz.id != -1){
-    $.post('/question/find', {quiz: quiz.id})
-    .then(function(questions) {
+      $.post('/question/find', {quiz: quiz.id})
+      .then(function(questions) {
+        me.setState({
+          quiz: quiz,
+          question: {id: -1},
+
+          questions: questions,
+        });
+      });
+    } else {
       me.setState({
         quiz: quiz,
         question: {id: -1},
-        answer: {id: -1},
-        // student: {id: -1},
 
-        questions: questions,
-        answers: [],
-        // students: [],
-
-        isAllQuizzes: false,
-        isAllQuestions: true,
-        isAllAnswers: true,
-        isAllStudents: true
+        questions: [],
       });
-    });
-  } else {
-    $.post('/question/getQuestionsByCourseId', {id: me.state.course.id})
-    .then(function(questions) {
-      me.setState({
-        quiz: quiz,
-        question: {id: -1},
-        answer: {id: -1},
-        // student: {id: -1},
-
-        questions: questions,
-        answers: [],
-        // students: [],
-
-        isAllQuizzes: false,
-        isAllQuestions: true,
-        isAllAnswers: true,
-        isAllStudents: true
-      });
-    });
-  }
-    console.log("this: ", this);
-    console.log("me: ", me);
+    }
   }
 
   changeQuestion(event) {
     var question = this.state.question;
     question.id = event.target.value;
-    var event_target = event.target;
-    var me = this;
-    $.post('/answer/find', {question: question.id})
-    .then(function(answers) {
-      me.setState({
-        question: event_target,
-        answer: {id: -1},
-        // student: {id: -1},
-
-        answers: answers,
-        // students: [],
-
-        isAllQuizzes: false,
-        isAllQuestions: false,
-        isAllAnswers: true,
-        isAllStudents: true
-      });
-    });
-  }
-
-  changeAnswer(event) {
-    var answer = this.state.answer;
-    answer.id = event.target.value;
-    var me = this;
-    me.setState({
-      answer: answer,
-
-      isAllQuizzes: false,
-      isAllQuestions: false,
-      isAllAnswers: false,
-      isAllStudents: false
+    this.setState({
+      question: question,
     });
   }
 
@@ -812,25 +784,25 @@ createLabelsAndCounts(sectionId, questionId) {
           <div>
             <div id="sections_div" className="small ml10">Sections</div>
             <select value={this.state.section.id} className="dropdown mr10" onChange={this.changeSection.bind(this)}>
-              <option value={this.state.allSections.id}>{this.state.allSections.title}</option>
+              {this.state.isAllSectionsOptionAvailable ? <option value={this.state.allSections.id}>{this.state.allSections.title}</option> : null }
               {this.state.sections.map(function(section, sectionIndex) {
                 return <option key={sectionIndex} value={section.id}>{section.title}</option>
               })}
             </select>
           </div>
           <div>
-          <div className="small ml10">Students</div>
+            <div className="small ml10">Students</div>
             <select value={this.state.student.id} className="dropdown mr10" onChange={this.changeStudent.bind(this)}>
-              <option value={this.state.allStudents.id}>{this.state.allStudents.title}</option>
+              {this.state.isAllStudentsOptionAvailable ? <option value={this.state.allStudents.id}>{this.state.allStudents.title}</option> : null }
               {this.state.students.map(function(student, studentIndex) {
-                return <option key={studentIndex} value={student.id}>{student.email}</option>
+                return <option key={studentIndex} value={student.id}>{student.firstName}</option>
               })}
             </select>
           </div>
           <div>
             <div className="small ml10">Quizzes</div>
             <select value={this.state.quiz.id} className="dropdown mr10" onChange={this.changeQuiz.bind(this)}>
-              <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option>
+              {this.state.isAllQuizzesOptionAvailable ? <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option> : null }
               {this.state.quizzes.map(function(quiz, quizIndex) {
                 return <option key={quizIndex} value={quiz.id}>{quiz.title}</option>
               })}
@@ -839,24 +811,12 @@ createLabelsAndCounts(sectionId, questionId) {
           <div>
             <div className="small ml10">Questions</div>
             <select value={this.state.question.id} className="dropdown mr10" onChange={this.changeQuestion.bind(this)}>
-              <option value={this.state.allQuestions.id}>{this.state.allQuestions.title}</option>
+              {this.state.isAllQuestionsOptionAvailable ? <option value={this.state.allQuestions.id}>{this.state.allQuestions.title}</option> : null }
               {this.state.questions.map(function(question, questionIndex) {
                 return <option key={questionIndex} value={questionIndex+1}>{question.text}</option>
               })}
             </select>
           </div>
-          <div>
-            <div className="small ml10">Answers</div>
-            <select value={this.state.answer.id} className="dropdown mr10" onChange={this.changeAnswer.bind(this)}>
-              <option value={this.state.allAnswers.id}>{this.state.allAnswers.title}</option>
-              {this.state.answers.map(function(answer, answerIndex) {
-                return <option key={answerIndex} value={answer.id}>{answer.text}</option>
-              })}
-            </select>
-          </div>
-          
-          
-        
           <button onClick={this.getMetrics.bind(this)}>GET METRICS</button>
         </div>
 

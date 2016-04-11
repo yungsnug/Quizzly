@@ -16,6 +16,13 @@ module.exports = {
     });
   },
 
+  getQuizzesByQuizIds: function(req, res) {
+    var data = req.params.all();
+    Quiz.find({id: data.quizIds}).exec(function(err, quizzes) {
+      res.json(quizzes);
+    });
+  },
+
   getQuizInfo: function(req, res) {
     var data = req.params.all();
     var response = [];

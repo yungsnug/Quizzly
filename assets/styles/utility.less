@@ -83,6 +83,7 @@ a {
 
 .lightGreenBackground { background-color: @lightGreen !important; }
 .lightBlueBackground { background-color: @lightBlue; }
+.lightRedBackground { background-color: @lightRed; }
 .whiteBackground { background-color: @white; }
 .lightGrayBackground { background-color: @lightGray; }
 .lightestGrayBackground { background-color: @lightestGray; }
@@ -186,3 +187,17 @@ a {
 
 .opacity40 { opacity: 0.4; }
 .opacity50 { opacity: 0.5; }
+
+.correct {
+  background-color: @lightGreen;
+  &:hover {
+    background-color: darken(@lightGreen, 4%) !important;
+  }
+}
+
+.wrong {
+  background-color: @lightRed;
+  &:hover {
+    background-color: darken(@lightRed, 1%) !important;
+  }
+}

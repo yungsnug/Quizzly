@@ -11,27 +11,39 @@ export class Header extends React.Component {
       course: props.course,
       term: props.term,
       sections: props.course.sections,
+      terms: props.terms,
     }
+  }
+
+  componentDidMount() {
+    var me = this;
+    this.setState({
+      term: me.props.term,
+      terms: me.props.terms,
+      course: me.props.course,
+      courses: me.props.courses,
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    var me = this;
+    this.setState({
+      term: nextProps.term,
+      terms: nextProps.terms,
+      course: nextProps.course,
+      courses: nextProps.courses,
+    });
   }
 
   changeCourse(event) {
     this.props.changeCourse(event.target.value);
-    var course = this.state.course;
-    course.id = event.target.value;
-    this.setState({
-      course: course
-    });
   }
 
   changeTerm(event) {
     this.props.changeTerm(event.target.value);
-    this.setState({
-      term: event.target.value
-    });
   }
 
   handleLogout() {
-    console.log("trying to logout");
     $.post("/logout")
     .then(function() {
       console.log("user successfully logged out");
@@ -45,17 +57,18 @@ export class Header extends React.Component {
   render() {
     return (
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
-        <div className="ml10">
-          <select value={this.state.course.id} className="dropdown mr10" onChange={this.changeCourse.bind(this)}>
-            {this.props.user.courses.map(function(course, courseIndex) {
-              return <option key={courseIndex} value={course.id}>{course.title}</option>
+        <div>
+          <select value={this.state.term.id} className="dropdown ml10" onChange={this.changeTerm.bind(this)}>
+            {this.props.terms.map(function(term, termIndex) {
+              return <option key={termIndex} value={term.id}>{term.season.season + " " + term.year.year}</option>
             })}
           </select>
-          <select value={this.state.term} className="dropdown" onChange={this.changeTerm.bind(this)}>
-            <option value="Fall 2016">Fall 2016</option>
-            <option value="Summer 2015">Summer 2015</option>
-            <option value="Spring 2015">Spring 2015</option>
-            <option value="Fall 2015">Fall 2015</option>
+          <select value={this.state.course.id} className="dropdown ml10" onChange={this.changeCourse.bind(this)}>
+            {this.props.user.courses.map(function(course, courseIndex) {
+              if(course.term == this.state.term.id) {
+                return <option key={courseIndex} value={course.id}>{course.title}</option>
+              }
+            }, this)}
           </select>
         </div>
         <div className="flexVertical" style={{"marginLeft":"auto"}}>
