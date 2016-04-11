@@ -209,16 +209,19 @@ export default class Metrics extends React.Component {
   }
 
   componentDidMount() {
+    console.log("in componentDidMount");
     this.populateDropdowns(this.props.course);
   }
 
   componentWillReceiveProps(newProps) {
+    console.log("in componentWillReceiveProps");
     this.populateDropdowns(newProps.course);
   }
 
   populateDropdowns(course) {
     console.log("newProps", course);
     if(course.id == -1) return;
+    console.log("course.id: ", course.id);
     var me = this;
     $.when(
       $.post('/section/find', {course: course.id}),
@@ -257,11 +260,13 @@ export default class Metrics extends React.Component {
     var selected_section = get_selected(this.state.sections, this.state.section.id);
     var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
     var selected_question = get_selected(this.state.questions, this.state.question.id);
+    var selected_student = get_selected(this.state.students, this.state.student.id);
     console.log("selected_quiz: ", selected_quiz);
 
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
     var questions = this.state.questions;
+    var student_id=this.state.student.id;
 
 
     var datas;
@@ -269,6 +274,7 @@ export default class Metrics extends React.Component {
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
     //TODO data for graphs (only where /*Show*/)
+    if (this.state.student.id == -1) {
     if (this.state.question.id == -1) {
       //all questions
       if (this.state.quiz.id == -1) {
@@ -300,7 +306,7 @@ export default class Metrics extends React.Component {
 
             var me = this;
             var quizMetric = [];
-            this.createMultiQuestionLabelsAndCounts(this.state.quiz.id)
+            this.createMultiQuestionLabelsAndCounts(selected_quiz.id, selected_section.id)
             .then(function(questionsMetric){
               console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
               setTimeout(function(){
@@ -317,7 +323,7 @@ export default class Metrics extends React.Component {
         /*Show all answers and number of students who answered question*/
         console.log("question else statement!");
         //Get labels (answers for question)
-         this.createLabelsAndCounts(this.state.section.id, this.state.question.id)
+         this.createLabelsAndCounts(selected_section.id, selected_question.id)
           .then(function(questionMetric){
               console.log("QUESTION METRIC ****************************", questionMetric);
               data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
@@ -325,7 +331,18 @@ export default class Metrics extends React.Component {
               return res(data);
           });
     }
+
+  } else {
+    //Fill the section
+    // $('#sections_div').selected();
+    // var e= document.getElementById("sections_div");
+    // e.options[]
+
+
+  }
+
 }
+
 
 createAllQuizzesMetric(selected_quizzes){
   var me = this;
@@ -405,7 +422,7 @@ createQuizMetricFromQuestionsMetric(questionsMetric){
 }
 
 
-createMultiQuestionLabelsAndCounts(quizId) {
+createMultiQuestionLabelsAndCounts(quizId , sectionId) {
   var me = this;
   var questionsMetric = {
     questionTitles: [],
@@ -421,7 +438,7 @@ createMultiQuestionLabelsAndCounts(quizId) {
     console.log("Before Promise, questions ", questions);
     Promise.each(questions, function(question) {
       if (question.type != "freeResponse") {
-        me.createLabelsAndCounts(me.state.section.id, question.id)
+        me.createLabelsAndCounts(sectionId, question.id)
         .then(function(questionMetric){
             questionsMetric.questionTitles.push(questionMetric.title);
             questionsMetric.barCounts.push(questionMetric.counts);
@@ -593,11 +610,37 @@ createLabelsAndCounts(sectionId, questionId) {
   changeQuestion(event) {
     var question = this.state.question;
     question.id = event.target.value;
-
     this.setState({
       question: question,
     });
   }
+
+  changeStudent(event) {
+    var student = this.state.student;
+    student.id = event.target.value;
+    var event_target = event.target;
+    var me = this;
+    // $.post('/student/getStudentsByCourseId', {question: question.id})
+    // .then(function(answers) {
+      me.setState({
+        // question: event_target,
+        // answer: {id: -1},
+        quiz: {id: -1},
+        question: {id: -1},
+        answer: {id: -1},
+        student: {student},
+
+        // answers: answers,
+        // students: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: false,
+        isAllAnswers: false,
+        isAllStudents: false
+      // });
+    // });
+  });
+}
 
   getMetrics() {
     console.log("getting metrics...");
@@ -636,7 +679,7 @@ createLabelsAndCounts(sectionId, questionId) {
       <div id="metrics" className="quizzlyContent">
         <div className="flexHorizontal">
           <div>
-            <div className="small ml10">Sections</div>
+            <div id="sections_div" className="small ml10">Sections</div>
             <select value={this.state.section.id} className="dropdown mr10" onChange={this.changeSection.bind(this)}>
               {this.state.isAllSectionsOptionAvailable ? <option value={this.state.allSections.id}>{this.state.allSections.title}</option> : null }
               {this.state.sections.map(function(section, sectionIndex) {
