@@ -21,7 +21,12 @@ export default class Layout extends React.Component {
         quizzes: [],
         sections: []
       },
-      term: "Summer 2015",
+      term: {
+        id: -1,
+        season: {season: "Oalcoa"},
+        year: {year: "1398"},
+      },
+      terms: [],
       user: {
         courses: [],
         email: "",
@@ -68,6 +73,7 @@ export default class Layout extends React.Component {
             console.log('courses', courses);
             if(courses[0] != undefined) {
               me.getCourseById(courses[0].id);
+              me.getTermsFromCourses(courses);
             }
             user.courses = courses;
             me.setState({user: user});
@@ -76,10 +82,32 @@ export default class Layout extends React.Component {
         case 'PROFESSOR':
           if(user.courses[0] != undefined) {
             me.getCourseById(user.courses[0].id);
+            me.getTermsFromCourses(user.courses);
           }
           me.setState({user: user});
           break;
       }
+    });
+  }
+
+  getTermsFromCourses(courses) {
+    var me = this;
+    var termIds = [];
+    courses.map(function(course) {
+      termIds.push(course.term);
+    });
+
+    termIds = Utility.removeDuplicates(termIds);
+    console.log(">>>>>>>>>>courses", courses);
+    console.log(">>>>>>>>>>termIds", termIds);
+    return $.post('/term/multifind', {termIds: termIds})
+    .then(function(terms) {
+      console.log("terms", terms);
+      me.setState({
+        term: terms[0],
+        terms: terms
+      });
+      return terms;
     });
   }
 
@@ -111,20 +139,36 @@ export default class Layout extends React.Component {
   }
 
   getCourseById(courseId) {
-    console.log('changeCourseId', courseId);
     var me = this;
 
-    $.post('/course/find/' + courseId)
+    return $.post('/course/find/' + courseId)
     .then(function(course) {
       if(course == undefined) return; // if there are no courses, then there are no sections
       me.setState({course: course});
     });
   }
 
-  changeTerm(term) {
-    console.log("changeTerm", term);
-    this.setState({
-      term: term
+  changeTerm(termId) {
+    var me = this;
+    this.getTermByTermId(termId)
+    .then(function() {
+      var courseId = -1;
+      me.state.user.courses.map(function(course) {
+        if(courseId == -1 && course.term == termId) {
+          courseId = course.id;
+        }
+      });
+      if(courseId == -1) return;
+      me.changeCourse(courseId);
+    });
+  }
+
+  getTermByTermId(termId) {
+    var me = this;
+    return $.post('/term/find/' + termId)
+    .then(function(term) {
+      if(term == undefined) return; // if there are no courses, then there are no sections
+      me.setState({term: term});
     });
   }
 
@@ -138,7 +182,7 @@ export default class Layout extends React.Component {
       }
     }
     console.log("user", this.state.user);
-    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections})
+    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id})
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
@@ -242,6 +286,7 @@ export default class Layout extends React.Component {
         <Header
           course={this.state.course}
           term={this.state.term}
+          terms={this.state.terms}
           user={this.state.user}
           changeCourse={this.changeCourse.bind(this)}
           changeTerm={this.changeTerm.bind(this)}

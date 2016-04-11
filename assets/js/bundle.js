@@ -394,7 +394,7 @@ var Courses = function (_React$Component) {
     value: function showCourseModal() {
       var modalInfo = this.state.modalInfo;
       modalInfo.modalType = "ADD_COURSE";
-      modalInfo.title = "Add Course";
+      modalInfo.title = "Add Course or Section";
       this.setState({
         showModal: true,
         showMetricModal: false,
@@ -463,7 +463,9 @@ var Courses = function (_React$Component) {
     key: 'addSectionToCourse',
     value: function addSectionToCourse(section) {
       var me = this;
-      //TODO: add student array to section
+      if (section.title == '') {
+        return;
+      }
       $.post('/section/create/', { title: section.title, course: me.state.course.id }).then(function (section) {
         console.log("created section", section);
         var sections = me.state.sections;
@@ -1018,7 +1020,12 @@ var Layout = function (_React$Component) {
         quizzes: [],
         sections: []
       },
-      term: "Summer 2015",
+      term: {
+        id: -1,
+        season: { season: "Oalcoa" },
+        year: { year: "1398" }
+      },
+      terms: [],
       user: {
         courses: [],
         email: "",
@@ -1064,6 +1071,7 @@ var Layout = function (_React$Component) {
               console.log('courses', courses);
               if (courses[0] != undefined) {
                 me.getCourseById(courses[0].id);
+                me.getTermsFromCourses(courses);
               }
               user.courses = courses;
               me.setState({ user: user });
@@ -1072,10 +1080,32 @@ var Layout = function (_React$Component) {
           case 'PROFESSOR':
             if (user.courses[0] != undefined) {
               me.getCourseById(user.courses[0].id);
+              me.getTermsFromCourses(user.courses);
             }
             me.setState({ user: user });
             break;
         }
+      });
+    }
+  }, {
+    key: 'getTermsFromCourses',
+    value: function getTermsFromCourses(courses) {
+      var me = this;
+      var termIds = [];
+      courses.map(function (course) {
+        termIds.push(course.term);
+      });
+
+      termIds = Utility.removeDuplicates(termIds);
+      console.log(">>>>>>>>>>courses", courses);
+      console.log(">>>>>>>>>>termIds", termIds);
+      return $.post('/term/multifind', { termIds: termIds }).then(function (terms) {
+        console.log("terms", terms);
+        me.setState({
+          term: terms[0],
+          terms: terms
+        });
+        return terms;
       });
     }
   }, {
@@ -1112,20 +1142,35 @@ var Layout = function (_React$Component) {
   }, {
     key: 'getCourseById',
     value: function getCourseById(courseId) {
-      console.log('changeCourseId', courseId);
       var me = this;
 
-      $.post('/course/find/' + courseId).then(function (course) {
+      return $.post('/course/find/' + courseId).then(function (course) {
         if (course == undefined) return; // if there are no courses, then there are no sections
         me.setState({ course: course });
       });
     }
   }, {
     key: 'changeTerm',
-    value: function changeTerm(term) {
-      console.log("changeTerm", term);
-      this.setState({
-        term: term
+    value: function changeTerm(termId) {
+      var me = this;
+      this.getTermByTermId(termId).then(function () {
+        var courseId = -1;
+        me.state.user.courses.map(function (course) {
+          if (courseId == -1 && course.term == termId) {
+            courseId = course.id;
+          }
+        });
+        if (courseId == -1) return;
+        me.changeCourse(courseId);
+      });
+    }
+  }, {
+    key: 'getTermByTermId',
+    value: function getTermByTermId(termId) {
+      var me = this;
+      return $.post('/term/find/' + termId).then(function (term) {
+        if (term == undefined) return; // if there are no courses, then there are no sections
+        me.setState({ term: term });
       });
     }
   }, {
@@ -1141,7 +1186,7 @@ var Layout = function (_React$Component) {
         }
       }
       console.log("user", this.state.user);
-      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections }).then(function (course) {
+      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id }).then(function (course) {
         console.log("created course", course);
         var user = me.state.user;
         course.sections = [];
@@ -1249,6 +1294,7 @@ var Layout = function (_React$Component) {
         _react2.default.createElement(_Header.Header, {
           course: this.state.course,
           term: this.state.term,
+          terms: this.state.terms,
           user: this.state.user,
           changeCourse: this.changeCourse.bind(this),
           changeTerm: this.changeTerm.bind(this),
@@ -3469,33 +3515,46 @@ var Header = exports.Header = function (_React$Component) {
       course: props.course,
       term: props.term,
       sections: props.course.sections,
-      terms: []
+      terms: props.terms
     };
     return _this;
   }
 
   _createClass(Header, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var me = this;
+      this.setState({
+        term: me.props.term,
+        terms: me.props.terms,
+        course: me.props.course,
+        courses: me.props.courses
+      });
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var me = this;
+      this.setState({
+        term: nextProps.term,
+        terms: nextProps.terms,
+        course: nextProps.course,
+        courses: nextProps.courses
+      });
+    }
+  }, {
     key: 'changeCourse',
     value: function changeCourse(event) {
       this.props.changeCourse(event.target.value);
-      var course = this.state.course;
-      course.id = event.target.value;
-      this.setState({
-        course: course
-      });
     }
   }, {
     key: 'changeTerm',
     value: function changeTerm(event) {
       this.props.changeTerm(event.target.value);
-      this.setState({
-        term: event.target.value
-      });
     }
   }, {
     key: 'handleLogout',
     value: function handleLogout() {
-      console.log("trying to logout");
       $.post("/logout").then(function () {
         console.log("user successfully logged out");
         _reactRouter.browserHistory.push('/entrance');
@@ -3514,38 +3573,27 @@ var Header = exports.Header = function (_React$Component) {
           null,
           _react2.default.createElement(
             'select',
-            { value: this.state.term, className: 'dropdown ml10', onChange: this.changeTerm.bind(this) },
-            _react2.default.createElement(
-              'option',
-              { value: 'Fall 2016' },
-              'Fall 2016'
-            ),
-            _react2.default.createElement(
-              'option',
-              { value: 'Summer 2015' },
-              'Summer 2015'
-            ),
-            _react2.default.createElement(
-              'option',
-              { value: 'Spring 2015' },
-              'Spring 2015'
-            ),
-            _react2.default.createElement(
-              'option',
-              { value: 'Fall 2015' },
-              'Fall 2015'
-            )
+            { value: this.state.term.id, className: 'dropdown ml10', onChange: this.changeTerm.bind(this) },
+            this.props.terms.map(function (term, termIndex) {
+              return _react2.default.createElement(
+                'option',
+                { key: termIndex, value: term.id },
+                term.season.season + " " + term.year.year
+              );
+            })
           ),
           _react2.default.createElement(
             'select',
             { value: this.state.course.id, className: 'dropdown ml10', onChange: this.changeCourse.bind(this) },
             this.props.user.courses.map(function (course, courseIndex) {
-              return _react2.default.createElement(
-                'option',
-                { key: courseIndex, value: course.id },
-                course.title
-              );
-            })
+              if (course.term == this.state.term.id) {
+                return _react2.default.createElement(
+                  'option',
+                  { key: courseIndex, value: course.id },
+                  course.title
+                );
+              }
+            }, this)
           )
         ),
         _react2.default.createElement(

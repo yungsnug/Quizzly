@@ -74,6 +74,8 @@ module.exports.routes = {
   'post /section/getSectionByStudentAndCourse': 'SectionController.getSectionByStudentAndCourse',
   'post /section/updateStudents/:sectionId': 'SectionController.updateStudents',
 
+  'post /term/multifind': 'TermController.multifind',
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

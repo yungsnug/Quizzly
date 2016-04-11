@@ -70,7 +70,7 @@ export default class Courses extends React.Component {
   showCourseModal() {
     var modalInfo = this.state.modalInfo;
     modalInfo.modalType = "ADD_COURSE";
-    modalInfo.title = "Add Course";
+    modalInfo.title = "Add Course or Section";
     this.setState({
       showModal: true,
       showMetricModal: false,
@@ -138,7 +138,9 @@ export default class Courses extends React.Component {
 
   addSectionToCourse(section) {
     var me = this;
-    //TODO: add student array to section
+    if(section.title == '') {
+      return;
+    }
     $.post('/section/create/', { title: section.title, course: me.state.course.id })
     .then(function(section) {
       console.log("created section", section);

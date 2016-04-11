@@ -14,7 +14,9 @@ module.exports = {
     professor: {
       model: 'professor'
     },
-
+    term: {
+      model: 'term'
+    },
     // Associations
     quizzes: {
       collection: 'quiz',
@@ -23,7 +25,7 @@ module.exports = {
     sections: {
       collection: 'section',
       via: 'course'
-    }
+    },
 
     // Methods
   }
