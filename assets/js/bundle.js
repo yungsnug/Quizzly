@@ -8650,6 +8650,7 @@ var Metrics = function (_React$Component) {
     _this.state = {
       course: props.course,
       sections: props.course.sections,
+      students: [],
       quizzes: [],
       questions: [],
       answers: [],
@@ -8658,15 +8659,18 @@ var Metrics = function (_React$Component) {
       quiz: { id: -1 },
       question: { id: -1 },
       answer: { id: -1 },
+      student: { id: -1 },
 
       allSections: { id: -1, title: "All" },
       allQuizzes: { id: -1, title: "All" },
       allQuestions: { id: -1, title: "All" },
       allAnswers: { id: -1, title: "All" },
+      allStudents: { id: -1, title: "All" },
 
       isAllQuizzes: true,
       isAllQuestions: true,
-      isAllAnswers: true
+      isAllAnswers: true,
+      isAllStudents: true
 
     };
     return _this;
@@ -8675,11 +8679,13 @@ var Metrics = function (_React$Component) {
   _createClass(Metrics, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      console.log("in componentDidMount");
       this.populateDropdowns(this.props.course);
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
+      console.log("in componentWillReceiveProps");
       this.populateDropdowns(newProps.course);
     }
   }, {
@@ -8687,19 +8693,22 @@ var Metrics = function (_React$Component) {
     value: function populateDropdowns(course) {
       console.log("newProps", course);
       if (course.id == -1) return;
+      console.log("course.id: ", course.id);
       var me = this;
-      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id }), $.post('/question/getQuestionsByCourseId', { id: course.id })).then(function (sections, quizzes, questions) {
+      $.when($.post('/section/find', { course: course.id }), $.post('/quiz/find', { course: course.id }), $.post('/question/getQuestionsByCourseId', { id: course.id }), $.post('/student/getStudentsByCourseId', { id: course.id })).then(function (sections, quizzes, questions, students) {
         // console.log("sections", sections);
         // console.log("quizzes", quizzes);
-        // console.log("questions", questions);
+        console.log("questions", questions);
         me.setState({
           sections: sections[0],
+          students: students[0],
           quizzes: quizzes[0],
           questions: questions[0],
 
           isAllQuizzes: true,
           isAllQuestions: true,
-          isAllAnswers: true
+          isAllAnswers: true,
+          isAllStudents: true
         });
       });
     }
@@ -8724,68 +8733,225 @@ var Metrics = function (_React$Component) {
       var selected_section = get_selected(this.state.sections, this.state.section.id);
       var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
       var selected_question = get_selected(this.state.questions, this.state.question.id);
+      var selected_student = get_selected(this.state.students, this.state.student.id);
       console.log("selected_quiz: ", selected_quiz);
 
       var quizzes_id = this.state.quiz.id;
       var section_id = this.state.section.id;
       var questions = this.state.questions;
+      var student_id = this.state.student.id;
 
       var datas;
       //Logic:
       //Bottom up approach (if question selected then quizzes and section already taken into account).
       //Likewise, if quiz selected the section is already taken into account
       //TODO data for graphs (only where /*Show*/)
-      if (this.state.question.id == -1) {
-        //all questions
-        if (this.state.quiz.id == -1) {
-          //all quizzes
-          if (this.state.section.id == -1) {
-            //all sections
-            /*Show percent correct of each section*/
-            //Labels will be sections
-            console.log("section if statement!");
-            //console.log("SELECTED COURSE", selected_course);
+      if (this.state.student.id == -1) {
+        if (this.state.question.id == -1) {
+          //all questions
+          if (this.state.quiz.id == -1) {
+            //all quizzes
+            if (this.state.section.id == -1) {
+              //all sections
+              /*Show percent correct of each section*/
+              //Labels will be sections
+              console.log("section if statement!");
+              //console.log("SELECTED COURSE", selected_course);
+            } else {
+                //section else
+                /*Show percent correct of each quiz*/
+                //Labels will be ALL quizzes
+                console.log("section else statement!");
+                console.log("SELECTED_QUIZ", selected_quiz);
+                // this.createAllQuizzesMetric(selected_quiz)
+                // .then(function(quizzesMet){
+                //   console.log("quizzes met HEREE:", quizzesMetric);
+                // });
+              }
           } else {
-              //section else
-              /*Show percent correct of each quiz*/
-              //Labels will be ALL quizzes
-              console.log("section else statement!");
-              console.log("SELECTED_QUIZ", selected_quiz);
-              // this.createAllQuizzesMetric(selected_quiz)
-              // .then(function(quizzesMet){
-              //   console.log("quizzes met HEREE:", quizzesMetric);
+              //Quiz else
+              /*Show percent correct of each question*/
+              //Labels will be questions
+              console.log("quiz else statement!");
+              var countsTotal = [];
+              var labelsTotal = [];
+              var count_i = 0;
+              var counter = 0;
+              var questions_length = questions.length;
+              var data = [];
+              Promise.each(questions, function (question) {
+                count_i++;
+
+                me.getAnswers(question, function (answers) {
+                  console.log("answers-outside: ", answers);
+
+                  var counts = [];
+                  var data = {};
+                  var counts_i = 0;
+                  Promise.each(answers, function (answer) {
+                    return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
+                      // if (counts_i==0){
+                      //   countsTotal.push(0);
+                      // }
+                      counts.push(count);
+
+                      counts_i++;
+                      // if(counts_i==answers.length) {
+                      //   countsTotal.push(0);
+                      //   counts_i =0;
+                      // }
+                    });
+                  }).then(function () {
+                    console.log("counts3: ", counts);
+                    console.log("answers_beforedata: ", answers);
+
+                    var key = "data";
+                    var obj = {
+                      label: "My First dataset",
+                      fillColor: "rgba(220,220,220,0.5)",
+                      strokeColor: "rgba(220,220,220,0.8)",
+                      highlightFill: "rgba(220,220,220,0.75)",
+                      highlightStroke: "rgba(220,220,220,1)"
+
+                    };
+                    obj[key] = counts;
+                    var datasets = [];
+                    datasets.push(obj);
+                    return datasets;
+                  }).then(function (datasets) {
+
+                    var labelsTemp = [];
+                    var countsTemp = [];
+                    for (var i in labelsTotal) {
+                      labelsTemp.push(labelsTotal[i]);
+                      countsTemp.push(countsTotal[i]);
+                    }
+                    labelsTotal = [];
+                    countsTotal = [];
+                    var labelArray = [];
+
+                    for (var i in answers) {
+                      // if (i_counts == 0) {
+                      //   labelsTotal.push("Q"+(counter+1));
+                      // }
+                      labelArray.push(answers[i].option);
+                      labelsTotal.push(answers[i].option);
+                      countsTotal.push(counts[i]);
+
+                      // if (i_counts == answers.length){
+                      //   counter++;
+                      //   labelsTotal.push(" ");
+                      //   i_counts = 0;
+                      // }
+                    }
+
+                    console.log("labelsTotal: ", labelsTotal);
+                    console.log("countsTotal: ", countsTotal);
+                    for (var i in labelsTemp) {
+                      labelsTotal.push(labelsTemp[i]);
+                      countsTotal.push(countsTemp[i]);
+                    }
+
+                    // var chartData = {
+                    //     labels : mainLabels,
+                    //     datasets : getBarChartDataSets(barLabels, dataArrays),
+                    //   };
+                    // return chartData;
+                    console.log("counter: ", counter);
+                    console.log("count_i: ", count_i);
+                    counter++;
+                    if (counter == questions_length) {
+                      var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
+                      data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
+
+                      console.log("data: ", data);
+                      return res(data);
+                    }
+                  });
+                });
+              });
+
+              // var me = this;
+              // var quizMetric = [];
+              // this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id)
+              // .then(function(questionsMetric){
+              //   console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
+              //   setTimeout(function(){
+              //     quizMetric = me.createQuizMetricFromQuestionsMetric(questionsMetric);
+              //     console.log("QUIZ METRIC AFTERRRRRRRRRRRRRRRRRR", quizMetric);
+              //     data = getBarChartData(quizMetric.questionTitles, quizMetric.barLabels, quizMetric.barCounts);
+              //     console.log("data: ", data);
+              //     return res(data);
+              //   },1000); 
               // });
             }
         } else {
-            //Quiz else
-            /*Show percent correct of each question*/
-            //Labels will be questions
-            console.log("quiz else statement!");
+            //Question else
+            /*Show all answers and number of students who answered question*/
+            // console.log("question else statement!");
+            // //Get labels (answers for question)
+            //  this.createLabelsAndCounts(selected_section.id, selected_question.id)
+            //   .then(function(questionMetric){
+            //       console.log("QUESTION METRIC ****************************", questionMetric);
+            //       data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
+            //       console.log("DATA ", data);
+            //       return res(data);
+            //   });
+            //Question else
+            /*Show all answers and number of students who answered question*/
+            //Labels will be answers (put correct bar as green)
+            console.log("question else statement!");
+            //Get labels (answers for question)
 
-            var me = this;
-            var quizMetric = [];
-            this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id).then(function (questionsMetric) {
-              console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
-              setTimeout(function () {
-                quizMetric = me.createQuizMetricFromQuestionsMetric(questionsMetric);
-                console.log("QUIZ METRIC AFTERRRRRRRRRRRRRRRRRR", quizMetric);
-                data = getBarChartData(quizMetric.questionTitles, quizMetric.barLabels, quizMetric.barCounts);
+            var answer_store = [];
+            this.getAnswers(selected_question, function (answers) {
+              console.log("answers-outside: ", answers);
+              answer_store = answers;
+              var counts = [];
+              var data = {};
+              Promise.each(answers, function (answer) {
+                return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
+                  counts.push(count);
+                });
+              }).then(function () {
+                console.log("counts3: ", counts);
+                console.log("answers_beforedata: ", answers);
+
+                //   var key = "data";
+                //   var obj = {
+                //               label: "My First dataset",
+                //               fillColor: "rgba(220,220,220,0.5)",
+                //               strokeColor: "rgba(220,220,220,0.8)",
+                //               highlightFill: "rgba(220,220,220,0.75)",
+                //               highlightStroke: "rgba(220,220,220,1)"
+
+                //               };
+                //   obj[key] = counts;
+                //   var datasets = [];
+                //   datasets.push(obj);
+                //   return datasets;
+                // }).then(function(datasets){
+                var labelArray = [];
+                for (var i in answers) {
+                  labelArray.push(answers[i].option);
+                }
+
+                var questionName = selected_question.text; /* GET NAME OF QUESTION */
+                data = getSingleItemBarChartData(questionName, labelArray, counts);
+
                 console.log("data: ", data);
+                return data;
+              }).then(function (data) {
                 return res(data);
-              }, 1000);
+              });
             });
           }
       } else {
-        //Question else
-        /*Show all answers and number of students who answered question*/
-        console.log("question else statement!");
-        //Get labels (answers for question)
-        this.createLabelsAndCounts(selected_section.id, selected_question.id).then(function (questionMetric) {
-          console.log("QUESTION METRIC ****************************", questionMetric);
-          data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
-          console.log("DATA ", data);
-          return res(data);
-        });
+        //Fill the section
+        // $('#sections_div').selected();
+        // var e= document.getElementById("sections_div");
+        // e.options[]
+
       }
     }
   }, {
@@ -8962,20 +9128,25 @@ var Metrics = function (_React$Component) {
       var section = this.state.section;
       section.id = event.target.value;
       var me = this;
-
+      console.log("me.state.course.id: ", me.state.course.id);
       $.post('/question/getQuestionsByCourseId', { id: me.state.course.id }).then(function (questions) {
+        console.log("questions: ", questions);
+
         me.setState({
           section: section,
           quiz: { id: -1 },
           question: { id: -1 },
           answer: { id: -1 },
+          // student: {id: -1},
 
           questions: questions,
           answers: [],
+          // students: [],
 
           isAllQuizzes: true,
           isAllQuestions: true,
-          isAllAnswers: true
+          isAllAnswers: true,
+          isAllStudents: true
         });
       });
     }
@@ -8991,13 +9162,16 @@ var Metrics = function (_React$Component) {
             quiz: quiz,
             question: { id: -1 },
             answer: { id: -1 },
+            // student: {id: -1},
 
             questions: questions,
             answers: [],
+            // students: [],
 
             isAllQuizzes: false,
             isAllQuestions: true,
-            isAllAnswers: true
+            isAllAnswers: true,
+            isAllStudents: true
           });
         });
       } else {
@@ -9006,13 +9180,16 @@ var Metrics = function (_React$Component) {
             quiz: quiz,
             question: { id: -1 },
             answer: { id: -1 },
+            // student: {id: -1},
 
             questions: questions,
             answers: [],
+            // students: [],
 
             isAllQuizzes: false,
             isAllQuestions: true,
-            isAllAnswers: true
+            isAllAnswers: true,
+            isAllStudents: true
           });
         });
       }
@@ -9030,12 +9207,15 @@ var Metrics = function (_React$Component) {
         me.setState({
           question: event_target,
           answer: { id: -1 },
+          // student: {id: -1},
 
           answers: answers,
+          // students: [],
 
           isAllQuizzes: false,
           isAllQuestions: false,
-          isAllAnswers: true
+          isAllAnswers: true,
+          isAllStudents: true
         });
       });
     }
@@ -9050,7 +9230,36 @@ var Metrics = function (_React$Component) {
 
         isAllQuizzes: false,
         isAllQuestions: false,
-        isAllAnswers: false
+        isAllAnswers: false,
+        isAllStudents: false
+      });
+    }
+  }, {
+    key: 'changeStudent',
+    value: function changeStudent(event) {
+      var student = this.state.student;
+      student.id = event.target.value;
+      var event_target = event.target;
+      var me = this;
+      // $.post('/student/getStudentsByCourseId', {question: question.id})
+      // .then(function(answers) {
+      me.setState({
+        // question: event_target,
+        // answer: {id: -1},
+        quiz: { id: -1 },
+        question: { id: -1 },
+        answer: { id: -1 },
+        student: { student: student },
+
+        // answers: answers,
+        // students: [],
+
+        isAllQuizzes: false,
+        isAllQuestions: false,
+        isAllAnswers: false,
+        isAllStudents: false
+        // });
+        // });
       });
     }
   }, {
@@ -9098,7 +9307,7 @@ var Metrics = function (_React$Component) {
             null,
             _react2.default.createElement(
               'div',
-              { className: 'small ml10' },
+              { id: 'sections_div', className: 'small ml10' },
               'Sections'
             ),
             _react2.default.createElement(
@@ -9114,6 +9323,31 @@ var Metrics = function (_React$Component) {
                   'option',
                   { key: sectionIndex, value: section.id },
                   section.title
+                );
+              })
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'div',
+              { className: 'small ml10' },
+              'Students'
+            ),
+            _react2.default.createElement(
+              'select',
+              { value: this.state.student.id, className: 'dropdown mr10', onChange: this.changeStudent.bind(this) },
+              _react2.default.createElement(
+                'option',
+                { value: this.state.allStudents.id },
+                this.state.allStudents.title
+              ),
+              this.state.students.map(function (student, studentIndex) {
+                return _react2.default.createElement(
+                  'option',
+                  { key: studentIndex, value: student.id },
+                  student.email
                 );
               })
             )
