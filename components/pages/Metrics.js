@@ -458,10 +458,13 @@ export default class Metrics extends React.Component {
 
         console.log("student_answer_sorted: ", student_answer_sorted);
         //For each quiz (calculate percent)
+        if (student_answer_sorted.length > 0) {
         var currentQuizId;
         currentQuizId = student_answer_sorted[0].quiz.id;
-        quizIDArray.push(student_answer_sorted[0].quiz.id);
-        quizTitleArray.push(student_answer_sorted[0].quiz.title);
+        // quizIDArray.push(student_answer_sorted[0].quiz.id);
+        // quizTitleArray.push(student_answer_sorted[0].quiz.title);
+        
+
         // $.post('/answers/find', {student: selected_student.id})
         //  .then(function(student_answer){
 
@@ -472,16 +475,17 @@ export default class Metrics extends React.Component {
         // var totalPerQuiz = 0;
         // var percent;
         //iterate
+        console.log("student_answer_sorted.length: ", student_answer_sorted.length);
         for(var i = 0; i < student_answer_sorted.length; i++) {
           if (currentQuizId != student_answer_sorted[i].quiz.id) {
 
             // percent = correctCountPerQuiz/totalPerQuiz;
             // console.log("percent: ",percent);
             
-              if (i != student_answer_sorted.length -1) {
+              // if (i != student_answer_sorted.length -1) {
                 quizTitleArray.push(student_answer_sorted[i-1].quiz.title);
                 quizIDArray.push(student_answer_sorted[i-1].quiz.id);
-              }
+              // }
 
               quizAnswerCorrectArray.push(correctCountPerQuiz);
               console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
@@ -548,6 +552,7 @@ export default class Metrics extends React.Component {
 
         });
 
+
           } else {
 
             if (student_answer_sorted[i].answer.correct){
@@ -560,6 +565,11 @@ export default class Metrics extends React.Component {
               // quizAnswerArray.push(student_answer_sorted[i]);
               // currentQuizId = 
             }
+            } else {
+        //if no answers at all
+
+
+      }
 
       });
 
