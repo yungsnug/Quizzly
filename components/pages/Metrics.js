@@ -306,7 +306,8 @@ export default class Metrics extends React.Component {
             var countsTotal = [];
             var labelsTotal = [];
             var countsArrays = []; // array of all counts for quiz - for metrics data
-
+            var labelsArrays = [];
+            var titlesArray = [];
             var count_i =0;
             var counter = 0;
             var questions_length = questions.length;
@@ -316,7 +317,6 @@ export default class Metrics extends React.Component {
 
               me.getAnswers(question,function(answers){
                 console.log("answers-outside: ", answers);
-
                 var counts = [];
                 var data = {};
                 var counts_i=0;
@@ -331,38 +331,37 @@ export default class Metrics extends React.Component {
                   console.log("counts3: ",counts);
                   console.log("answers_beforedata: ", answers);
 
-                  var labelsTemp = [];
-                  var countsTemp = [];
-                  for(var i in labelsTotal) {
-                    labelsTemp.push(labelsTotal[i]);
-                    countsTemp.push(countsTotal[i]);  
-                  }
                   labelsTotal=[];
                   countsTotal=[];
-                  var labelArray = [];
 
                   for(var i in answers) {
                  
-                    labelArray.push(answers[i].option);
                     labelsTotal.push(answers[i].option);
                     countsTotal.push(counts[i]);
-
+                  }
+                  if (countsTotal.length > 0) {
+                    countsArrays.push(countsTotal);
+                    titlesArray.push(question.text);
+                  }
+                  if (labelsTotal.length > 0) {
+                    labelsArrays.push(labelsTotal);
                   }
 
-                  console.log("labelsTotal: ", labelsTotal);
-                  console.log("countsTotal: ", countsTotal);
-                  for(var i in labelsTemp){
-                    labelsTotal.push(labelsTemp[i]);
-                    countsTotal.push(countsTemp[i]);
-
-                  }
+                  console.log("COUNTS ARRAY - ALL: ", countsArrays);
+                  console.log("TITLES ARRAY - ALL: ", titlesArray);
+                  console.log("LABELS ARRAY - ALL: ", labelsArrays);
+                
 
                   console.log("counter: ", counter);
                   console.log("count_i: ", count_i);
                   counter++;
                   if (counter == questions_length){
-                    var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
-                    data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
+                    console.log("SET DATA");
+                    var quizMet = {};
+
+                    quizMet = me.createQuizMetric(titlesArray, labelsArrays, countsArrays);
+                    console.log("QUIZ METRIC IN DO MATH: ", quizMet);
+                    data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
 
                     console.log("data: ", data);
                     return res(data);
@@ -370,20 +369,6 @@ export default class Metrics extends React.Component {
               });
           }); 
         });
-            // var me = this;
-            // var quizMetric = [];
-            // this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id)
-            // .then(function(questionsMetric){
-            //   console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
-            //   setTimeout(function(){
-            //     quizMetric = me.createQuizMetricFromQuestionsMetric(questionsMetric);
-            //     console.log("QUIZ METRIC AFTERRRRRRRRRRRRRRRRRR", quizMetric);
-            //     data = getBarChartData(quizMetric.questionTitles, quizMetric.barLabels, quizMetric.barCounts);
-            //     console.log("data: ", data);
-            //     return res(data);
-            //   },1000);  
-            // });
-
       }
     } else {
         //Question else
@@ -446,49 +431,20 @@ export default class Metrics extends React.Component {
 
 }
 
+createQuizMetric(titlesTotal, labelsTotal, countsTotal){
+  console.log("Titles in QuizMetric: ", titlesTotal);
+  console.log("Labels in QuizMetric: ", labelsTotal);
+  console.log("Counts in QuizMetric: ", countsTotal);
 
-createAllQuizzesMetric(selected_quizzes){
-  var me = this;
-  var quizzesMetric = {
-    quizTitles: [],
-    quizAverages: [],
-  };
-  Promise.each(selected_quizzes, function(quiz){
-    me.createMultiQuestionLabelsAndCounts(quiz.id)
-      .then(function(questionsMetric){
-        quizzesMetric.quizTitles.push(questionsMetric.quizTitle);
-        quizzesMetric.quizAverages.push((questionsMetric.correctResponses / questionsMetric.totalResponses) * 100.0);
-        console.log("HEREEEEEE Quizzes METRIC: ", quizzesMetric);
-      });
-  })
-  return quizzesMetric;
-  // return $.post('/quiz/find', {course: courseId })
-  // .then(function(quizzes){
-  //   console.log("Before Promise, QUIZZES ", quizzes);
-  //   Promise.each(quizzes, function(quiz) {
-  //     me.createMultiQuestionLabelsAndCounts(quiz.id)
-  //     .then(function(questionsMetric){
-  //       quizzesMetric.quizTitles.push(questionsMetric.quizTitle);
-  //       quizzesMetric.quizAverages.push((questionsMetric.correctResponses / questionsMetric.totalResponses) * 100.0);
-  //       console.log("HEREEEEEE Quizzes METRIC: ", quizzesMetric);
-  //     });
-  //   })
-  //   return quizzesMetric;
-  // });
-}
-
-createQuizMetricFromQuestionsMetric(questionsMetric){
-  console.log("questionMetirc in QuizMetric: ", questionsMetric);
   var questionsBarCounts = [];
   var questionsBarLabels = [];
   var answerCount = 1;
   var labelArray = [];
-  questionsBarLabels = questionsMetric.barLabels;
 
-  for (var i = 0; i < questionsBarLabels.length; i++) {
-    if (questionsBarLabels[i].length > answerCount) {
-      answerCount = questionsBarLabels[i].length;
-      labelArray = questionsBarLabels[i];
+  for (var i = 0; i < labelsTotal.length; i++) {
+    if (labelsTotal[i].length > answerCount) {
+      answerCount = labelsTotal[i].length;
+      labelArray = labelsTotal[i];
     }
   }
   console.log("Label Array: ", labelArray);
@@ -496,11 +452,11 @@ createQuizMetricFromQuestionsMetric(questionsMetric){
   //add Dummy Data to barCounts
   for (var i = 0; i < labelArray.length; i++){
     var thisCounts = [];
-    for (var j = 0; j < questionsMetric.barCounts.length; j++) {
-      if (i >= questionsMetric.barCounts[j].length) {
+    for (var j = 0; j < countsTotal.length; j++) {
+      if (i >= countsTotal[j].length) {
         thisCounts.push(0);
       } else {
-        thisCounts.push(questionsMetric.barCounts[j][i]);
+        thisCounts.push(countsTotal[j][i]);
       }
     }
     questionsBarCounts.push(thisCounts)
@@ -508,16 +464,11 @@ createQuizMetricFromQuestionsMetric(questionsMetric){
   console.log("COUNTS ARRAY: ", questionsBarCounts);
 
   var quizMetric = {
-    quizTitle: 0,
     questionTitles: [],
     barLabels: [],
     barCounts: [],
-    percentCorrect: 0,
   };
-  quizMetric.quizTitle = questionsMetric.quizTitle;
-  quizMetric.percentCorrect = (questionsMetric.correctResponses / questionsMetric.totalResponses) * 100.0;
-  console.log("PERCENT CORRECT: ", quizMetric.percentCorrect);
-  quizMetric.questionTitles = questionsMetric.questionTitles;
+  quizMetric.questionTitles = titlesTotal;
   quizMetric.barLabels = labelArray;
   quizMetric.barCounts = questionsBarCounts;
   console.log("************* QUIZ METRIC ", quizMetric);

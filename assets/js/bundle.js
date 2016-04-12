@@ -8811,7 +8811,8 @@ var Metrics = function (_React$Component) {
               var countsTotal = [];
               var labelsTotal = [];
               var countsArrays = []; // array of all counts for quiz - for metrics data
-
+              var labelsArrays = [];
+              var titlesArray = [];
               var count_i = 0;
               var counter = 0;
               var questions_length = questions.length;
@@ -8821,7 +8822,6 @@ var Metrics = function (_React$Component) {
 
                 me.getAnswers(question, function (answers) {
                   console.log("answers-outside: ", answers);
-
                   var counts = [];
                   var data = {};
                   var counts_i = 0;
@@ -8834,36 +8834,48 @@ var Metrics = function (_React$Component) {
                     console.log("counts3: ", counts);
                     console.log("answers_beforedata: ", answers);
 
-                    var labelsTemp = [];
-                    var countsTemp = [];
-                    for (var i in labelsTotal) {
-                      labelsTemp.push(labelsTotal[i]);
-                      countsTemp.push(countsTotal[i]);
-                    }
+                    // var labelsTemp = [];
+                    // var countsTemp = [];
+                    // for(var i in labelsTotal) {
+                    //   labelsTemp.push(labelsTotal[i]);
+                    //   countsTemp.push(countsTotal[i]); 
+                    // }
                     labelsTotal = [];
                     countsTotal = [];
-                    var labelArray = [];
 
                     for (var i in answers) {
 
-                      labelArray.push(answers[i].option);
                       labelsTotal.push(answers[i].option);
                       countsTotal.push(counts[i]);
+                    }
+                    if (countsTotal.length > 0) {
+                      countsArrays.push(countsTotal);
+                      titlesArray.push(question.text);
+                    }
+                    if (labelsTotal.length > 0) {
+                      labelsArrays.push(labelsTotal);
                     }
 
                     console.log("labelsTotal: ", labelsTotal);
                     console.log("countsTotal: ", countsTotal);
-                    for (var i in labelsTemp) {
-                      labelsTotal.push(labelsTemp[i]);
-                      countsTotal.push(countsTemp[i]);
-                    }
+
+                    console.log("COUNTS ARRAY - ALL: ", countsArrays);
+                    console.log("TITLES ARRAY - ALL: ", titlesArray);
+
+                    console.log("LABELS ARRAY - ALL: ", labelsArrays);
 
                     console.log("counter: ", counter);
                     console.log("count_i: ", count_i);
                     counter++;
                     if (counter == questions_length) {
-                      var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
-                      data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
+                      console.log("SET DATA");
+                      var quizMet = {};
+                      quizMet = me.createQuizMetric(titlesArray, labelsArrays, countsArrays);
+                      console.log("QUIZ METRIC IN DO MATH: ", quizMet);
+                      data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
+
+                      // var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
+                      //data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
 
                       console.log("data: ", data);
                       return res(data);
@@ -8941,34 +8953,49 @@ var Metrics = function (_React$Component) {
       }
     }
   }, {
-    key: 'createAllQuizzesMetric',
-    value: function createAllQuizzesMetric(selected_quizzes) {
-      var me = this;
-      var quizzesMetric = {
-        quizTitles: [],
-        quizAverages: []
+    key: 'createQuizMetric',
+    value: function createQuizMetric(titlesTotal, labelsTotal, countsTotal) {
+      console.log("Titles in QuizMetric: ", titlesTotal);
+      console.log("Labels in QuizMetric: ", labelsTotal);
+      console.log("Counts in QuizMetric: ", countsTotal);
+
+      var questionsBarCounts = [];
+      var questionsBarLabels = [];
+      var answerCount = 1;
+      var labelArray = [];
+
+      for (var i = 0; i < labelsTotal.length; i++) {
+        if (labelsTotal[i].length > answerCount) {
+          answerCount = labelsTotal[i].length;
+          labelArray = labelsTotal[i];
+        }
+      }
+      console.log("Label Array: ", labelArray);
+
+      //add Dummy Data to barCounts
+      for (var i = 0; i < labelArray.length; i++) {
+        var thisCounts = [];
+        for (var j = 0; j < countsTotal.length; j++) {
+          if (i >= countsTotal[j].length) {
+            thisCounts.push(0);
+          } else {
+            thisCounts.push(countsTotal[j][i]);
+          }
+        }
+        questionsBarCounts.push(thisCounts);
+      }
+      console.log("COUNTS ARRAY: ", questionsBarCounts);
+
+      var quizMetric = {
+        questionTitles: [],
+        barLabels: [],
+        barCounts: []
       };
-      Promise.each(selected_quizzes, function (quiz) {
-        me.createMultiQuestionLabelsAndCounts(quiz.id).then(function (questionsMetric) {
-          quizzesMetric.quizTitles.push(questionsMetric.quizTitle);
-          quizzesMetric.quizAverages.push(questionsMetric.correctResponses / questionsMetric.totalResponses * 100.0);
-          console.log("HEREEEEEE Quizzes METRIC: ", quizzesMetric);
-        });
-      });
-      return quizzesMetric;
-      // return $.post('/quiz/find', {course: courseId })
-      // .then(function(quizzes){
-      //   console.log("Before Promise, QUIZZES ", quizzes);
-      //   Promise.each(quizzes, function(quiz) {
-      //     me.createMultiQuestionLabelsAndCounts(quiz.id)
-      //     .then(function(questionsMetric){
-      //       quizzesMetric.quizTitles.push(questionsMetric.quizTitle);
-      //       quizzesMetric.quizAverages.push((questionsMetric.correctResponses / questionsMetric.totalResponses) * 100.0);
-      //       console.log("HEREEEEEE Quizzes METRIC: ", quizzesMetric);
-      //     });
-      //   })
-      //   return quizzesMetric;
-      // });
+      quizMetric.questionTitles = titlesTotal;
+      quizMetric.barLabels = labelArray;
+      quizMetric.barCounts = questionsBarCounts;
+      console.log("************* QUIZ METRIC ", quizMetric);
+      return quizMetric;
     }
   }, {
     key: 'createQuizMetricFromQuestionsMetric',
