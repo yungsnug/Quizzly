@@ -62,7 +62,7 @@ module.exports = {
 
   ask: function(req, res) {
     //console.log("ask api hit");
-    Question.findOne({id:req.query.id}).exec(function (err, question) {
+    Question.findOne({id:req.query.id}).populate('answers').exec(function (err, question) {
       if(err) {
         return res.json({
           error: res.negotiate(err)
@@ -72,61 +72,61 @@ module.exports = {
           error: 'Question not found'
         });
       }
-      Answer.find({question: question.id}).exec(function(err, answers) {
-
-        var pushInfo = {
-          "audience": "all",
-          "notification": {
-             "alert": "Question Available",
-             "android": {
-               "extra": {
-                 "question": question.text,
-                 "quiz_id": question.quiz,
-                 "quest_id": question.id,
-                 "type": question.type,
-                 "answer0": answers[0].text,
-                 "answer1": answers[1].text,
-                 "time_limit": question.duration,
-               }
-             },
-             "ios": {
-               "extra": {
-                 "question": question.text,
-                 "quiz_id": question.quiz,
-                 "quest_id": question.id,
-                 "type": question.type,
-                 "answer0": answers[0].text,
-                 "answer1": answers[1].text,
-                 "time_limit": question.duration,
-               }
+  //    var answers = question.anwers;
+      console.log(question.answers.length);
+      var pushInfo = {
+        "audience": "all",
+        "notification": {
+           "alert": "Question Available",
+           "android": {
+             "extra": {
+               "question": question.text,
+               "quiz_id": question.quiz,
+               "quest_id": question.id,
+               "type": question.type,
+               "time_limit": question.duration,
              }
-          },
-          "device_types": ["android", "ios"]
-        };
-
-        if(answers.length > 2) {
-          pushInfo.notification.android.extra.answer2 = answers[2].text;
-          pushInfo.notification.ios.extra.answer2 = answers[2].text;
+           },
+           "ios": {
+             "extra": {
+               "question": question.text,
+               "quiz_id": question.quiz,
+               "quest_id": question.id,
+               "type": question.type,
+               "time_limit": question.duration,
+             }
+           }
+        },
+        "device_types": ["android", "ios"]
+      };
+      if(question.answers.length != 0) {
+        pushInfo.notification.android.extra.answer0 = question.answers[0].text;
+        pushInfo.notification.android.extra.answer1 = question.answers[1].text;
+        if(question.answers.length > 2) {
+          pushInfo.notification.android.extra.answer2 = question.answers[2].text;
+          pushInfo.notification.ios.extra.answer2 = question.answers[2].text;
         }
-        if(answers.length > 3) {
-          pushInfo.notification.android.extra.answer3 = answers[3].text;
-          pushInfo.notification.ios.extra.answer3 = answers[3].text;
+        if(question.answers.length > 3) {
+          pushInfo.notification.android.extra.answer3 = question.answers[3].text;
+          pushInfo.notification.ios.extra.answer3 = question.answers[3].text;
         }
+      }
 
-        console.log(pushInfo);
-        urbanAirshipPush.push.send(pushInfo, function (err, data) {
-            if (err) {
-                // Handle error
-                console.log(err);
-                return;
-            }
-            console.log(data);
-            return res.json({
-              success: "Push sent"
-            });
 
-        });
+      console.log(pushInfo);
+      urbanAirshipPush.push.send(pushInfo, function (err, data) {
+          if (err) {
+              // Handle error
+              console.log(err);
+              return;
+          }
+          console.log(data);
+          return res.json({
+            success: "Push sent"
+          });
+
       });
+
     });
   },
 
