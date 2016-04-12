@@ -115,6 +115,24 @@ function getLineChartDataSets(pointLabels, dataArrays) {
   return datasets;
 }
 
+/*
+  var mainLabelLine = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4"];
+  var pointLabelsLine = "Mary";
+  var dataArraysLine = [80, 60, 78, 92];
+*/
+function getSingleItemLineChartData(mainLabels, pointLabel, dataArray) {
+  // Create Double Array from dataArray
+  var doubleArray = [];
+  doubleArray.push(dataArray);
+
+  // Create Array from point Label String
+  var pointLabelArray = [];
+  pointLabelArray.push(pointLabel);
+
+  // Call getLineChartData() to Create Chart Data
+  return getLineChartData(mainLabels, pointLabelArray, doubleArray);
+}
+
 function getBarChartValueOptions(){
  var options = {
    responsive : true,
@@ -377,22 +395,9 @@ export default class Metrics extends React.Component {
     } else {
         //Question else
         /*Show all answers and number of students who answered question*/
-        // console.log("question else statement!");
-        // //Get labels (answers for question)
-        //  this.createLabelsAndCounts(selected_section.id, selected_question.id)
-        //   .then(function(questionMetric){
-        //       console.log("QUESTION METRIC ****************************", questionMetric);
-        //       data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
-        //       console.log("DATA ", data);
-        //       return res(data);
-        //   });
-        //Question else
-        /*Show all answers and number of students who answered question*/
-          //Labels will be answers (put correct bar as green)
-          console.log("question else statement!");
+        console.log("question else statement!");
         //Get labels (answers for question)
         
-
         var answer_store = [];
         this.getAnswers(selected_question,function(answers){
           console.log("answers-outside: ", answers);
