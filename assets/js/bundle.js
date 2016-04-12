@@ -1809,7 +1809,7 @@ var Metrics = function (_React$Component) {
             console.log("student_answer_sorted.length: ", student_answer_sorted.length);
             for (var i = 0; i < student_answer_sorted.length; i++) {
               if (currentQuizId != student_answer_sorted[i].quiz.id) {
-
+                currentQuizId = student_answer_sorted[i].quiz.id;
                 // percent = correctCountPerQuiz/totalPerQuiz;
                 // console.log("percent: ",percent);
 
@@ -1822,6 +1822,7 @@ var Metrics = function (_React$Component) {
                 console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
                 console.log("1quizTitleArray: ", quizTitleArray);
                 correctCountPerQuiz = 0;
+
                 // totalPerQuiz = 0;
                 // if (student_answer_sorted[i].answer.correct){
                 //   correctCountPerQuiz++;
