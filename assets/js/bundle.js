@@ -8617,6 +8617,24 @@ function getLineChartDataSets(pointLabels, dataArrays) {
   return datasets;
 }
 
+/*
+  var mainLabelLine = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4"];
+  var pointLabelsLine = "Mary";
+  var dataArraysLine = [80, 60, 78, 92];
+*/
+function getSingleItemLineChartData(mainLabels, pointLabel, dataArray) {
+  // Create Double Array from dataArray
+  var doubleArray = [];
+  doubleArray.push(dataArray);
+
+  // Create Array from point Label String
+  var pointLabelArray = [];
+  pointLabelArray.push(pointLabel);
+
+  // Call getLineChartData() to Create Chart Data
+  return getLineChartData(mainLabels, pointLabelArray, doubleArray);
+}
+
 function getBarChartValueOptions() {
   var options = {
     responsive: true,
@@ -8697,9 +8715,8 @@ var Metrics = function (_React$Component) {
       questions: [],
 
       section: { id: -1 },
-      student: { id: -1, getFullName: function getFullName() {
-          return "Conner Jack";
-        }, firstName: "Jake" },
+      // student: {id: -1, getFullName: function() {return "Conner Jack"}, firstName: "Jake"},
+      student: { id: -1 },
       quiz: { id: -1 },
       question: { id: -1 },
 
@@ -8768,6 +8785,9 @@ var Metrics = function (_React$Component) {
       var selected_section = get_selected(this.state.sections, this.state.section.id);
       var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
       var selected_question = get_selected(this.state.questions, this.state.question.id);
+      console.log("this: ", this);
+      console.log("this.state.students: ", this.state.students);
+      console.log("this.state.student.id: ", this.state.student.id);
       var selected_student = get_selected(this.state.students, this.state.student.id);
       console.log("selected_quiz: ", selected_quiz);
 
@@ -8875,18 +8895,6 @@ var Metrics = function (_React$Component) {
         } else {
           //Question else
           /*Show all answers and number of students who answered question*/
-          // console.log("question else statement!");
-          // //Get labels (answers for question)
-          //  this.createLabelsAndCounts(selected_section.id, selected_question.id)
-          //   .then(function(questionMetric){
-          //       console.log("QUESTION METRIC ****************************", questionMetric);
-          //       data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
-          //       console.log("DATA ", data);
-          //       return res(data);
-          //   });
-          //Question else
-          /*Show all answers and number of students who answered question*/
-          //Labels will be answers (put correct bar as green)
           console.log("question else statement!");
           //Get labels (answers for question)
 
@@ -8924,7 +8932,31 @@ var Metrics = function (_React$Component) {
         // $('#sections_div').selected();
         // var e= document.getElementById("sections_div");
         // e.options[]
+        //Need student id
+        // selected_student.
+        console.log("selected_student: ", selected_student);
+        //Need students answers
+        var quiz = [];
+        var quizTitleArray = [];
+        var quizAnswerArray = [];
+        $.post('/studentanswer/find', { student: selected_student.id }).then(function (student_answer) {
+          console.log("student_answer: ", student_answer);
+          //For each quiz (calculate percent)
+          var quizId;
+          quiz = [];
+          student_answer.sort(function (a, b) {
+            return parseInt(a.quiz.id) - parseInt(b.quiz.id);
+          });
+          console.log("student_answer: ", student_answer);
+          for (var i in student_answer) {
+            //check quizId
+            // quiz.push(student_answer.quiz.id
+          }
+        });
 
+        //For each quiz
+        //Need to check each answer for correctness
+        //Total number of questions
       }
     }
   }, {
@@ -9174,7 +9206,7 @@ var Metrics = function (_React$Component) {
         quiz: { id: -1 },
         question: { id: -1 },
         answer: { id: -1 },
-        student: { student: student },
+        student: student,
 
         // answers: answers,
         // students: [],
