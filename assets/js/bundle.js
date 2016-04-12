@@ -8834,12 +8834,6 @@ var Metrics = function (_React$Component) {
                     console.log("counts3: ", counts);
                     console.log("answers_beforedata: ", answers);
 
-                    // var labelsTemp = [];
-                    // var countsTemp = [];
-                    // for(var i in labelsTotal) {
-                    //   labelsTemp.push(labelsTotal[i]);
-                    //   countsTemp.push(countsTotal[i]); 
-                    // }
                     labelsTotal = [];
                     countsTotal = [];
 
@@ -8856,12 +8850,8 @@ var Metrics = function (_React$Component) {
                       labelsArrays.push(labelsTotal);
                     }
 
-                    console.log("labelsTotal: ", labelsTotal);
-                    console.log("countsTotal: ", countsTotal);
-
                     console.log("COUNTS ARRAY - ALL: ", countsArrays);
                     console.log("TITLES ARRAY - ALL: ", titlesArray);
-
                     console.log("LABELS ARRAY - ALL: ", labelsArrays);
 
                     console.log("counter: ", counter);
@@ -8870,12 +8860,10 @@ var Metrics = function (_React$Component) {
                     if (counter == questions_length) {
                       console.log("SET DATA");
                       var quizMet = {};
+
                       quizMet = me.createQuizMetric(titlesArray, labelsArrays, countsArrays);
                       console.log("QUIZ METRIC IN DO MATH: ", quizMet);
                       data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
-
-                      // var quizName = selected_quiz.title; /* GET NAME OF QUIZ */
-                      //data = getSingleItemBarChartData(quizName, labelsTotal, countsTotal);
 
                       console.log("data: ", data);
                       return res(data);
@@ -8883,67 +8871,54 @@ var Metrics = function (_React$Component) {
                   });
                 });
               });
-              // var me = this;
-              // var quizMetric = [];
-              // this.createMultiQuestionLabelsAndCounts(me.state.quiz.id, selected_section.id)
-              // .then(function(questionsMetric){
-              //   console.log("QUESTIONSSSSS METRIC AFTERRRRRRRRRRRRRRRRRR", questionsMetric);
-              //   setTimeout(function(){
-              //     quizMetric = me.createQuizMetricFromQuestionsMetric(questionsMetric);
-              //     console.log("QUIZ METRIC AFTERRRRRRRRRRRRRRRRRR", quizMetric);
-              //     data = getBarChartData(quizMetric.questionTitles, quizMetric.barLabels, quizMetric.barCounts);
-              //     console.log("data: ", data);
-              //     return res(data);
-              //   },1000); 
-              // });
             }
         } else {
-            //Question else
-            /*Show all answers and number of students who answered question*/
-            // console.log("question else statement!");
-            // //Get labels (answers for question)
-            //  this.createLabelsAndCounts(selected_section.id, selected_question.id)
-            //   .then(function(questionMetric){
-            //       console.log("QUESTION METRIC ****************************", questionMetric);
-            //       data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
-            //       console.log("DATA ", data);
-            //       return res(data);
-            //   });
-            //Question else
-            /*Show all answers and number of students who answered question*/
-            //Labels will be answers (put correct bar as green)
-            console.log("question else statement!");
-            //Get labels (answers for question)
+          //Question else
+          /*Show all answers and number of students who answered question*/
+          // console.log("question else statement!");
+          // //Get labels (answers for question)
+          //  this.createLabelsAndCounts(selected_section.id, selected_question.id)
+          //   .then(function(questionMetric){
+          //       console.log("QUESTION METRIC ****************************", questionMetric);
+          //       data = getSingleItemBarChartData(questionMetric.title, questionMetric.labels, questionMetric.counts);
+          //       console.log("DATA ", data);
+          //       return res(data);
+          //   });
+          //Question else
+          /*Show all answers and number of students who answered question*/
+          //Labels will be answers (put correct bar as green)
+          console.log("question else statement!");
+          //Get labels (answers for question)
 
-            var answer_store = [];
-            this.getAnswers(selected_question, function (answers) {
-              console.log("answers-outside: ", answers);
-              answer_store = answers;
-              var counts = [];
-              var data = {};
-              Promise.each(answers, function (answer) {
-                return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
-                  counts.push(count);
-                });
-              }).then(function () {
-                console.log("counts3: ", counts);
-                console.log("answers_beforedata: ", answers);
-
-                var labelArray = [];
-                for (var i in answers) {
-                  labelArray.push(answers[i].option);
-                }
-
-                var questionName = selected_question.text; /* GET NAME OF QUESTION */
-                data = getSingleItemBarChartData(questionName, labelArray, counts);
-
-                console.log("data: ", data);
-                return data;
-              }).then(function (data) {
-                return res(data);
+          var answer_store = [];
+          this.getAnswers(selected_question, function (answers) {
+            console.log("answers-outside: ", answers);
+            answer_store = answers;
+            var counts = [];
+            var data = {};
+            Promise.each(answers, function (answer) {
+              return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
+                counts.push(count);
               });
+            }).then(function () {
+              console.log("counts3: ", counts);
+              console.log("answers_beforedata: ", answers);
+
+              var labelArray = [];
+              for (var i in answers) {
+                labelArray.push(answers[i].option);
+              }
+
+              var questionName = selected_question.text; /* GET NAME OF QUESTION */
+              data = getSingleItemBarChartData(questionName, labelArray, counts);
+
+              console.log("data: ", data);
+              return data;
+            }).then(function (data) {
+              return res(data);
             });
-          }
+          });
+        }
       } else {
         //Fill the section
         // $('#sections_div').selected();
@@ -8992,54 +8967,6 @@ var Metrics = function (_React$Component) {
         barCounts: []
       };
       quizMetric.questionTitles = titlesTotal;
-      quizMetric.barLabels = labelArray;
-      quizMetric.barCounts = questionsBarCounts;
-      console.log("************* QUIZ METRIC ", quizMetric);
-      return quizMetric;
-    }
-  }, {
-    key: 'createQuizMetricFromQuestionsMetric',
-    value: function createQuizMetricFromQuestionsMetric(questionsMetric) {
-      console.log("questionMetirc in QuizMetric: ", questionsMetric);
-      var questionsBarCounts = [];
-      var questionsBarLabels = [];
-      var answerCount = 1;
-      var labelArray = [];
-      questionsBarLabels = questionsMetric.barLabels;
-
-      for (var i = 0; i < questionsBarLabels.length; i++) {
-        if (questionsBarLabels[i].length > answerCount) {
-          answerCount = questionsBarLabels[i].length;
-          labelArray = questionsBarLabels[i];
-        }
-      }
-      console.log("Label Array: ", labelArray);
-
-      //add Dummy Data to barCounts
-      for (var i = 0; i < labelArray.length; i++) {
-        var thisCounts = [];
-        for (var j = 0; j < questionsMetric.barCounts.length; j++) {
-          if (i >= questionsMetric.barCounts[j].length) {
-            thisCounts.push(0);
-          } else {
-            thisCounts.push(questionsMetric.barCounts[j][i]);
-          }
-        }
-        questionsBarCounts.push(thisCounts);
-      }
-      console.log("COUNTS ARRAY: ", questionsBarCounts);
-
-      var quizMetric = {
-        quizTitle: 0,
-        questionTitles: [],
-        barLabels: [],
-        barCounts: [],
-        percentCorrect: 0
-      };
-      quizMetric.quizTitle = questionsMetric.quizTitle;
-      quizMetric.percentCorrect = questionsMetric.correctResponses / questionsMetric.totalResponses * 100.0;
-      console.log("PERCENT CORRECT: ", quizMetric.percentCorrect);
-      quizMetric.questionTitles = questionsMetric.questionTitles;
       quizMetric.barLabels = labelArray;
       quizMetric.barCounts = questionsBarCounts;
       console.log("************* QUIZ METRIC ", quizMetric);
