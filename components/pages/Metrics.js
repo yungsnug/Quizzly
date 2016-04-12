@@ -514,8 +514,9 @@ export default class Metrics extends React.Component {
             console.log("quizIDArray: ", quizIDArray);
 
             var totalQuestionsPerQuiz = [];
+            var type = "multipleChoice";
       Promise.each(quizIDArray, function(quiz) {
-          return $.post('/question/find', {quiz: quiz})
+          return $.post('/question/find', {quiz: quiz, type: type})
             .then(function(questions){
               totalQuestionsPerQuiz.push(questions.length);
               console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);

@@ -1844,8 +1844,9 @@ var Metrics = function (_React$Component) {
                 console.log("quizIDArray: ", quizIDArray);
 
                 var totalQuestionsPerQuiz = [];
+                var type = "multipleChoice";
                 Promise.each(quizIDArray, function (quiz) {
-                  return $.post('/question/find', { quiz: quiz }).then(function (questions) {
+                  return $.post('/question/find', { quiz: quiz, type: type }).then(function (questions) {
                     totalQuestionsPerQuiz.push(questions.length);
                     console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
                   });
