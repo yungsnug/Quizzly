@@ -85,7 +85,7 @@ module.exports = {
                "quest_id": question.id,
                "type": question.type,
                "time_limit": question.duration,
-               "num_answers": question.answers.length               
+               "num_answers": question.answers.length
              }
            },
            "ios": {
@@ -105,6 +105,8 @@ module.exports = {
       if(question.answers.length != 0) {
         pushInfo.notification.android.extra.answer0 = question.answers[0].text;
         pushInfo.notification.android.extra.answer1 = question.answers[1].text;
+        pushInfo.notification.ios.extra.answer0 = question.answers[0].text;
+        pushInfo.notification.ios.extra.answer1 = question.answers[1].text;
         if(question.answers.length > 2) {
           pushInfo.notification.android.extra.answer2 = question.answers[2].text;
           pushInfo.notification.ios.extra.answer2 = question.answers[2].text;
