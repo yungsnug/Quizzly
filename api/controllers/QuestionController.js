@@ -177,8 +177,7 @@ module.exports = {
                  "quest_id": question.id,
                  "type": question.type,
                  "time_limit": question.duration,
-                 "num_answers": question.answers.length,
-                 "answers": []
+                 "num_answers": question.answers.length
                }
              },
              "ios": {
@@ -188,8 +187,7 @@ module.exports = {
                  "quest_id": question.id,
                  "type": question.type,
                  "time_limit": question.duration,
-                 "num_answers": question.answers.length,
-                 "answers": []
+                 "num_answers": question.answers.length
                }
              }
           },
