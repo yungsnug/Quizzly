@@ -19,7 +19,7 @@ export default class extends React.Component {
           <div className="header">
             <span className="pointer" onClick={this.props.showQuizModal.bind(this, this.props.quizIndex)}>{this.props.quiz.title}</span>
             <span className="floatR pointer" onClick={this.props.deleteQuizFromCourse.bind(this, this.props.quizIndex)}><img src={CLOSE_IMAGE_PATH} style={{"width":"12px"}}/></span>
-            </div>
+          </div>
           <div className="body">
             {this.props.quiz.questions.map(function(question, questionIndex) {
               return (
@@ -27,6 +27,7 @@ export default class extends React.Component {
                   key={questionIndex}
                   quizIndex={this.props.quizIndex}
                   questionIndex={questionIndex}
+                  quiz={this.props.quiz}
                   question={question}
                   showQuestionInModal={this.props.showQuestionInModal.bind(this)}
                   deleteQuestionFromQuiz={this.props.deleteQuestionFromQuiz.bind(this)}
