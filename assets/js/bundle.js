@@ -9818,9 +9818,12 @@ var Quizzes = function (_React$Component) {
     }
   }, {
     key: 'askQuestion',
-    value: function askQuestion(quizIndex, questionIndex) {
+    value: function askQuestion(quizIndex, questionIndex, sectionId) {
+      console.log("quizIndex", quizIndex);
+      console.log("questionIndex", questionIndex);
+      console.log("sectionId", sectionId);
       var question = this.state.quizzes[quizIndex].questions[questionIndex];
-      return $.post('/question/ask/', { id: question.id }).then(function () {
+      return $.post('/question/askWithSection/', { question: question.id, section: sectionId }).then(function () {
         console.log("asked question success!");
       });
     }
@@ -11542,21 +11545,37 @@ var _class = function (_React$Component) {
 
     _this.state = {
       successfullyAsked: false,
-      hover: false
+      hover: false,
+      showSelectionSection: false,
+      sections: []
     };
     return _this;
   }
 
   _createClass(_class, [{
     key: "askQuestion",
-    value: function askQuestion(quizIndex, questionIndex) {
+    value: function askQuestion(quizIndex, questionIndex, sectionId) {
       var me = this;
-      this.props.askQuestion(quizIndex, questionIndex).then(function () {
+      this.props.askQuestion(quizIndex, questionIndex, sectionId).then(function () {
+        me.setState({ showSelectionSection: false });
         me.setState({ successfullyAsked: true }, function () {
           setTimeout(function () {
             me.setState({ successfullyAsked: false });
           }, 2000);
         }.bind(me));
+      });
+    }
+  }, {
+    key: "selectSection",
+    value: function selectSection() {
+      var me = this;
+      console.log("selectSection");
+      return $.post('/section/find', { course: this.props.quiz.course.id }).then(function (sections) {
+        console.log("sections", sections);
+        me.setState({
+          showSelectionSection: true,
+          sections: sections
+        });
       });
     }
   }, {
@@ -11576,32 +11595,56 @@ var _class = function (_React$Component) {
 
       return _react2.default.createElement(
         "div",
-        { className: "item relative", onMouseEnter: this.mouseEnter.bind(this), onMouseLeave: this.mouseLeave.bind(this) },
-        this.state.successfullyAsked ? _react2.default.createElement(
-          "div",
-          { className: "width100 height100 flexCenter absolute greenBlueGradient white mont z20 bold", style: { "margin": "-10px" } },
-          "ASKED"
-        ) : null,
+        { className: "relative" },
         _react2.default.createElement(
-          "span",
-          { className: "pointer", onClick: this.props.showQuestionInModal.bind(this, this.props.quizIndex, this.props.questionIndex) },
-          this.props.question.text
+          "div",
+          { className: "item", onMouseEnter: this.mouseEnter.bind(this), onMouseLeave: this.mouseLeave.bind(this) },
+          this.state.successfullyAsked ? _react2.default.createElement(
+            "div",
+            { className: "width100 height100 flexCenter absolute greenBlueGradient white mont z20 bold", style: { "margin": "-10px" } },
+            "ASKED"
+          ) : null,
+          _react2.default.createElement(
+            "span",
+            { className: "pointer", onClick: this.props.showQuestionInModal.bind(this, this.props.quizIndex, this.props.questionIndex) },
+            this.props.question.text
+          ),
+          function () {
+            if (_this2.state.hover) {
+              return _react2.default.createElement(
+                "div",
+                { className: "floatR" },
+                _react2.default.createElement(
+                  "span",
+                  { className: "small pointer darkGreen mr10", onClick: _this2.selectSection.bind(_this2) },
+                  "ask"
+                ),
+                _react2.default.createElement(
+                  "span",
+                  { className: "pointer opacity40", onClick: _this2.props.deleteQuestionFromQuiz.bind(_this2, _this2.props.quizIndex, _this2.props.questionIndex) },
+                  _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "8px" } })
+                )
+              );
+            }
+          }()
         ),
         function () {
-          if (_this2.state.hover) {
+          if (_this2.state.showSelectionSection) {
             return _react2.default.createElement(
               "div",
-              { className: "floatR" },
+              { className: "round absolute outerShadow whiteBackground small", style: { marginLeft: "271px", top: "0", zIndex: "10000" } },
               _react2.default.createElement(
-                "span",
-                { className: "small pointer darkGreen mr10", onClick: _this2.askQuestion.bind(_this2, _this2.props.quizIndex, _this2.props.questionIndex) },
-                "ask"
+                "div",
+                { className: "lightGreenBackground roundTop borderBottom p10 mb10 bold" },
+                "Select Section"
               ),
-              _react2.default.createElement(
-                "span",
-                { className: "pointer opacity40", onClick: _this2.props.deleteQuestionFromQuiz.bind(_this2, _this2.props.quizIndex, _this2.props.questionIndex) },
-                _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "8px" } })
-              )
+              _this2.state.sections.map(function (section, sectionIndex) {
+                return _react2.default.createElement(
+                  "div",
+                  { className: "pointer pl10 pr10 pb10", key: sectionIndex, onClick: this.askQuestion.bind(this, this.props.quizIndex, this.props.questionIndex, section.id) },
+                  section.title
+                );
+              }, _this2)
             );
           }
         }()
@@ -11685,6 +11728,7 @@ var _class = function (_React$Component) {
                 key: questionIndex,
                 quizIndex: this.props.quizIndex,
                 questionIndex: questionIndex,
+                quiz: this.props.quiz,
                 question: question,
                 showQuestionInModal: this.props.showQuestionInModal.bind(this),
                 deleteQuestionFromQuiz: this.props.deleteQuestionFromQuiz.bind(this),
