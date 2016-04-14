@@ -34,6 +34,10 @@ module.exports = {
     course: {
       model: 'course'
     },
+
+    text: {
+      type: 'string'
+    }
     // Methods
   }
 };
