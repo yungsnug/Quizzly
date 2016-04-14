@@ -31,7 +31,6 @@ export default class extends React.Component {
     if (!password || !email) {
       return;
     }
-console.log("this", this);
     if(this.state.isSignIn) {
       $.post('/login', {email: email, password: password}, function(user) {
         console.log("User is logged in", user);
@@ -59,7 +58,8 @@ console.log("this", this);
         return;
       }
 
-      $.post('/signup', {email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor}, function(user) {
+      $.post('/signup', {email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor})
+      .then(function(user) {
         console.log("User is logged in", user);
         var route = 'p';
         if(isProfessor) {
