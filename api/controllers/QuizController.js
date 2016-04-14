@@ -23,6 +23,21 @@ module.exports = {
     });
   },
 
+  getQuizQuestions: function(req, res) {
+    var data = req.params.all();
+    Quiz.findOne({id: data.id}).populate('questions').exec(function(err, quiz) {
+      if(quiz.questions.length != 0) {
+        return res.send(200, quiz.questions);
+      }
+
+      return res.json({
+        error: "That quiz does not have any questions"
+      });
+
+    });
+  },
+
+  //Used for power point I think?
   getQuizInfo: function(req, res) {
     var data = req.params.all();
     var response = [];

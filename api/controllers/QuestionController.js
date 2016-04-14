@@ -278,7 +278,7 @@ module.exports = {
         });
       }
       console.log("found student");
-      Answer.findOne({text: req.param('answer')}).exec(function (err, answer) {
+      Answer.findOne({text: req.param('answer'), question: req.param('quest_id')}).exec(function (err, answer) {
         if(err) {
           console.log("answer error");
           return res.json({
@@ -313,6 +313,35 @@ module.exports = {
     });
   },
 
+  getQuestionAndUserAnswer: function(req, res) {
+    var data = req.params.all();
+
+    Question.findOne({id: data.question}).exec(function(err, q) {
+      Student.findOne({email: data.student}).exec(function(err, s) {
+        StudentAnswer.findOne({student: s.id, question: data.question}).exec(function(err, studentanswer) {
+          questionWithStudentAnswer = {};
+
+          questionWithStudentAnswer.question = q.text;
+          questionWithStudentAnswer.student_answer = studentanswer.answer;
+
+          return res.send(200, questionWithStudentAnswer);
+        });
+      });
+    });
+  },
+
+  getQuestionAnswers: function(req,res) {
+    var data = req.params.all();
+    Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
+      if(q.answers.length != 0) {
+        return res.send(200, q.answers);
+      }
+      return res.json({
+        error: "No answers for that question"
+      });
+    });
+  },
+
   answerFreeResponse: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
@@ -320,7 +349,21 @@ module.exports = {
     console.log("Answer: " + req.param('answer'));
 
     Student.findOne({email : req.param('user_email')}).exec(function(err, student) {
+      var data = {
+        student: student.id,
+        question: req.param('quest_id'),
+        answer: req.param('answer'),
+        quiz: req.param('quiz_id')
+      };
+      StudentAnswer.create(data).exec(function(err, studentanswer) {
+        if(err) {
+          return res.json({
+            error: "answer not created"
+          });
+        }
 
+        return res.send(200, studentanswer);
+      });
     });
   }
 };

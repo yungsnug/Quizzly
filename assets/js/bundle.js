@@ -1344,6 +1344,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var Promise = require('bluebird');
 
+// Global Variable used to determine whether to use a bar or Line Chart
+var isBarChartGlobal = true;
+
 /*
   Create Array of Colors to Shuffle Through
   When Displaying Chart Data
@@ -1503,6 +1506,7 @@ function getLineChartValueOptions() {
     responsive: true,
     animation: true,
     showScale: true,
+    scaleBeginAtZero: true,
     multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>"
   };
   return options;
@@ -1513,6 +1517,7 @@ function getLineChartPercentOptions() {
     responsive: true,
     animation: true,
     showScale: true,
+    scaleBeginAtZero: true,
     multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>" + "%"
   };
   return options;
@@ -1655,6 +1660,8 @@ var Metrics = function (_React$Component) {
                 /*Show percent correct of each quiz*/
                 //Labels will be ALL quizzes
                 console.log("section else statement!");
+                isBarChartGlobal = true; // Bar Chart
+
                 console.log("SELECTED_QUIZ", selected_quiz);
                 // this.createAllQuizzesMetric(selected_quiz)
                 // .then(function(quizzesMet){
@@ -1666,6 +1673,8 @@ var Metrics = function (_React$Component) {
               /*Show percent correct of each question*/
               //Labels will be questions
               console.log("quiz else statement!");
+              isBarChartGlobal = true; // Bar Chart
+
               var countsTotal = [];
               var labelsTotal = [];
               var countsArrays = []; // array of all counts for quiz - for metrics data
@@ -1734,6 +1743,8 @@ var Metrics = function (_React$Component) {
           //Question else
           /*Show all answers and number of students who answered question*/
           console.log("question else statement!");
+          isBarChartGlobal = true; // Bar Chart
+
           //Get labels (answers for question)
 
           var answer_store = [];
@@ -1772,8 +1783,11 @@ var Metrics = function (_React$Component) {
         // e.options[]
         //Need student id
         // selected_student.
+        console.log("Single Student Metrics");
+        isBarChartGlobal = false; // Line Chart
         console.log("selected_student: ", selected_student);
         //Need students answers
+        var studentName = selected_student.firstName;
         var quiz = [];
         var quizTitleArray = [];
         var quizAnswerCorrectArray = [];
@@ -1867,23 +1881,26 @@ var Metrics = function (_React$Component) {
                   //Calculate percentage
                   var quizPercent = [];
                   for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
-                    quizPercent.push(quizAnswerCorrectArray[k] / totalQuestionsPerQuiz[k]);
+                    quizPercent.push(quizAnswerCorrectArray[k] / totalQuestionsPerQuiz[k] * 100);
                   }
 
                   //Percent
                   console.log("quizPercent: ", quizPercent);
+                  console.log("studentName: ", studentName);
                   //Quiz Name
                   console.log("quizTitleArray: ", quizTitleArray);
 
-                  //SPENCER!!!!! GRAPH STUFF HERE!
+                  data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
+                  console.log("data: ", data);
+                  return res(data);
                 });
               } else {
 
-                  if (student_answer_sorted[i].answer.correct) {
-                    correctCountPerQuiz++;
-                  }
-                  // totalPerQuiz++;
+                if (student_answer_sorted[i].answer.correct) {
+                  correctCountPerQuiz++;
                 }
+                // totalPerQuiz++;
+              }
               console.log("correctCountPerQuiz", correctCountPerQuiz);
               // quizTitleArray.push(student_answer_sorted[i].quiz.title);
               // quizAnswerArray.push(student_answer_sorted[i]);
@@ -2203,16 +2220,31 @@ var Metrics = function (_React$Component) {
       ctx.canvas.width = 400;
       ctx.canvas.height = 200;
 
-      // var mainLabelLine = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4"];
-      // var pointLabelsLine = ["Mary", "Joey", "Class Average"];
-      // var dataArraysLine = [[80, 60, 78, 92],[64, 62, 77, 83],[84, 65, 87, 86]];
-
-      // var lineChartData = getLineChartData(mainLabelLine, pointLabelsLine, dataArraysLine);
-
-      var options = getBarChartValueOptions();
       this.doMath(1, function (data) {
-        var myNewChart = new Chart(ctx).Bar(data, options);
+        if (isBarChartGlobal) {
+          console.log('IS BAR CHART');
+          var options = getBarChartValueOptions();
+          var myNewChart = new Chart(ctx).Bar(data, options);
+        } else {
+          console.log('IS LINE CHART');
+          var options = getLineChartPercentOptions();
+          var myNewChart = new Chart(ctx).Line(data, options);
+        }
       });
+
+      // if (isBarChartGlobal) {
+      //   console.log('IS BAR CHART');
+      //   var options = getBarChartValueOptions();
+      //   this.doMath(1, function(data){
+      //     var myNewChart = new Chart(ctx).Bar(data,options);
+      //   });
+      // } else {
+      //   console.log('IS LINE CHART');
+      //   var options = getLineChartPercentOptions();
+      //   this.doMath(1, function(data){
+      //     var myNewChart = new Chart(ctx).Line(data,options);
+      //   });
+      // }
 
       // $("#myChart").click(function(evt){
       //   var activeBars = myNewChart.getBarsAtEvent(evt);
