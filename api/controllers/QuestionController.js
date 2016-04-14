@@ -313,6 +313,26 @@ module.exports = {
     });
   },
 
+  getQuestionAndUserAnswer: function(req, res) {
+    var data = req.params.all();
+
+    Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
+      StudentAnswer.findOne({student: data.student, question: data.question}).exec(function(err, studentanswer) {
+        questionWithStudentAnswer = {};
+
+        questionWithStudentAnswer.question = q.text;
+
+        if(q.answers.length != 0) {
+          questionWithStudentAnswer.answers = q.answers;
+        }
+
+        questionWithStudentAnswer.student_answer = studentanswer.answer;
+
+        return res.send(200, questionWithStudentAnswer);
+      });
+    });
+  },
+
   answerFreeResponse: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
