@@ -67,30 +67,24 @@ module.exports = {
     var data = req.params.all();
     console.log(data);
     var UserType = {};
-    if(data.isProfessor == 'true') {
-      Professor.create({email: data.email, password: data.password, firstName: data.firstName, lastName: data.lastName})
-      .exec(function(err, user) {
-        console.log("signed up professor", user);
-        user.password = "";
-        delete user.password;
-
-        req.session.user = user;
-        console.log("req.session", req.session);
-        res.json(user);
-      });
+    if(data.isProfessor == 'true' || data.isProfessor == 'YES') {
+      console.log("signed up professor");
+      UserType = Professor;
     } else {
-      console.log(">>>>>>>>>>>> creating a student");
-      Student.create({email: data.email, password: data.password, firstName: data.firstName, lastName: data.lastName})
-      .exec(function(err, user) {
-        console.log("signed up student", user);
-        user.password = "";
-        delete user.password;
-
-        req.session.user = user;
-        console.log("req.session", req.session);
-        res.json(user);
-      });
+      console.log("signed up student");
+      UserType = Student;
     }
+
+    UserType.create({email: data.email, password: data.password, firstName: data.firstName, lastName: data.lastName})
+    .exec(function(err, user) {
+      console.log("signed up user", user);
+      user.password = "";
+      delete user.password;
+
+      req.session.user = user;
+      console.log("req.session", req.session);
+      res.json(user);
+    });
   },
   logout: function(req, res) {
     delete req.session.user;
