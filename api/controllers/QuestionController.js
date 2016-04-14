@@ -317,18 +317,20 @@ module.exports = {
     var data = req.params.all();
 
     Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
-      StudentAnswer.findOne({student: data.student, question: data.question}).exec(function(err, studentanswer) {
-        questionWithStudentAnswer = {};
+      Student.findOne({email: data.student}).exec(function(err, s) {
+        StudentAnswer.findOne({student: s.id, question: data.question}).exec(function(err, studentanswer) {
+          questionWithStudentAnswer = {};
 
-        questionWithStudentAnswer.question = q.text;
+          questionWithStudentAnswer.question = q.text;
 
-        if(q.answers.length != 0) {
-          questionWithStudentAnswer.answers = q.answers;
-        }
+          if(q.answers.length != 0) {
+            questionWithStudentAnswer.answers = q.answers;
+          }
 
-        questionWithStudentAnswer.student_answer = studentanswer.answer;
+          questionWithStudentAnswer.student_answer = studentanswer.answer;
 
-        return res.send(200, questionWithStudentAnswer);
+          return res.send(200, questionWithStudentAnswer);
+        });
       });
     });
   },
