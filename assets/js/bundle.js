@@ -809,7 +809,6 @@ var _class = function (_React$Component) {
       if (!password || !email) {
         return;
       }
-      console.log("this", this);
       if (this.state.isSignIn) {
         $.post('/login', { email: email, password: password }, function (user) {
           console.log("User is logged in", user);
@@ -836,7 +835,7 @@ var _class = function (_React$Component) {
           return;
         }
 
-        $.post('/signup', { email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor }, function (user) {
+        $.post('/signup', { email: email, password: password, firstName: firstName, lastName: lastName, isProfessor: isProfessor }).then(function (user) {
           console.log("User is logged in", user);
           var route = 'p';
           if (isProfessor) {
@@ -2626,9 +2625,6 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'askQuestion',
     value: function askQuestion(quizIndex, questionIndex, sectionId) {
-      console.log("quizIndex", quizIndex);
-      console.log("questionIndex", questionIndex);
-      console.log("sectionId", sectionId);
       var question = this.state.quizzes[quizIndex].questions[questionIndex];
       return $.post('/question/askWithSection/', { question: question.id, section: sectionId }).then(function () {
         console.log("asked question success!");
@@ -4386,6 +4382,11 @@ var _class = function (_React$Component) {
       });
     }
   }, {
+    key: "closeSectionsModal",
+    value: function closeSectionsModal() {
+      this.setState({ showSelectionSection: false });
+    }
+  }, {
     key: "mouseEnter",
     value: function mouseEnter() {
       this.setState({ hover: true });
@@ -4443,7 +4444,12 @@ var _class = function (_React$Component) {
               _react2.default.createElement(
                 "div",
                 { className: "lightGreenBackground roundTop borderBottom p10 mb10 bold" },
-                "Select Section"
+                "Select Section",
+                _react2.default.createElement(
+                  "span",
+                  { className: "floatR pointer", onClick: _this2.closeSectionsModal.bind(_this2) },
+                  _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "12px" } })
+                )
               ),
               _this2.state.sections.map(function (section, sectionIndex) {
                 return _react2.default.createElement(

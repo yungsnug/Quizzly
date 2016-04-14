@@ -37,6 +37,10 @@ export default class extends React.Component {
     });
   }
 
+  closeSectionsModal() {
+    this.setState({showSelectionSection: false});
+  }
+
   mouseEnter() {
     this.setState({hover: true});
   }
@@ -66,7 +70,10 @@ export default class extends React.Component {
           if(this.state.showSelectionSection) {
             return (
               <div className="round absolute outerShadow whiteBackground small" style={{marginLeft: "271px", top: "0", zIndex: "10000"}}>
-                <div className="lightGreenBackground roundTop borderBottom p10 mb10 bold">Select Section</div>
+                <div className="lightGreenBackground roundTop borderBottom p10 mb10 bold">
+                  Select Section
+                  <span className="floatR pointer" onClick={this.closeSectionsModal.bind(this)}><img src={CLOSE_IMAGE_PATH} style={{"width":"12px"}}/></span>
+                </div>
                 {this.state.sections.map(function(section, sectionIndex) {
                   return (
                     <div className="pointer pl10 pr10 pb10" key={sectionIndex} onClick={this.askQuestion.bind(this, this.props.quizIndex, this.props.questionIndex, section.id)}>{section.title}</div>
