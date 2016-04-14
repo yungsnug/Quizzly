@@ -236,9 +236,12 @@ export default class Quizzes extends React.Component {
     });
   }
 
-  askQuestion(quizIndex, questionIndex) {
+  askQuestion(quizIndex, questionIndex, sectionId) {
+    console.log("quizIndex", quizIndex);
+    console.log("questionIndex", questionIndex);
+    console.log("sectionId", sectionId);
     var question = this.state.quizzes[quizIndex].questions[questionIndex];
-    return $.post('/question/ask/', {id: question.id})
+    return $.post('/question/askWithSection/', {question: question.id, section: sectionId})
     .then(function() {
       console.log("asked question success!");
     });
