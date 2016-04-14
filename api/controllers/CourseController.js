@@ -17,5 +17,14 @@ module.exports = {
     Course.destroy({id: data.ids}).exec(function(err, courses) {
       res.json(courses);
     });
+  },
+
+  getCourseQuizzes: function(req,res) {
+    var data = req.params.all();
+    Course.findOne({id: data.id}).populate('quizzes').exec(function(err, course) {
+      return res.json({
+        quizzes: course.quizzes
+      });
+    });
   }
 };
