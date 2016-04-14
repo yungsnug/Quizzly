@@ -352,7 +352,7 @@ module.exports = {
       var data = {
         student: student.id,
         question: req.param('quest_id'),
-        answer: req.param('answer'),
+        text: req.param('answer'),
         quiz: req.param('quiz_id')
       };
       StudentAnswer.create(data).exec(function(err, studentanswer) {
