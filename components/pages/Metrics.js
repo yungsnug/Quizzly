@@ -958,7 +958,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.section.id} className="dropdown mr10" onChange={this.changeSection.bind(this)}>
               {this.state.isAllSectionsOptionAvailable ? <option value={this.state.allSections.id}>{this.state.allSections.title}</option> : null }
               {this.state.sections.map(function(section, sectionIndex) {
-                return <option key={sectionIndex} value={section.id}>{section.title}</option>
+                return <option key={sectionIndex} value={sectionIndex+1}>{section.title}</option>
               })}
             </select>
           </div>
@@ -967,7 +967,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.student.id} className="dropdown mr10" onChange={this.changeStudent.bind(this)}>
               {this.state.isAllStudentsOptionAvailable ? <option value={this.state.allStudents.id}>{this.state.allStudents.title}</option> : null }
               {this.state.students.map(function(student, studentIndex) {
-                return <option key={studentIndex} value={student.id}>{student.firstName}</option>
+                return <option key={studentIndex} value={studentIndex+1}>{student.firstName}</option>
               })}
             </select>
           </div>
@@ -976,7 +976,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.quiz.id} className="dropdown mr10" onChange={this.changeQuiz.bind(this)}>
               {this.state.isAllQuizzesOptionAvailable ? <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option> : null }
               {this.state.quizzes.map(function(quiz, quizIndex) {
-                return <option key={quizIndex} value={quiz.id}>{quiz.title}</option>
+                return <option key={quizIndex} value={quizIndex+1}>{quiz.title}</option>
               })}
             </select>
           </div>
