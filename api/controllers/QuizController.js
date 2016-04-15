@@ -23,10 +23,11 @@ module.exports = {
     });
   },
 
+  //Two parameters, quiz and email
   //this will return only the questions that have been answered by that user
   getQuizQuestions: function(req, res) {
     var data = req.params.all();
-
+/*
     Student.findOne({email: data.student}).exec(function(err, s) {
       console.log("id: " + s.id);
       StudentAnswer.find({student: s.id, quiz: data.quiz}).populate('question').exec(function(err, answers) {
@@ -37,14 +38,14 @@ module.exports = {
           if(!(answer.question.id in dict)) {
             dict[answer.question.id] = 1;
             questions.push(answer.question);
-          }          
+          }
         });
 
         return res.send(200, questions);
       });
-    });
+    });*/
 
-    /*
+
     Quiz.findOne({id: data.id}).populate('questions').exec(function(err, quiz) {
       if(quiz.questions.length != 0) {
         return res.send(200, quiz.questions);
@@ -54,7 +55,7 @@ module.exports = {
         error: "That quiz does not have any questions"
       });
 
-    });*/
+    });
   },
 
   //Used for power point I think?
@@ -105,6 +106,7 @@ module.exports = {
     });
   },
 
+  //Failed powerpoint graph that may work with some more effort
   displayPowerPointGraph: function (req, res) {
     var data = req.params.all();
 

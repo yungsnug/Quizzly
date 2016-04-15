@@ -60,6 +60,9 @@ module.exports = {
     });
   },
 
+  //One parameter id
+  //Asks ALL students this question
+  //No longer used
   ask: function(req, res) {
     //console.log("ask api hit");
     Question.findOne({id:req.query.id}).populate('answers').exec(function (err, question) {
@@ -135,6 +138,8 @@ module.exports = {
     });
   },
 
+  //Two parameters, question_id and section_id
+  //Asks users in the specified section the question
   askWithSection: function(req, res) {
     var question_id = req.query.question;
     var section_id = req.query.section;
@@ -199,7 +204,8 @@ module.exports = {
         question.answers.forEach(function(answer) {
           pushInfo.notification.android.extra.answers.push(answer);
         });
-        //Debug with Android to see how it will receive an array of answers objects
+
+        would be nice, but you can't put an array in "extra"
         */
         if(question.answers.length != 0) {
           pushInfo.notification.android.extra.answer0 = question.answers[0].text;
@@ -261,6 +267,7 @@ module.exports = {
     });
   },
 
+  //Used by iOS and Android to answer multiple choice questions
   answer: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
@@ -313,12 +320,17 @@ module.exports = {
     });
   },
 
+  //Returns the question text and the ID of the answer that the user selected
+  //Used for Android stats page
   getQuestionAndUserAnswer: function(req, res) {
     var data = req.params.all();
 
     Question.findOne({id: data.question}).exec(function(err, q) {
       Student.findOne({email: data.student}).exec(function(err, s) {
         StudentAnswer.findOne({student: s.id, question: data.question}).exec(function(err, studentanswer) {
+          if(!studentanswer) {
+            return res.send(200, []);
+          }
           questionWithStudentAnswer = {};
 
           questionWithStudentAnswer.question = q.text;
@@ -330,6 +342,8 @@ module.exports = {
     });
   },
 
+  //Returns all the answers for that question
+  //Used for Android stats page
   getQuestionAnswers: function(req,res) {
     var data = req.params.all();
     Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
@@ -342,6 +356,7 @@ module.exports = {
     });
   },
 
+  //Used by iOS and Android to answer free response questions
   answerFreeResponse: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
     console.log("Quiz ID: " + req.param('quiz_id'));
