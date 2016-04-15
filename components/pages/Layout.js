@@ -104,7 +104,13 @@ export default class Layout extends React.Component {
       .then(function(section) {
         section.students.map(function(student) {
           if(me.state.user.id == student.id) {
-            browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+            $.post('/studentanswer/find', {question: data.questionId, student: student.id})
+            .then(function(studentanswer) {
+              console.log(studentanswer);
+              if(studentanswer.length == 0) { // the student has not answered this question before
+                browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+              }
+            });
           }
         });
       });

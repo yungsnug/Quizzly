@@ -1186,7 +1186,13 @@ var Layout = function (_React$Component) {
         $.post('/section/find/' + data.sectionId).then(function (section) {
           section.students.map(function (student) {
             if (me.state.user.id == student.id) {
-              _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+              $.post('/studentanswer/find', { question: data.questionId, student: student.id }).then(function (studentanswer) {
+                console.log(studentanswer);
+                if (studentanswer.length == 0) {
+                  // the student has not answered this question before
+                  _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+                }
+              });
             }
           });
         });
