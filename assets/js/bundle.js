@@ -233,8 +233,11 @@ var _class = function (_React$Component) {
     value: function getSelectedAnswer() {
       var question = this.state.question;
       var selectedAnswer = {};
+      console.log(">>>>>>>>>>>getSelectedAnswer");
       question.answers.map(function (answer) {
-        if (answer.correct) {
+        console.log(">>>>>>>>>>>each answer", answer);
+        if (answer.isSelected) {
+          console.log(">>>>>>>>>>>answer selected", answer);
           selectedAnswer = answer;
         }
       });
@@ -258,6 +261,8 @@ var _class = function (_React$Component) {
         case 'freeResponse':
           break;
       }
+
+      console.log(">>>>>>>>final answer selected", answer);
 
       $.post('/section/getSectionByStudentAndCourse', { studentId: student.id, courseId: quiz.course }).then(function (section) {
         return $.post('/studentanswer/create', {
@@ -3802,7 +3807,7 @@ var AddQuestionBody = function (_React$Component) {
     key: "addQuestionToQuiz",
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
       if (question.text.trim().length == 0) return;
-      if (!this.correctAnswerIsSet(question)) {
+      if (!this.correctAnswerIsSet(question) && this.state.isFreeResponse) {
         this.setState({ showHelperMessage: true });
         return;
       }
@@ -3909,7 +3914,7 @@ var AddQuestionBody = function (_React$Component) {
           questionAnswer,
           answers
         ),
-        this.state.showHelperMessage ? _react2.default.createElement(
+        this.state.showHelperMessage && !this.state.isFreeResponse ? _react2.default.createElement(
           "div",
           { className: "small alignC pb20 red" },
           "Please indicate a correct answer"
