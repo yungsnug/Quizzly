@@ -1655,6 +1655,154 @@ var Metrics = function (_React$Component) {
               //Labels will be sections
               console.log("section if statement!");
               //console.log("SELECTED COURSE", selected_course);
+              isBarChartGlobal = true;
+              console.log("selected_section", selected_section);
+              var section_count = 0;
+              Promise.each(selected_section, function (section) {
+
+                //TOP
+
+                var quiz = [];
+                var quizTitleArray = [];
+                var quizAnswerCorrectArray = [];
+                var quizIDArray = [];
+                $.post('/studentanswer/find', { section: section.id }).then(function (student_answer) {
+                  console.log("student_answer: ", student_answer);
+
+                  student_answer.sort(function (a, b) {
+                    return parseInt(a.quiz.id) - parseInt(b.quiz.id);
+                  });
+
+                  return student_answer;
+                }).then(function (student_answer_sorted) {
+
+                  console.log("student_answer_sorted: ", student_answer_sorted);
+                  //For each quiz (calculate percent)
+                  if (student_answer_sorted.length > 0) {
+                    var currentQuizId;
+                    currentQuizId = student_answer_sorted[0].quiz.id;
+                    // quizIDArray.push(student_answer_sorted[0].quiz.id);
+                    // quizTitleArray.push(student_answer_sorted[0].quiz.title);
+
+                    // $.post('/answers/find', {student: selected_student.id})
+                    //  .then(function(student_answer){
+
+                    //  });
+
+                    var correctCountPerQuiz = 0;
+                    // var totalPerQuiz = 0;
+                    // var percent;
+                    //iterate
+
+                    console.log("student_answer_sorted.length: ", student_answer_sorted.length);
+                    for (var i = 0; i < student_answer_sorted.length; i++) {
+                      //if answer == null then don't do anything
+                      if (student_answer_sorted[i].question.type == "multipleChoice") {
+
+                        if (currentQuizId != student_answer_sorted[i].quiz.id) {
+                          currentQuizId = student_answer_sorted[i].quiz.id;
+                          // percent = correctCountPerQuiz/totalPerQuiz;
+                          // console.log("percent: ",percent);
+
+                          // if (i != student_answer_sorted.length -1) {
+                          quizTitleArray.push(student_answer_sorted[i - 1].quiz.title);
+                          quizIDArray.push(student_answer_sorted[i - 1].quiz.id);
+                          // }
+
+                          quizAnswerCorrectArray.push(correctCountPerQuiz);
+                          console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
+                          console.log("1quizTitleArray: ", quizTitleArray);
+                          correctCountPerQuiz = 0;
+
+                          // totalPerQuiz = 0;
+                          // if (student_answer_sorted[i].answer.correct){
+                          //   correctCountPerQuiz++;
+                          // }
+
+                          // totalPerQuiz++;
+                        }
+                        if (i == student_answer_sorted.length - 1) {
+                          if (student_answer_sorted[i].answer.correct) {
+                            correctCountPerQuiz++;
+                          }
+                          // totalPerQuiz++;
+                          // percent = correctCountPerQuiz/totalPerQuiz;
+                          // console.log("percent: ",percent);
+                          quizTitleArray.push(student_answer_sorted[i].quiz.title);
+                          quizAnswerCorrectArray.push(correctCountPerQuiz);
+                          quizIDArray.push(student_answer_sorted[i].quiz.id);
+                          console.log("2quizAnswerCorrectArray: ", quizAnswerCorrectArray);
+                          console.log("2quizTitleArray: ", quizTitleArray);
+                          console.log("quizIDArray: ", quizIDArray);
+
+                          var totalQuestionsPerQuiz = [];
+                          var type = "multipleChoice";
+                          Promise.each(quizIDArray, function (quiz) {
+                            return $.post('/question/find', { quiz: quiz, type: type }).then(function (questions) {
+                              totalQuestionsPerQuiz.push(questions.length);
+                              console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+                            });
+                          }).then(function () {
+
+                            console.log("quizIDArray", quizIDArray);
+                            // for (var j = 0; j < quizIDArray.length; j++) {
+
+                            //     $.post('/question/find', {quiz: quizIDArray[j]})
+                            //       .then(function(questions){
+                            //         totalQuestionsPerQuiz.push(questions.length);
+                            //         console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+                            //     });
+                            // }
+                            console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+                            console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
+
+                            var totalStudents;
+                            //Get total number of students
+                            $.post('/student/getStudentsBySectionId/', { id: section.id }).then(function (students) {
+                              totalStudents = students.length;
+                              console.log("totalStudents: ", totalStudents);
+
+                              //Calculate percentage
+                              var quizPercent = [];
+                              for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
+                                quizPercent.push(quizAnswerCorrectArray[k] / (totalQuestionsPerQuiz[k] * totalStudents) * 100);
+                              }
+
+                              //Percent
+                              console.log("quizPercent: ", quizPercent);
+                              console.log("studentName: ", studentName);
+                              //Quiz Name
+                              console.log("quizTitleArray: ", quizTitleArray);
+                              //if last one
+                              section_count++;
+                              if (section_count == selected_section.length) {
+                                data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
+                                console.log("data: ", data);
+                                return res(data);
+                              }
+                            });
+                          });
+                        } else {
+                          console.log("I: ", i);
+                          if (student_answer_sorted[i].answer.correct) {
+                            correctCountPerQuiz++;
+                          }
+                          // totalPerQuiz++;
+                        }
+                        console.log("correctCountPerQuiz", correctCountPerQuiz);
+                      }
+                      // quizTitleArray.push(student_answer_sorted[i].quiz.title);
+                      // quizAnswerArray.push(student_answer_sorted[i]);
+                      // currentQuizId =
+                    }
+                  } else {
+                      //if no answers at all
+
+                    }
+                });
+
+                //BOTTOM
+              });
             } else {
                 //section else
                 /*Show percent correct of each quiz*/
@@ -1662,12 +1810,13 @@ var Metrics = function (_React$Component) {
                 console.log("section else statement!");
                 isBarChartGlobal = true; // Bar Chart
 
+                //TOP
                 var studentName = selected_student.firstName;
                 var quiz = [];
                 var quizTitleArray = [];
                 var quizAnswerCorrectArray = [];
                 var quizIDArray = [];
-                $.post('/studentanswer/find', { quiz: selected_quiz.id }).then(function (student_answer) {
+                $.post('/studentanswer/find', { section: selected_section.id }).then(function (student_answer) {
                   console.log("student_answer: ", student_answer);
 
                   student_answer.sort(function (a, b) {
@@ -1798,6 +1947,8 @@ var Metrics = function (_React$Component) {
 
                     }
                 });
+
+                //BOTTOM
               }
           } else {
               //Quiz else
