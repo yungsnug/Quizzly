@@ -221,27 +221,35 @@ export default class Layout extends React.Component {
   }
 
   deleteCourseFromProfessor(course) {
+    console.log(">>>>>>>> deleting shit", course);
     var me = this;
 
-    var sectionIds = course.sections.map(function(section){return section.id;});
-    var quizIds = course.quizzes.map(function(quiz){return quiz.id;});
+    var sectionIds = [];
+    course.sections.map(function(section){sectionIds.push(section.id);});
+    var quizIds = [];
+    course.quizzes.map(function(quiz){quizIds.push(quiz.id);});
     var questionIds = [];
     var answerIds = [];
 
     return $.post('/question/find', {quiz: quizIds})
     .then(function(questions) {
-      questionIds = questions.map(function(question){return question.id;});
+      console.log("questions", questions);
+      console.log("quizIds", quizIds);
+      questionIds = [];
+      questions.map(function(question){ questionIds.push(question.id);});
       return $.post('/answer/find', {question: questionIds})
     })
     .then(function(answers) {
-      answerIds = answers.map(function(answer){return answer.id;});
-      return $.when(
-        $.post('/course/destroy', {id: course.id}),
-        $.post('/section/multidestroy', {ids: sectionIds}),
-        $.post('/quiz/multidestroy', {ids: quizIds}),
-        $.post('/question/multidestroy', {ids: questionIds}),
-        $.post('/answer/multidestroy', {ids: answerIds})
-      );
+      answerIds = [];
+      answers.map(function(answer){answerIds.push(answer.id);});
+      return $.post('/course/destroy', {id: course.id});
+      // return $.when(
+      //   ,
+        // $.post('/section/multidestroy', {ids: sectionIds}),
+        // $.post('/quiz/multidestroy', {ids: quizIds}),
+        // $.post('/question/multidestroy', {ids: questionIds}),
+        // $.post('/answer/multidestroy', {ids: answerIds})
+      // );
     })
     .then(function() {
       return $.post('/professor/find/' + me.state.user.id);
