@@ -22,10 +22,6 @@ export default class extends React.Component {
     this.getQustionFromUrl();
   }
 
-  componentWillReceiveProps(newProps) {
-    console.log("componentWillReceiveProps");
-  }
-
   getQustionFromUrl() {
     var me = this;
     var array = window.location.pathname.split('/');

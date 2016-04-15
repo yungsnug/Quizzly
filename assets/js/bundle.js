@@ -117,11 +117,6 @@ var _class = function (_React$Component) {
       this.getQustionFromUrl();
     }
   }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(newProps) {
-      console.log("componentWillReceiveProps");
-    }
-  }, {
     key: "getQustionFromUrl",
     value: function getQustionFromUrl() {
       var me = this;
@@ -2630,7 +2625,6 @@ var Quizzes = function (_React$Component) {
     key: 'getQuizzesFromCourseId',
     value: function getQuizzesFromCourseId(courseId) {
       var me = this;
-      console.log("componentDidMount");
       $.post("/quiz/find", { course: courseId }).then(function (quizzes) {
         console.log("quizzes", quizzes);
 
@@ -2718,7 +2712,7 @@ var Quizzes = function (_React$Component) {
     value: function updateQuestion(question, quizIndex, questionIndex) {
       var quizzes = this.state.quizzes;
       var me = this;
-      $.post('/question/update/' + question.id, { text: question.text, type: question.type }).then(function (question) {
+      $.post('/question/update/' + question.id, { text: question.text, type: question.type, duration: question.duration }).then(function (question) {
         quizzes[quizIndex].questions[questionIndex] = question;
         me.setState({ quizzes: quizzes });
       }).then(function () {
@@ -2751,7 +2745,7 @@ var Quizzes = function (_React$Component) {
         }
       }
 
-      $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers }).then(function (createdQuestion) {
+      $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers, duration: question.duration }).then(function (createdQuestion) {
         quizzes[quizIndex].questions.push(createdQuestion);
         me.setState({ quizzes: quizzes });
         me.closeModal();
@@ -2987,15 +2981,11 @@ var _class = function (_React$Component) {
   _createClass(_class, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      console.log("componentDidMount");
-      console.log(this.props);
       this.getQuizzesFromCourseId(this.props.course.id);
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
-      console.log("componentWillReceiveProps");
-      console.log(newProps);
       this.getQuizzesFromCourseId(newProps.course.id);
     }
   }, {
@@ -3469,6 +3459,7 @@ var AddQuestionBody = function (_React$Component) {
 
     var question = {
       type: "multipleChoice",
+      duration: 1,
       text: "",
       answers: [{ option: "A", text: "", correct: false }, { option: "B", text: "", correct: false }, { option: "C", text: "", correct: false }]
     };
@@ -3508,6 +3499,8 @@ var AddQuestionBody = function (_React$Component) {
       var question = this.state.question;
       if (i == 'question') {
         question.text = event.target.value;
+      } else if (i == 'duration') {
+        question.duration = event.target.value;
       } else {
         question.answers[i].text = event.target.value;
       }
@@ -3554,6 +3547,12 @@ var AddQuestionBody = function (_React$Component) {
       this.setState({ question: question });
     }
   }, {
+    key: "addQuestionToQuiz",
+    value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
+
+      this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
+    }
+  }, {
     key: "render",
     value: function render() {
       var me = this;
@@ -3566,6 +3565,19 @@ var AddQuestionBody = function (_React$Component) {
           placeholder: "Question...",
           value: this.state.question.text,
           onChange: this.handleChange.bind(this, 'question')
+        }),
+        _react2.default.createElement(
+          "div",
+          { className: "nowrap mr10 ml10" },
+          "Time Limit"
+        ),
+        _react2.default.createElement("input", {
+          type: "number",
+          className: "addCourseInput alignC",
+          value: this.state.question.duration,
+          min: "1",
+          onChange: this.handleChange.bind(this, 'duration'),
+          style: { maxWidth: "50px" }
         })
       );
 
@@ -3577,7 +3589,7 @@ var AddQuestionBody = function (_React$Component) {
             { className: "flex mb20 flexVertical", key: answerIndex },
             _react2.default.createElement(
               "span",
-              { className: "mr15 pointer", onClick: me.setAsCorrectAnswer.bind(me, answerIndex) },
+              { className: "mr15 greenButton", onClick: me.setAsCorrectAnswer.bind(me, answerIndex) },
               answer.option,
               ".)"
             ),
@@ -3633,7 +3645,7 @@ var AddQuestionBody = function (_React$Component) {
           { className: "pb20 pl20 pr20" },
           _react2.default.createElement(
             "div",
-            { className: "modalButton", onClick: this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex) },
+            { className: "modalButton", onClick: this.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex) },
             "SAVE QUESTION"
           )
         ),

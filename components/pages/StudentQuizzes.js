@@ -18,14 +18,10 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount");
-    console.log(this.props);
     this.getQuizzesFromCourseId(this.props.course.id);
   }
 
   componentWillReceiveProps(newProps) {
-    console.log("componentWillReceiveProps");
-    console.log(newProps);
     this.getQuizzesFromCourseId(newProps.course.id);
   }
 
