@@ -16,8 +16,7 @@ export default class extends React.Component {
       },
       selectedAnswer: {},
       freeResponseAnswer: "",
-      user: {},
-      counter: {}
+      user: {}
     };
   }
 
@@ -33,7 +32,8 @@ export default class extends React.Component {
 
   startTimer(duration) {
     var me = this;
-    var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+    counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+
     function timer() {
       duration--;
       var question = me.state.question;
@@ -130,10 +130,13 @@ export default class extends React.Component {
   }
 
   getSelectedAnswer() {
+    console.log(">>>>>>>>>> selecting answer");
     var question = this.state.question;
     var selectedAnswer = {};
     question.answers.map(function(answer) {
-      if(answer.correct) {
+      console.log(">>>>>>>>>> answer in each loop", answer);
+      if(answer.isSelected) {
+        console.log(">>>>>>>>>> answer that is selected", answer);
         selectedAnswer = answer;
       }
     });
@@ -157,6 +160,7 @@ export default class extends React.Component {
         break;
     }
 
+    console.log("??????????? final answer selected", answer);
     $.post('/section/getSectionByStudentAndCourse', {studentId: student.id, courseId: quiz.course})
     .then(function(section) {
       return $.post('/studentanswer/create', {
@@ -171,7 +175,7 @@ export default class extends React.Component {
     })
     .then(function(studentAnswer) {
       console.log("studentAnswer saved", studentAnswer);
-      // clearInterval(me.state.counter);
+      clearInterval(counter);
       browserHistory.push('/s/quizzes');
     });
   }
@@ -224,3 +228,5 @@ export default class extends React.Component {
     );
   }
 }
+
+var counter;

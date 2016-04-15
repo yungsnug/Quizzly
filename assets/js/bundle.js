@@ -109,8 +109,7 @@ var _class = function (_React$Component) {
       },
       selectedAnswer: {},
       freeResponseAnswer: "",
-      user: {},
-      counter: {}
+      user: {}
     };
     return _this;
   }
@@ -129,7 +128,8 @@ var _class = function (_React$Component) {
     key: 'startTimer',
     value: function startTimer(duration) {
       var me = this;
-      var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+      counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+
       function timer() {
         duration--;
         var question = me.state.question;
@@ -231,10 +231,13 @@ var _class = function (_React$Component) {
   }, {
     key: 'getSelectedAnswer',
     value: function getSelectedAnswer() {
+      console.log(">>>>>>>>>> selecting answer");
       var question = this.state.question;
       var selectedAnswer = {};
       question.answers.map(function (answer) {
-        if (answer.correct) {
+        console.log(">>>>>>>>>> answer in each loop", answer);
+        if (answer.isSelected) {
+          console.log(">>>>>>>>>> answer that is selected", answer);
           selectedAnswer = answer;
         }
       });
@@ -259,6 +262,7 @@ var _class = function (_React$Component) {
           break;
       }
 
+      console.log("??????????? final answer selected", answer);
       $.post('/section/getSectionByStudentAndCourse', { studentId: student.id, courseId: quiz.course }).then(function (section) {
         return $.post('/studentanswer/create', {
           student: student.id,
@@ -271,7 +275,7 @@ var _class = function (_React$Component) {
         });
       }).then(function (studentAnswer) {
         console.log("studentAnswer saved", studentAnswer);
-        // clearInterval(me.state.counter);
+        clearInterval(counter);
         _reactRouter.browserHistory.push('/s/quizzes');
       });
     }
@@ -364,6 +368,9 @@ var _class = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = _class;
+
+
+var counter;
 
 },{"react":238,"react-router":103}],3:[function(require,module,exports){
 "use strict";
@@ -1179,7 +1186,13 @@ var Layout = function (_React$Component) {
         $.post('/section/find/' + data.sectionId).then(function (section) {
           section.students.map(function (student) {
             if (me.state.user.id == student.id) {
-              _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+              $.post('/studentanswer/find', { question: data.questionId, student: student.id }).then(function (studentanswer) {
+                console.log(studentanswer);
+                if (studentanswer.length == 0) {
+                  // the student has not answered this question before
+                  _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+                }
+              });
             }
           });
         });
@@ -1712,6 +1725,9 @@ var Metrics = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       console.log("in componentDidMount");
+      $.post("/studentanswer/find").then(function (ans) {
+        console.log("<><><><><><><><><ANSWERS:", ans);
+      });
       this.populateDropdowns(this.props.course);
     }
   }, {
@@ -4162,7 +4178,7 @@ var AddQuestionBody = function (_React$Component) {
     key: "addQuestionToQuiz",
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
       if (question.text.trim().length == 0) return;
-      if (!this.correctAnswerIsSet(question)) {
+      if (!this.correctAnswerIsSet(question) && this.state.isFreeResponse) {
         this.setState({ showHelperMessage: true });
         return;
       }
@@ -4269,7 +4285,7 @@ var AddQuestionBody = function (_React$Component) {
           questionAnswer,
           answers
         ),
-        this.state.showHelperMessage ? _react2.default.createElement(
+        this.state.showHelperMessage && !this.state.isFreeResponse ? _react2.default.createElement(
           "div",
           { className: "small alignC pb20 red" },
           "Please indicate a correct answer"
