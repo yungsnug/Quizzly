@@ -23,6 +23,7 @@ module.exports = {
     });
   },
 
+  //Two parameters, quiz and email
   //this will return only the questions that have been answered by that user
   getQuizQuestions: function(req, res) {
     var data = req.params.all();
@@ -37,7 +38,7 @@ module.exports = {
           if(!(answer.question.id in dict)) {
             dict[answer.question.id] = 1;
             questions.push(answer.question);
-          }          
+          }
         });
 
         return res.send(200, questions);
@@ -105,6 +106,7 @@ module.exports = {
     });
   },
 
+  //Failed powerpoint graph that may work with some more effort
   displayPowerPointGraph: function (req, res) {
     var data = req.params.all();
 
