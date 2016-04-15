@@ -133,7 +133,7 @@ export default class extends React.Component {
     var question = this.state.question;
     var selectedAnswer = {};
     question.answers.map(function(answer) {
-      if(answer.correct) {
+      if(answer.isSelected) {
         selectedAnswer = answer;
       }
     });
