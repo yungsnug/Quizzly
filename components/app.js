@@ -22,7 +22,7 @@ render((
       <Route path="s/quizzes" component={StudentQuizzes} />
       <Route path="s/metrics" component={StudentMetrics} />
     </Route>
-    <Route path="/s/question/:id" component={AskStudentQuestion} />
+    <Route path="/s/question/:questionId/:sectionId" component={AskStudentQuestion} />
     <Route path="/entrance" component={Entrance} />
     <Route path="/style" component={Style} />
   </Router>

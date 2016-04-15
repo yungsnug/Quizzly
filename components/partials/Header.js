@@ -8,10 +8,11 @@ export class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      course: props.course,
       term: props.term,
-      sections: props.course.sections,
       terms: props.terms,
+      course: props.course,
+      courses: props.courses,
+      sections: props.course.sections,
     }
   }
 
@@ -59,12 +60,12 @@ export class Header extends React.Component {
       <div id="quizzlyHeader" className="lightBlueBackground borderBottom flexVertical" style={{"height": "57px"}}>
         <div>
           <select value={this.state.term.id} className="dropdown ml10" onChange={this.changeTerm.bind(this)}>
-            {this.props.terms.map(function(term, termIndex) {
+            {this.state.terms.map(function(term, termIndex) {
               return <option key={termIndex} value={term.id}>{term.season.season + " " + term.year.year}</option>
             })}
           </select>
           <select value={this.state.course.id} className="dropdown ml10" onChange={this.changeCourse.bind(this)}>
-            {this.props.user.courses.map(function(course, courseIndex) {
+            {this.state.courses.map(function(course, courseIndex) {
               if(course.term == this.state.term.id) {
                 return <option key={courseIndex} value={course.id}>{course.title}</option>
               }

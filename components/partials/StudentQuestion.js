@@ -19,8 +19,13 @@ export default class extends React.Component {
   }
 
   render() {
+    var status = " wrong";
+    if(this.props.studentAnswer.answer == undefined || this.props.studentAnswer.answer.correct) {
+      status = " correct";
+    }
+
     return (
-      <div className={"item relative" + (this.props.studentAnswer.answer.correct ? " correct" : " wrong")} onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
+      <div className={"item relative" + status} onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
         <span className="pointer">{this.props.studentAnswer.question.text}</span>
       </div>
     );

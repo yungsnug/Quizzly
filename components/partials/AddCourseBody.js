@@ -13,8 +13,29 @@ export default class AddCourseBody extends React.Component {
         sections: [
           {title: "", placeholder: "Section..."}
         ]
-      }
+      },
+      terms: [],
+      term: {}
     };
+  }
+
+  componentDidMount() {
+    var me = this;
+    $.post('/term/find')
+    .then(function(terms) {
+      me.setState({
+        term: terms[0],
+        terms: terms
+      });
+    });
+  }
+
+  changeTerm(event, termIndex) {
+    var me = this;
+    $.post('/term/find/' + event.target.value)
+    .then(function(term) {
+      me.setState({term: term});
+    });
   }
 
   handleChange(i, event) {
@@ -82,9 +103,14 @@ export default class AddCourseBody extends React.Component {
             value={this.state.course.title}
             onChange={this.handleChange.bind(this, 'course')}
           />
+          <select value={this.state.term.id} className="dropdown ml10" onChange={this.changeTerm.bind(this)}>
+            {this.state.terms.map(function(term, termIndex) {
+              return <option key={termIndex} value={term.id}>{term.season.season + " " + term.year.year}</option>
+            })}
+          </select>
         </div>
       );
-      addButton = <div className="modalButton" onClick={this.props.addCourseToProfessor.bind(this, this.state.course)}>ADD COURSE</div>
+      addButton = <div className="modalButton" onClick={this.props.addCourseToProfessor.bind(this, this.state.course, this.state.term)}>ADD COURSE</div>
       footerButton = <div className="footerButton" onClick={this.addSection.bind(this)} >+</div>
     } else {
       courseInput = null;

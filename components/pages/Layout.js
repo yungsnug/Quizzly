@@ -63,6 +63,7 @@ export default class Layout extends React.Component {
       console.log('user', user);
       switch(user.type) {
         case 'STUDENT':
+          me.addPusherListener();
           var courseIds = [];
           user.sections.map(function(section) {
             courseIds.push(section.course);
@@ -90,6 +91,26 @@ export default class Layout extends React.Component {
     });
   }
 
+  addPusherListener() {
+    var me = this;
+    var pusher = new Pusher('638c5913fb91435e1b42', {
+      encrypted: true
+    });
+
+    var channel = pusher.subscribe('test_channel');
+    channel.bind('my_event', function(data) {
+      console.log("pusher data", data);
+      $.post('/section/find/' + data.sectionId)
+      .then(function(section) {
+        section.students.map(function(student) {
+          if(me.state.user.id == student.id) {
+            browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+          }
+        });
+      });
+    });
+  }
+
   getTermsFromCourses(courses) {
     var me = this;
     var termIds = [];
@@ -98,8 +119,6 @@ export default class Layout extends React.Component {
     });
 
     termIds = Utility.removeDuplicates(termIds);
-    console.log(">>>>>>>>>>courses", courses);
-    console.log(">>>>>>>>>>termIds", termIds);
     return $.post('/term/multifind', {termIds: termIds})
     .then(function(terms) {
       console.log("terms", terms);
@@ -172,7 +191,7 @@ export default class Layout extends React.Component {
     });
   }
 
-  addCourseToProfessor(course) {
+  addCourseToProfessor(course, term) {
     var me = this;
     //TODO: add student array to section
     for(var i = 0; i < course.sections.length; ++i) { // this removes empty answers from the array
@@ -182,17 +201,35 @@ export default class Layout extends React.Component {
       }
     }
     console.log("user", this.state.user);
-    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id})
+    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections, term: term.id})
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
-      course.sections = [];
       course.quizzes = [];
+      course.sections = [];
+
       user.courses.push(course);
+
+      var isNewTerm = true;
+      var terms = me.state.terms;
+      for(var i = 0; i < terms.length; ++i) {
+        if(terms[i].id == term.id) {
+          isNewTerm = false;
+          break;
+        }
+      }
+
+      if(isNewTerm) {
+        terms.push(term);
+      }
+
       me.setState({
         user: user,
-        course: course
+        course: course,
+        term: term,
+        terms: terms
       });
+      return course;
     });
   }
 
@@ -205,27 +242,35 @@ export default class Layout extends React.Component {
   }
 
   deleteCourseFromProfessor(course) {
+    console.log(">>>>>>>> deleting shit", course);
     var me = this;
 
-    var sectionIds = course.sections.map(function(section){return section.id;});
-    var quizIds = course.quizzes.map(function(quiz){return quiz.id;});
+    var sectionIds = [];
+    course.sections.map(function(section){sectionIds.push(section.id);});
+    var quizIds = [];
+    course.quizzes.map(function(quiz){quizIds.push(quiz.id);});
     var questionIds = [];
     var answerIds = [];
 
     return $.post('/question/find', {quiz: quizIds})
     .then(function(questions) {
-      questionIds = questions.map(function(question){return question.id;});
+      console.log("questions", questions);
+      console.log("quizIds", quizIds);
+      questionIds = [];
+      questions.map(function(question){ questionIds.push(question.id);});
       return $.post('/answer/find', {question: questionIds})
     })
     .then(function(answers) {
-      answerIds = answers.map(function(answer){return answer.id;});
-      return $.when(
-        $.post('/course/destroy', {id: course.id}),
-        $.post('/section/multidestroy', {ids: sectionIds}),
-        $.post('/quiz/multidestroy', {ids: quizIds}),
-        $.post('/question/multidestroy', {ids: questionIds}),
-        $.post('/answer/multidestroy', {ids: answerIds})
-      );
+      answerIds = [];
+      answers.map(function(answer){answerIds.push(answer.id);});
+      return $.post('/course/destroy', {id: course.id});
+      // return $.when(
+      //   ,
+        // $.post('/section/multidestroy', {ids: sectionIds}),
+        // $.post('/quiz/multidestroy', {ids: quizIds}),
+        // $.post('/question/multidestroy', {ids: questionIds}),
+        // $.post('/answer/multidestroy', {ids: answerIds})
+      // );
     })
     .then(function() {
       return $.post('/professor/find/' + me.state.user.id);
@@ -243,6 +288,7 @@ export default class Layout extends React.Component {
       } else {
         course = user.courses[0];
       }
+      me.getTermsFromCourses(user.courses);
       me.setState({
         course: course,
         user: user
@@ -285,6 +331,7 @@ export default class Layout extends React.Component {
         />
         <Header
           course={this.state.course}
+          courses={this.state.user.courses}
           term={this.state.term}
           terms={this.state.terms}
           user={this.state.user}

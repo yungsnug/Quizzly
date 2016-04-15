@@ -122,6 +122,8 @@ button, .button {
   margin-left: 192px;
 }
 
+.nowrap { white-space: nowrap; }
+
 .addEntityButton {
   .pointer;
   .outerShadow;
@@ -199,7 +201,7 @@ button, .button {
   .p10;
   font-weight: 500;
   &:hover {
-    background-color: darken(@lightGreen, 5%);
+    background-color: darken(@lightGreen, 5%) !important;
   }
 }
 
@@ -335,7 +337,7 @@ button, .button {
   .p10;
   flex-shrink: 0;
   &:hover {
-    background-color: darken(@lightGreen, 5%);
+    background-color: darken(@lightGreen, 5%) !important;
   }
 }
 

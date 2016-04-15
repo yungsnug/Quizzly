@@ -64,7 +64,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     _react2.default.createElement(_reactRouter.Route, { path: 's/quizzes', component: _StudentQuizzes2.default }),
     _react2.default.createElement(_reactRouter.Route, { path: 's/metrics', component: _StudentMetrics2.default })
   ),
-  _react2.default.createElement(_reactRouter.Route, { path: '/s/question/:id', component: _AskStudentQuestion2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/s/question/:questionId/:sectionId', component: _AskStudentQuestion2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: '/entrance', component: _Entrance2.default }),
   _react2.default.createElement(_reactRouter.Route, { path: '/style', component: _Style2.default })
 ), document.getElementById("quizzly"));
@@ -78,9 +78,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -106,35 +108,102 @@ var _class = function (_React$Component) {
         quiz: {}
       },
       selectedAnswer: {},
-      freeResponseAnswer: ""
+      freeResponseAnswer: "",
+      user: {},
+      counter: {}
     };
     return _this;
   }
 
   _createClass(_class, [{
-    key: "componentDidMount",
+    key: 'componentDidMount',
     value: function componentDidMount() {
-      this.getQustionFromUrl();
+      var me = this;
+      $.post('/session').then(function (user) {
+        me.setState({ user: user });
+      });
+      this.getQuestionFromUrl();
+      this.addPusherListener();
     }
   }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(newProps) {
-      console.log("componentWillReceiveProps");
+    key: 'startTimer',
+    value: function startTimer(duration) {
+      var me = this;
+      var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+      function timer() {
+        duration--;
+        var question = me.state.question;
+        question.duration = duration;
+        me.setState({ question: question }, function () {
+          if (duration <= 0) {
+            clearInterval(counter);
+            _reactRouter.browserHistory.push('/s/quizzes');
+            return;
+          }
+        }.bind(this));
+
+        //Do code for showing the number of seconds here
+      }
+    }
+
+    // startTimer(duration) {
+    //   var me = this;
+    //   console.log("starting timer");
+    //   var counter = setInterval(me.timer(me), 1000);
+    //   me.setState({counter: counter});
+    // }
+    //
+    // timer(me) {
+    //   // var me = this;
+    //   console.log("inside timer");
+    //   var question = me.state.question;
+    //   question.duration--;
+    //   me.setState({question: question}, function() {
+    //     if (me.state.question.duration <= 0) {
+    //       clearInterval(me.state.counter);
+    //       browserHistory.push('/s/quizzes');
+    //       return;
+    //     }
+    //   }.bind(me));
+    //
+    //   //Do code for showing the number of seconds here
+    // }
+
+  }, {
+    key: 'addPusherListener',
+    value: function addPusherListener() {
+      var me = this;
+      var pusher = new Pusher('638c5913fb91435e1b42', {
+        encrypted: true
+      });
+
+      var channel = pusher.subscribe('test_channel');
+      channel.bind('my_event', function (data) {
+        console.log("pusher data", data);
+        $.post('/section/find/' + data.sectionId).then(function (section) {
+          section.students.map(function (student) {
+            if (me.state.user.id == student.id) {
+              _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+            }
+          });
+        });
+      });
     }
   }, {
-    key: "getQustionFromUrl",
-    value: function getQustionFromUrl() {
+    key: 'getQuestionFromUrl',
+    value: function getQuestionFromUrl() {
       var me = this;
       var array = window.location.pathname.split('/');
       var questionId = array[3];
       return $.post('/question/find/' + questionId).then(function (question) {
-        console.log(question);
+        console.log("question", question);
         question.answers = me.resetSelectedAnswers(question.answers);
+        me.startTimer(question.duration);
         me.setState({ question: question });
       });
     }
   }, {
-    key: "handleSelectedAnswer",
+    key: 'handleSelectedAnswer',
     value: function handleSelectedAnswer(answerIndex) {
       var question = this.state.question;
       question.answers = this.resetSelectedAnswers(question.answers);
@@ -145,13 +214,13 @@ var _class = function (_React$Component) {
       });
     }
   }, {
-    key: "handleFreeResponseChange",
+    key: 'handleFreeResponseChange',
     value: function handleFreeResponseChange(e) {
       var freeResponseAnswer = e.target.value;
       this.setState({ freeResponseAnswer: freeResponseAnswer });
     }
   }, {
-    key: "resetSelectedAnswers",
+    key: 'resetSelectedAnswers',
     value: function resetSelectedAnswers(answers) {
       answers.map(function (answer) {
         return answer.isSelected = false;
@@ -160,7 +229,7 @@ var _class = function (_React$Component) {
       return answers;
     }
   }, {
-    key: "getSelectedAnswer",
+    key: 'getSelectedAnswer',
     value: function getSelectedAnswer() {
       var question = this.state.question;
       var selectedAnswer = {};
@@ -172,81 +241,90 @@ var _class = function (_React$Component) {
       return selectedAnswer;
     }
   }, {
-    key: "submitAnswer",
+    key: 'submitAnswer',
     value: function submitAnswer() {
       console.log("submitting answer!");
+      var me = this;
       var currentUser = {};
       var quiz = this.state.question.quiz;
       var question = this.state.question;
-      var answer = this.getSelectedAnswer();
-      var student = {};
+      var answer = {};
+      var student = this.state.user;
 
-      $.post('/session').then(function (user) {
-        student = user;
-        return $.post('/section/getSectionByStudentAndCourse', { studentId: student.id, courseId: quiz.course });
-      }).then(function (section) {
+      switch (question.type) {
+        case 'multipleChoice':
+          answer = this.getSelectedAnswer();
+          break;
+        case 'freeResponse':
+          break;
+      }
+
+      $.post('/section/getSectionByStudentAndCourse', { studentId: student.id, courseId: quiz.course }).then(function (section) {
         return $.post('/studentanswer/create', {
           student: student.id,
           course: quiz.course,
           section: section.id,
           quiz: quiz.id,
           question: question.id,
-          answer: answer.id
+          answer: answer.id,
+          text: me.state.freeResponseAnswer
         });
       }).then(function (studentAnswer) {
         console.log("studentAnswer saved", studentAnswer);
+        // clearInterval(me.state.counter);
+        _reactRouter.browserHistory.push('/s/quizzes');
       });
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       var _this2 = this;
 
       var me = this;
       return _react2.default.createElement(
-        "div",
-        { id: "studentQuestionContainer" },
+        'div',
+        { id: 'studentQuestionContainer' },
         _react2.default.createElement(
-          "div",
+          'div',
           null,
-          _react2.default.createElement("img", { id: "logo", src: LOGO_IMAGE_PATH }),
+          _react2.default.createElement('img', { id: 'logo', src: LOGO_IMAGE_PATH }),
           _react2.default.createElement(
-            "span",
-            { id: "timer" },
-            "34"
+            'span',
+            { id: 'timer' },
+            this.state.question.duration
           )
         ),
         _react2.default.createElement(
-          "div",
-          { id: "studentQuestion" },
+          'div',
+          { id: 'studentQuestion' },
           _react2.default.createElement(
-            "div",
-            { className: "quizTitle" },
+            'div',
+            { className: 'quizTitle' },
             (this.state.question.quiz.title + "").toUpperCase()
           ),
           _react2.default.createElement(
-            "div",
-            { className: "question" },
+            'div',
+            { className: 'question' },
             this.state.question.text
           ),
-          _react2.default.createElement("div", { className: "questionBorder" }),
+          _react2.default.createElement('div', { className: 'questionBorder' }),
           function () {
             switch (_this2.state.question.type) {
               case "multipleChoice":
                 return _this2.state.question.answers.map(function (answer, answerIndex) {
                   return _react2.default.createElement(
-                    "div",
-                    { className: "row answerRow", key: answerIndex },
+                    'div',
+                    { className: 'row answerRow', key: answerIndex },
                     _react2.default.createElement(
-                      "div",
-                      { className: "columns one pt10" },
+                      'div',
+                      { className: 'columns one pt10' },
                       answer.option + ".)"
                     ),
                     _react2.default.createElement(
-                      "div",
-                      { className: "columns eleven" },
+                      'div',
+                      { className: 'columns eleven' },
                       _react2.default.createElement(
-                        "div",
+                        'div',
                         { className: "answer" + (answer.isSelected ? " selected" : ""), onClick: me.handleSelectedAnswer.bind(me, answerIndex) },
                         answer.text
                       )
@@ -256,16 +334,16 @@ var _class = function (_React$Component) {
                 break;
               case "freeResponse":
                 return _react2.default.createElement(
-                  "div",
-                  { className: "pl20 pr20" },
-                  _react2.default.createElement("textarea", {
-                    className: "freeResponse",
+                  'div',
+                  { className: 'pl20 pr20' },
+                  _react2.default.createElement('textarea', {
+                    className: 'freeResponse',
                     value: me.state.freeResponseAnswer,
                     onChange: me.handleFreeResponseChange.bind(me)
                   }),
                   _react2.default.createElement(
-                    "div",
-                    { className: "charCount" },
+                    'div',
+                    { className: 'charCount' },
                     me.state.freeResponseAnswer.length
                   )
                 );
@@ -273,9 +351,9 @@ var _class = function (_React$Component) {
             }
           }(),
           _react2.default.createElement(
-            "div",
-            { className: "submit", onClick: this.submitAnswer.bind(this) },
-            "SUBMIT"
+            'div',
+            { className: 'submit', onClick: this.submitAnswer.bind(this) },
+            'SUBMIT'
           )
         )
       );
@@ -287,7 +365,7 @@ var _class = function (_React$Component) {
 
 exports.default = _class;
 
-},{"react":238}],3:[function(require,module,exports){
+},{"react":238,"react-router":103}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -476,10 +554,10 @@ var Courses = function (_React$Component) {
     }
   }, {
     key: 'addCourseToProfessor',
-    value: function addCourseToProfessor(course) {
+    value: function addCourseToProfessor(course, term) {
       var me = this;
-      this.props.addCourseToProfessor(course).then(function () {
-        me.setState({ course: course });
+      this.props.addCourseToProfessor(course, term).then(function (newCourse) {
+        me.setState({ course: newCourse });
         me.closeModal();
       });
     }
@@ -512,13 +590,13 @@ var Courses = function (_React$Component) {
       var quizzes = this.state.course.quizzes;
       $.post('/quiz/find/' + quizzes[quizIndex].id).then(function (quiz) {
         return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
-      }).then(function (quiz) {
-        if (quiz.questions.length == 0) return $.when(null);
-        var questionIds = quiz.questions.map(function (question) {
-          return question.id;
-        });
-        return $.post('/question/multidestroy', { ids: questionIds });
-      }).then(function () {
+      })
+      // .then(function(quiz) {
+      //   if(quiz.questions.length == 0) return $.when(null);
+      //   var questionIds = quiz.questions.map(function(question){return question.id;});
+      //   return $.post('/question/multidestroy', {ids: questionIds});
+      // })
+      .then(function () {
         quizzes.splice(quizIndex, 1);
         var course = me.state.course;
         course.quizzes = quizzes;
@@ -1061,6 +1139,7 @@ var Layout = function (_React$Component) {
         console.log('user', user);
         switch (user.type) {
           case 'STUDENT':
+            me.addPusherListener();
             var courseIds = [];
             user.sections.map(function (section) {
               courseIds.push(section.course);
@@ -1087,6 +1166,26 @@ var Layout = function (_React$Component) {
       });
     }
   }, {
+    key: 'addPusherListener',
+    value: function addPusherListener() {
+      var me = this;
+      var pusher = new Pusher('638c5913fb91435e1b42', {
+        encrypted: true
+      });
+
+      var channel = pusher.subscribe('test_channel');
+      channel.bind('my_event', function (data) {
+        console.log("pusher data", data);
+        $.post('/section/find/' + data.sectionId).then(function (section) {
+          section.students.map(function (student) {
+            if (me.state.user.id == student.id) {
+              _reactRouter.browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+            }
+          });
+        });
+      });
+    }
+  }, {
     key: 'getTermsFromCourses',
     value: function getTermsFromCourses(courses) {
       var me = this;
@@ -1096,8 +1195,6 @@ var Layout = function (_React$Component) {
       });
 
       termIds = Utility.removeDuplicates(termIds);
-      console.log(">>>>>>>>>>courses", courses);
-      console.log(">>>>>>>>>>termIds", termIds);
       return $.post('/term/multifind', { termIds: termIds }).then(function (terms) {
         console.log("terms", terms);
         me.setState({
@@ -1174,7 +1271,7 @@ var Layout = function (_React$Component) {
     }
   }, {
     key: 'addCourseToProfessor',
-    value: function addCourseToProfessor(course) {
+    value: function addCourseToProfessor(course, term) {
       var me = this;
       //TODO: add student array to section
       for (var i = 0; i < course.sections.length; ++i) {
@@ -1185,16 +1282,34 @@ var Layout = function (_React$Component) {
         }
       }
       console.log("user", this.state.user);
-      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id }).then(function (course) {
+      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections, term: term.id }).then(function (course) {
         console.log("created course", course);
         var user = me.state.user;
-        course.sections = [];
         course.quizzes = [];
+        course.sections = [];
+
         user.courses.push(course);
+
+        var isNewTerm = true;
+        var terms = me.state.terms;
+        for (var i = 0; i < terms.length; ++i) {
+          if (terms[i].id == term.id) {
+            isNewTerm = false;
+            break;
+          }
+        }
+
+        if (isNewTerm) {
+          terms.push(term);
+        }
+
         me.setState({
           user: user,
-          course: course
+          course: course,
+          term: term,
+          terms: terms
         });
+        return course;
       });
     }
   }, {
@@ -1208,27 +1323,41 @@ var Layout = function (_React$Component) {
   }, {
     key: 'deleteCourseFromProfessor',
     value: function deleteCourseFromProfessor(course) {
+      console.log(">>>>>>>> deleting shit", course);
       var me = this;
 
-      var sectionIds = course.sections.map(function (section) {
-        return section.id;
+      var sectionIds = [];
+      course.sections.map(function (section) {
+        sectionIds.push(section.id);
       });
-      var quizIds = course.quizzes.map(function (quiz) {
-        return quiz.id;
+      var quizIds = [];
+      course.quizzes.map(function (quiz) {
+        quizIds.push(quiz.id);
       });
       var questionIds = [];
       var answerIds = [];
 
       return $.post('/question/find', { quiz: quizIds }).then(function (questions) {
-        questionIds = questions.map(function (question) {
-          return question.id;
+        console.log("questions", questions);
+        console.log("quizIds", quizIds);
+        questionIds = [];
+        questions.map(function (question) {
+          questionIds.push(question.id);
         });
         return $.post('/answer/find', { question: questionIds });
       }).then(function (answers) {
-        answerIds = answers.map(function (answer) {
-          return answer.id;
+        answerIds = [];
+        answers.map(function (answer) {
+          answerIds.push(answer.id);
         });
-        return $.when($.post('/course/destroy', { id: course.id }), $.post('/section/multidestroy', { ids: sectionIds }), $.post('/quiz/multidestroy', { ids: quizIds }), $.post('/question/multidestroy', { ids: questionIds }), $.post('/answer/multidestroy', { ids: answerIds }));
+        return $.post('/course/destroy', { id: course.id });
+        // return $.when(
+        //   ,
+        // $.post('/section/multidestroy', {ids: sectionIds}),
+        // $.post('/quiz/multidestroy', {ids: quizIds}),
+        // $.post('/question/multidestroy', {ids: questionIds}),
+        // $.post('/answer/multidestroy', {ids: answerIds})
+        // );
       }).then(function () {
         return $.post('/professor/find/' + me.state.user.id);
       }).then(function (user) {
@@ -1244,6 +1373,7 @@ var Layout = function (_React$Component) {
         } else {
           course = user.courses[0];
         }
+        me.getTermsFromCourses(user.courses);
         me.setState({
           course: course,
           user: user
@@ -1292,6 +1422,7 @@ var Layout = function (_React$Component) {
         }),
         _react2.default.createElement(_Header.Header, {
           course: this.state.course,
+          courses: this.state.user.courses,
           term: this.state.term,
           terms: this.state.terms,
           user: this.state.user,
@@ -2763,7 +2894,6 @@ var Quizzes = function (_React$Component) {
     key: 'getQuizzesFromCourseId',
     value: function getQuizzesFromCourseId(courseId) {
       var me = this;
-      console.log("componentDidMount");
       $.post("/quiz/find", { course: courseId }).then(function (quizzes) {
         console.log("quizzes", quizzes);
 
@@ -2837,9 +2967,6 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'addQuestionToQuiz',
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
-      if (question.text.trim().length == 0) return;
-      if (!this.correctAnswerIsSet(question)) return; // if correct answer is not set
-
       if (questionIndex > -1) {
         this.updateQuestion(question, quizIndex, questionIndex);
       } else {
@@ -2851,7 +2978,7 @@ var Quizzes = function (_React$Component) {
     value: function updateQuestion(question, quizIndex, questionIndex) {
       var quizzes = this.state.quizzes;
       var me = this;
-      $.post('/question/update/' + question.id, { text: question.text, type: question.type }).then(function (question) {
+      $.post('/question/update/' + question.id, { text: question.text, type: question.type, duration: question.duration }).then(function (question) {
         quizzes[quizIndex].questions[questionIndex] = question;
         me.setState({ quizzes: quizzes });
       }).then(function () {
@@ -2884,7 +3011,7 @@ var Quizzes = function (_React$Component) {
         }
       }
 
-      $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers }).then(function (createdQuestion) {
+      $.post('/question/create', { text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers, duration: question.duration }).then(function (createdQuestion) {
         quizzes[quizIndex].questions.push(createdQuestion);
         me.setState({ quizzes: quizzes });
         me.closeModal();
@@ -2910,18 +3037,6 @@ var Quizzes = function (_React$Component) {
         option: answer.option,
         question: question.id
       });
-    }
-  }, {
-    key: 'correctAnswerIsSet',
-    value: function correctAnswerIsSet(question) {
-      var correctAnswerIsSet = false;
-      question.answers.map(function (answer) {
-        if (answer.correct) {
-          correctAnswerIsSet = true;
-        }
-      });
-
-      return correctAnswerIsSet;
     }
   }, {
     key: 'deleteQuizFromCourse',
@@ -3120,15 +3235,11 @@ var _class = function (_React$Component) {
   _createClass(_class, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      console.log("componentDidMount");
-      console.log(this.props);
       this.getQuizzesFromCourseId(this.props.course.id);
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
-      console.log("componentWillReceiveProps");
-      console.log(newProps);
       this.getQuizzesFromCourseId(newProps.course.id);
     }
   }, {
@@ -3384,12 +3495,33 @@ var AddCourseBody = function (_React$Component) {
         title: "",
         placeholder: "Course...",
         sections: [{ title: "", placeholder: "Section..." }]
-      }
+      },
+      terms: [],
+      term: {}
     };
     return _this;
   }
 
   _createClass(AddCourseBody, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var me = this;
+      $.post('/term/find').then(function (terms) {
+        me.setState({
+          term: terms[0],
+          terms: terms
+        });
+      });
+    }
+  }, {
+    key: "changeTerm",
+    value: function changeTerm(event, termIndex) {
+      var me = this;
+      $.post('/term/find/' + event.target.value).then(function (term) {
+        me.setState({ term: term });
+      });
+    }
+  }, {
     key: "handleChange",
     value: function handleChange(i, event) {
       var me = this;
@@ -3458,11 +3590,22 @@ var AddCourseBody = function (_React$Component) {
             placeholder: this.state.course.placeholder,
             value: this.state.course.title,
             onChange: this.handleChange.bind(this, 'course')
-          })
+          }),
+          _react2.default.createElement(
+            "select",
+            { value: this.state.term.id, className: "dropdown ml10", onChange: this.changeTerm.bind(this) },
+            this.state.terms.map(function (term, termIndex) {
+              return _react2.default.createElement(
+                "option",
+                { key: termIndex, value: term.id },
+                term.season.season + " " + term.year.year
+              );
+            })
+          )
         );
         addButton = _react2.default.createElement(
           "div",
-          { className: "modalButton", onClick: this.props.addCourseToProfessor.bind(this, this.state.course) },
+          { className: "modalButton", onClick: this.props.addCourseToProfessor.bind(this, this.state.course, this.state.term) },
           "ADD COURSE"
         );
         footerButton = _react2.default.createElement(
@@ -3570,13 +3713,15 @@ var AddQuestionBody = function (_React$Component) {
 
     var question = {
       type: "multipleChoice",
+      duration: 1,
       text: "",
       answers: [{ option: "A", text: "", correct: false }, { option: "B", text: "", correct: false }, { option: "C", text: "", correct: false }]
     };
 
     _this.state = {
       isFreeResponse: false,
-      question: question
+      question: question,
+      showHelperMessage: false
     };
     return _this;
   }
@@ -3609,6 +3754,8 @@ var AddQuestionBody = function (_React$Component) {
       var question = this.state.question;
       if (i == 'question') {
         question.text = event.target.value;
+      } else if (i == 'duration') {
+        question.duration = event.target.value;
       } else {
         question.answers[i].text = event.target.value;
       }
@@ -3647,12 +3794,36 @@ var AddQuestionBody = function (_React$Component) {
   }, {
     key: "setAsCorrectAnswer",
     value: function setAsCorrectAnswer(answerIndex) {
+      this.setState({ showHelperMessage: false });
       var question = this.state.question;
       question.answers.map(function (answer) {
         return answer.correct = false;
       });
       question.answers[answerIndex].correct = true;
       this.setState({ question: question });
+    }
+  }, {
+    key: "addQuestionToQuiz",
+    value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
+      if (question.text.trim().length == 0) return;
+      if (!this.correctAnswerIsSet(question)) {
+        this.setState({ showHelperMessage: true });
+        return;
+      }
+
+      this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
+    }
+  }, {
+    key: "correctAnswerIsSet",
+    value: function correctAnswerIsSet(question) {
+      var correctAnswerIsSet = false;
+      question.answers.map(function (answer) {
+        if (answer.correct) {
+          correctAnswerIsSet = true;
+        }
+      });
+
+      return correctAnswerIsSet;
     }
   }, {
     key: "render",
@@ -3667,6 +3838,19 @@ var AddQuestionBody = function (_React$Component) {
           placeholder: "Question...",
           value: this.state.question.text,
           onChange: this.handleChange.bind(this, 'question')
+        }),
+        _react2.default.createElement(
+          "div",
+          { className: "nowrap mr10 ml10" },
+          "Time Limit"
+        ),
+        _react2.default.createElement("input", {
+          type: "number",
+          className: "addCourseInput alignC",
+          value: this.state.question.duration,
+          min: "1",
+          onChange: this.handleChange.bind(this, 'duration'),
+          style: { maxWidth: "50px" }
         })
       );
 
@@ -3678,7 +3862,7 @@ var AddQuestionBody = function (_React$Component) {
             { className: "flex mb20 flexVertical", key: answerIndex },
             _react2.default.createElement(
               "span",
-              { className: "mr15 pointer", onClick: me.setAsCorrectAnswer.bind(me, answerIndex) },
+              { className: "mr15 greenButton", onClick: me.setAsCorrectAnswer.bind(me, answerIndex) },
               answer.option,
               ".)"
             ),
@@ -3729,12 +3913,17 @@ var AddQuestionBody = function (_React$Component) {
           questionAnswer,
           answers
         ),
+        this.state.showHelperMessage ? _react2.default.createElement(
+          "div",
+          { className: "small alignC pb20 red" },
+          "Please indicate a correct answer"
+        ) : null,
         _react2.default.createElement(
           "div",
           { className: "pb20 pl20 pr20" },
           _react2.default.createElement(
             "div",
-            { className: "modalButton", onClick: this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex) },
+            { className: "modalButton", onClick: this.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex) },
             "SAVE QUESTION"
           )
         ),
@@ -3979,14 +4168,28 @@ var _class = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, props));
 
     _this.state = {
-      title: "Course Title"
+      title: "Course Title",
+      course: props.course
     };
     return _this;
   }
 
   _createClass(_class, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // console.log("Course: componentDidMount", this.props.course);
+      this.setState({ course: this.props.course });
+    }
+  }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      // console.log("Course: componentWillReceiveProps", nextProps.course);
+      this.setState({ course: nextProps.course });
+    }
+  }, {
     key: "render",
     value: function render() {
+      // console.log("Course: render:this.state.course", this.state.course);
       return _react2.default.createElement(
         "div",
         { className: "mainPanel" },
@@ -3996,17 +4199,17 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "header" },
-            this.props.isCourse ? this.props.course.title : this.props.section.title,
+            this.props.isCourse ? this.state.course.title : this.props.section.title,
             _react2.default.createElement(
               "span",
-              { className: "floatR pointer", onClick: this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
+              { className: "floatR pointer", onClick: this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.state.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
               _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "12px" } })
             )
           ),
           _react2.default.createElement(
             "div",
             { className: "body" },
-            this.props.course.quizzes.map(function (quiz, quizIndex) {
+            this.state.course.quizzes.map(function (quiz, quizIndex) {
               return _react2.default.createElement(
                 "div",
                 { /*onClick={this.props.showMetricModal.bind(this, quiz)}*/key: quizIndex, title: quiz, className: "item" },
@@ -4075,10 +4278,11 @@ var Header = exports.Header = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Header).call(this, props));
 
     _this.state = {
-      course: props.course,
       term: props.term,
-      sections: props.course.sections,
-      terms: props.terms
+      terms: props.terms,
+      course: props.course,
+      courses: props.courses,
+      sections: props.course.sections
     };
     return _this;
   }
@@ -4137,7 +4341,7 @@ var Header = exports.Header = function (_React$Component) {
           _react2.default.createElement(
             'select',
             { value: this.state.term.id, className: 'dropdown ml10', onChange: this.changeTerm.bind(this) },
-            this.props.terms.map(function (term, termIndex) {
+            this.state.terms.map(function (term, termIndex) {
               return _react2.default.createElement(
                 'option',
                 { key: termIndex, value: term.id },
@@ -4148,7 +4352,7 @@ var Header = exports.Header = function (_React$Component) {
           _react2.default.createElement(
             'select',
             { value: this.state.course.id, className: 'dropdown ml10', onChange: this.changeCourse.bind(this) },
-            this.props.user.courses.map(function (course, courseIndex) {
+            this.state.courses.map(function (course, courseIndex) {
               if (course.term == this.state.term.id) {
                 return _react2.default.createElement(
                   'option',
@@ -4791,11 +4995,15 @@ var _class = function (_React$Component) {
               { className: "round absolute outerShadow whiteBackground small", style: { marginLeft: "271px", top: "0", zIndex: "10000" } },
               _react2.default.createElement(
                 "div",
-                { className: "lightGreenBackground roundTop borderBottom p10 mb10 bold" },
-                "Select Section",
+                { className: "lightGreenBackground roundTop borderBottom p10 mb10 bold flexCenter" },
+                _react2.default.createElement(
+                  "div",
+                  null,
+                  "Select Section"
+                ),
                 _react2.default.createElement(
                   "span",
-                  { className: "floatR pointer", onClick: _this2.closeSectionsModal.bind(_this2) },
+                  { className: "ml10 pointer", onClick: _this2.closeSectionsModal.bind(_this2) },
                   _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "12px" } })
                 )
               ),
@@ -4985,11 +5193,6 @@ var Sidebar = exports.Sidebar = function (_React$Component) {
                   'div',
                   { className: _this2.isActive('/s/quizzes'), onClick: _this2.setFilter.bind(_this2, '/s/quizzes') },
                   'Quizzes'
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _this2.isActive('/s/metrics'), onClick: _this2.setFilter.bind(_this2, '/s/metrics') },
-                  'Metrics'
                 )
               );
               break;
@@ -5078,9 +5281,14 @@ var _class = function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      var status = " wrong";
+      if (this.props.studentAnswer.answer == undefined || this.props.studentAnswer.answer.correct) {
+        status = " correct";
+      }
+
       return _react2.default.createElement(
         "div",
-        { className: "item relative" + (this.props.studentAnswer.answer.correct ? " correct" : " wrong"), onMouseEnter: this.mouseEnter.bind(this), onMouseLeave: this.mouseLeave.bind(this) },
+        { className: "item relative" + status, onMouseEnter: this.mouseEnter.bind(this), onMouseLeave: this.mouseLeave.bind(this) },
         _react2.default.createElement(
           "span",
           { className: "pointer" },
@@ -5141,7 +5349,7 @@ var _class = function (_React$Component) {
       var studentAnswers = this.props.studentQuiz.studentAnswers;
       var numCorrect = 0;
       studentAnswers.map(function (studentAnswer) {
-        if (studentAnswer.answer.correct) {
+        if (studentAnswer.answer == undefined || studentAnswer.answer.correct) {
           numCorrect++;
         }
       });

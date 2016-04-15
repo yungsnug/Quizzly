@@ -31,7 +31,6 @@ export default class Quizzes extends React.Component {
 
   getQuizzesFromCourseId(courseId) {
     var me = this;
-    console.log("componentDidMount");
       $.post("/quiz/find", { course: courseId })
       .then(function(quizzes) {
         console.log("quizzes", quizzes);
@@ -102,9 +101,6 @@ export default class Quizzes extends React.Component {
   }
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
-    if(question.text.trim().length == 0) return;
-    if(!this.correctAnswerIsSet(question)) return; // if correct answer is not set
-
     if(questionIndex > -1) {
       this.updateQuestion(question, quizIndex, questionIndex);
     } else {
@@ -115,7 +111,7 @@ export default class Quizzes extends React.Component {
   updateQuestion(question, quizIndex, questionIndex) {
     var quizzes = this.state.quizzes;
     var me = this;
-    $.post('/question/update/' + question.id, {text: question.text, type: question.type})
+    $.post('/question/update/' + question.id, {text: question.text, type: question.type, duration: question.duration})
     .then(function(question) {
       quizzes[quizIndex].questions[questionIndex] = question;
       me.setState({quizzes: quizzes});
@@ -149,7 +145,7 @@ export default class Quizzes extends React.Component {
       }
     }
 
-    $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers})
+    $.post('/question/create', {text: question.text, type: question.type, quiz: quizzes[quizIndex].id, answers: question.answers, duration: question.duration})
     .then(function(createdQuestion) {
       quizzes[quizIndex].questions.push(createdQuestion);
       me.setState({quizzes: quizzes});
@@ -175,17 +171,6 @@ export default class Quizzes extends React.Component {
       option: answer.option,
       question: question.id
     });
-  }
-
-  correctAnswerIsSet(question) {
-    var correctAnswerIsSet = false;
-    question.answers.map(function(answer) {
-      if(answer.correct) {
-        correctAnswerIsSet = true;
-      }
-    });
-
-    return correctAnswerIsSet;
   }
 
   deleteQuizFromCourse(quizIndex) {

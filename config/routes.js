@@ -51,7 +51,7 @@ module.exports.routes = {
   '/s/metrics': {
     view: 'app'
   },
-  '/s/question/:id': {
+  '/s/question/:questionId/:sectionId': {
     view: 'app'
   },
   'post /login': 'AuthController.login',

@@ -7,6 +7,7 @@ export default class AddQuestionBody extends React.Component {
     super(props);
     var question = {
       type: "multipleChoice",
+      duration: 1,
       text: "",
       answers: [
         {option: "A", text: "", correct: false},
@@ -17,7 +18,8 @@ export default class AddQuestionBody extends React.Component {
 
     this.state = {
       isFreeResponse: false,
-      question: question
+      question: question,
+      showHelperMessage: false
     };
   }
 
@@ -51,6 +53,8 @@ export default class AddQuestionBody extends React.Component {
     var question = this.state.question;
     if(i == 'question') {
       question.text = event.target.value;
+    } else if(i == 'duration') {
+      question.duration = event.target.value;
     } else {
       question.answers[i].text = event.target.value;
     }
@@ -85,10 +89,32 @@ export default class AddQuestionBody extends React.Component {
   }
 
   setAsCorrectAnswer(answerIndex) {
+    this.setState({showHelperMessage: false});
     var question = this.state.question;
     question.answers.map(function(answer) { return answer.correct = false });
     question.answers[answerIndex].correct = true;
     this.setState({question: question});
+  }
+
+  addQuestionToQuiz(question, quizIndex, questionIndex) {
+    if(question.text.trim().length == 0) return;
+    if(!this.correctAnswerIsSet(question)) {
+      this.setState({showHelperMessage: true});
+      return;
+    }
+
+    this.props.addQuestionToQuiz(question, quizIndex, questionIndex)
+  }
+
+  correctAnswerIsSet(question) {
+    var correctAnswerIsSet = false;
+    question.answers.map(function(answer) {
+      if(answer.correct) {
+        correctAnswerIsSet = true;
+      }
+    });
+
+    return correctAnswerIsSet;
   }
 
   render() {
@@ -102,6 +128,15 @@ export default class AddQuestionBody extends React.Component {
           value={this.state.question.text}
           onChange={this.handleChange.bind(this, 'question')}
         />
+        <div className="nowrap mr10 ml10">Time Limit</div>
+        <input
+          type="number"
+          className="addCourseInput alignC"
+          value={this.state.question.duration}
+          min="1"
+          onChange={this.handleChange.bind(this, 'duration')}
+          style={{maxWidth: "50px"}}
+        />
       </div>
     );
 
@@ -110,7 +145,7 @@ export default class AddQuestionBody extends React.Component {
       answers = this.state.question.answers.map(function(answer, answerIndex) {
         return (
           <div className="flex mb20 flexVertical" key={answerIndex}>
-            <span className="mr15 pointer" onClick={me.setAsCorrectAnswer.bind(me, answerIndex)}>{answer.option}.)</span>
+            <span className="mr15 greenButton" onClick={me.setAsCorrectAnswer.bind(me, answerIndex)}>{answer.option}.)</span>
             <input
               type="text"
               className={"addCourseInput " + (answer.correct ? "lightGreenBackground" : "")}
@@ -138,8 +173,9 @@ export default class AddQuestionBody extends React.Component {
           {questionAnswer}
           {answers}
         </div>
+        {this.state.showHelperMessage ? <div className="small alignC pb20 red">Please indicate a correct answer</div> : null}
         <div className="pb20 pl20 pr20">
-          <div className="modalButton" onClick={this.props.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>
+          <div className="modalButton" onClick={this.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>
         </div>
         {footer}
       </div>
