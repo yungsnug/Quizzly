@@ -130,10 +130,13 @@ export default class extends React.Component {
   }
 
   getSelectedAnswer() {
+    console.log(">>>>>>>>>> selecting answer");
     var question = this.state.question;
     var selectedAnswer = {};
     question.answers.map(function(answer) {
+      console.log(">>>>>>>>>> answer in each loop", answer);
       if(answer.isSelected) {
+        console.log(">>>>>>>>>> answer that is selected", answer);
         selectedAnswer = answer;
       }
     });
@@ -157,6 +160,7 @@ export default class extends React.Component {
         break;
     }
 
+    console.log("??????????? final answer selected", answer);
     $.post('/section/getSectionByStudentAndCourse', {studentId: student.id, courseId: quiz.course})
     .then(function(section) {
       return $.post('/studentanswer/create', {

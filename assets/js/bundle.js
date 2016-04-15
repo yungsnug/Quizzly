@@ -231,13 +231,13 @@ var _class = function (_React$Component) {
   }, {
     key: 'getSelectedAnswer',
     value: function getSelectedAnswer() {
+      console.log(">>>>>>>>>> selecting answer");
       var question = this.state.question;
       var selectedAnswer = {};
-      console.log(">>>>>>>>>>>getSelectedAnswer");
       question.answers.map(function (answer) {
-        console.log(">>>>>>>>>>>each answer", answer);
+        console.log(">>>>>>>>>> answer in each loop", answer);
         if (answer.isSelected) {
-          console.log(">>>>>>>>>>>answer selected", answer);
+          console.log(">>>>>>>>>> answer that is selected", answer);
           selectedAnswer = answer;
         }
       });
@@ -262,8 +262,7 @@ var _class = function (_React$Component) {
           break;
       }
 
-      console.log(">>>>>>>>final answer selected", answer);
-
+      console.log("??????????? final answer selected", answer);
       $.post('/section/getSectionByStudentAndCourse', { studentId: student.id, courseId: quiz.course }).then(function (section) {
         return $.post('/studentanswer/create', {
           student: student.id,
