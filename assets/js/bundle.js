@@ -4115,7 +4115,7 @@ var AddQuestionBody = function (_React$Component) {
 
     var question = {
       type: "multipleChoice",
-      duration: 1,
+      duration: 30,
       text: "",
       answers: [{ option: "A", text: "", correct: false }, { option: "B", text: "", correct: false }, { option: "C", text: "", correct: false }]
     };
@@ -4208,12 +4208,15 @@ var AddQuestionBody = function (_React$Component) {
     key: "addQuestionToQuiz",
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
       if (question.text.trim().length == 0) return;
-      if (!this.correctAnswerIsSet(question) && this.state.isFreeResponse) {
+      console.log("is free response", this.state.isFreeResponse);
+      if (this.state.isFreeResponse) {
+        this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
+      } else if (!this.correctAnswerIsSet(question)) {
         this.setState({ showHelperMessage: true });
         return;
+      } else {
+        this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
       }
-
-      this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
     }
   }, {
     key: "correctAnswerIsSet",
