@@ -32,8 +32,12 @@ module.exports = {
       StudentAnswer.find({student: s.id, quiz: data.quiz}).populate('question').exec(function(err, answers) {
         console.log("answers: " + answers);
         var questions = [];
+        var dict = {};
         answers.forEach(function(answer) {
-          questions.push(answer.question);
+          if(!(answer.question.id in dict)) {
+            dict[answer.question.id] = 1;
+            questions.push(answer.question);
+          }          
         });
 
         return res.send(200, questions);
