@@ -63,6 +63,7 @@ export default class Layout extends React.Component {
       console.log('user', user);
       switch(user.type) {
         case 'STUDENT':
+          me.addPusherListener();
           var courseIds = [];
           user.sections.map(function(section) {
             courseIds.push(section.course);
@@ -87,6 +88,26 @@ export default class Layout extends React.Component {
           me.setState({user: user});
           break;
       }
+    });
+  }
+
+  addPusherListener() {
+    var me = this;
+    var pusher = new Pusher('638c5913fb91435e1b42', {
+      encrypted: true
+    });
+
+    var channel = pusher.subscribe('test_channel');
+    channel.bind('my_event', function(data) {
+      console.log("pusher data", data);
+      $.post('/section/find/' + data.sectionId)
+      .then(function(section) {
+        section.students.map(function(student) {
+          if(me.state.user.id == student.id) {
+            browserHistory.push('/s/question/' + data.questionId + "/" + data.sectionId);
+          }
+        });
+      });
     });
   }
 

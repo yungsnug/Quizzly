@@ -14,7 +14,8 @@ module.exports = {
       required: true
     },
     correct: {
-      type: 'boolean'
+      type: 'boolean',
+      defaultsTo: true
     },
     option: {
       type: 'string',

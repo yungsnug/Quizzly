@@ -7,6 +7,7 @@
  */
 
 var UrbanAirshipPush = require('urban-airship-push');
+var Pusher = require('pusher');
  // Your app access configuration. You will find this stuff in your App
  // Settings under App Key, App Secret and App Master Secret.
  var config = {
@@ -65,6 +66,7 @@ module.exports = {
   //No longer used
   ask: function(req, res) {
     //console.log("ask api hit");
+
     Question.findOne({id:req.query.id}).populate('answers').exec(function (err, question) {
       if(err) {
         return res.json({
@@ -141,8 +143,24 @@ module.exports = {
   //Two parameters, question_id and section_id
   //Asks users in the specified section the question
   askWithSection: function(req, res) {
+    var data = req.params.all();
     var question_id = req.query.question;
     var section_id = req.query.section;
+
+    var pusher = new Pusher({
+      appId: '198096',
+      key: '638c5913fb91435e1b42',
+      secret: 'bb4f3412beab5121f288',
+      encrypted: true
+    });
+
+    console.log(">>>>>>>>>pusher is triggered", data.question);
+
+    pusher.trigger('test_channel', 'my_event', {
+      "questionId": data.question,
+      "sectionId": data.section
+    });
+
     Section.findOne({id: section_id}).populate('students').exec(function(err, section) {
       if(err) {
         return res.json({error: res.negotiate(err)})

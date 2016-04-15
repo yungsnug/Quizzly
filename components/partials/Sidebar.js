@@ -31,7 +31,7 @@ export class Sidebar extends React.Component {
               return (
                 <span>
                   <div className={this.isActive('/s/quizzes')} onClick={this.setFilter.bind(this, '/s/quizzes')}>Quizzes</div>
-                  <div className={this.isActive('/s/metrics')} onClick={this.setFilter.bind(this, '/s/metrics')}>Metrics</div>
+                  {/*<div className={this.isActive('/s/metrics')} onClick={this.setFilter.bind(this, '/s/metrics')}>Metrics</div>*/}
                 </span>
               );
               break;

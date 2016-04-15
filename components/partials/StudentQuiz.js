@@ -16,7 +16,7 @@ export default class extends React.Component {
     var studentAnswers = this.props.studentQuiz.studentAnswers;
     var numCorrect = 0;
     studentAnswers.map(function(studentAnswer) {
-      if(studentAnswer.answer.correct) {
+      if(studentAnswer.answer == undefined || studentAnswer.answer.correct) {
         numCorrect++;
       }
     });
