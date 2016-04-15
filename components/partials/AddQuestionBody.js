@@ -98,7 +98,7 @@ export default class AddQuestionBody extends React.Component {
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
     if(question.text.trim().length == 0) return;
-    if(!this.correctAnswerIsSet(question)) {
+    if(!this.correctAnswerIsSet(question) && this.state.isFreeResponse) {
       this.setState({showHelperMessage: true});
       return;
     }
@@ -173,7 +173,7 @@ export default class AddQuestionBody extends React.Component {
           {questionAnswer}
           {answers}
         </div>
-        {this.state.showHelperMessage ? <div className="small alignC pb20 red">Please indicate a correct answer</div> : null}
+        {this.state.showHelperMessage && !this.state.isFreeResponse? <div className="small alignC pb20 red">Please indicate a correct answer</div> : null}
         <div className="pb20 pl20 pr20">
           <div className="modalButton" onClick={this.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>
         </div>
