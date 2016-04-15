@@ -323,7 +323,7 @@ export default class Metrics extends React.Component {
                 console.log("selected_section", selected_section);
                 var section_count = 0;
                 Promise.each(selected_section, function(section){
-                  var sectionTitle = section.title;
+                  var sectionTitle = "Section " + section.title;
 
                   
 
@@ -444,7 +444,8 @@ export default class Metrics extends React.Component {
             var quizPercent = [];
             for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
               //more logic
-              quizPercent.push((quizAnswerCorrectArray[k]/(totalQuestionsPerQuiz[k]*totalStudents))*100);
+              var num = (quizAnswerCorrectArray[k]/(totalQuestionsPerQuiz[k]*totalStudents))*100;
+              quizPercent.push(num.toFixed(2));
             }
 
             //Percent
@@ -462,7 +463,24 @@ export default class Metrics extends React.Component {
             console.log("sectionsNames: ", sectionsNames);
 
             if (section_count==selected_section.length){
-              data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
+              var sectionMet = {};
+              sectionMet = me.createSectionMetric(sectionsNames, sectionsQuizNames, sectionsPercentArray);
+              console.log("SECTION METRIC AFTER!!: ", sectionMet);
+              data = getBarChartData(sectionMet.quizTitles, sectionMet.sectionTitles, sectionMet.quizPercents);
+
+              /*
+              var quizMet = {};
+
+                    quizMet = me.createQuizMetric(titlesArray, labelsArrays, countsArrays);
+                    console.log("QUIZ METRIC IN DO MATH: ", quizMet);
+                    data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
+                     var sectionMetric = {
+                      sectionTitles: [],
+                      quizTitles: [],
+                      quizPercents: [],
+                    };
+              */
+              //data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
               console.log("data: ", data);
               return res(data);
             }
@@ -985,7 +1003,6 @@ createQuizMetric(titlesTotal, labelsTotal, countsTotal){
   console.log("Counts in QuizMetric: ", countsTotal);
 
   var questionsBarCounts = [];
-  var questionsBarLabels = [];
   var answerCount = 1;
   var labelArray = [];
 
@@ -1023,89 +1040,41 @@ createQuizMetric(titlesTotal, labelsTotal, countsTotal){
   return quizMetric;
 }
 
+createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
+  console.log("Section Titles in SectionMetric: ", secTitles);
+  console.log("Quiz Title Arrays in SectionMetric: ", quizTitlesArrays);
+  console.log("Quiz Percents in SectionMetric: ", quizPercentsArrays);
 
-createMultiQuestionLabelsAndCounts(quizId, sectionId) {
-  var me = this;
-  var questionsMetric = {
-    questionTitles: [],
-    barLabels: [],
-    barCounts: [],
-    totalResponses: 0,
-    correctResponses: 0,
-    quizTitle: 0,
-  };
+  var sectionsQuizPercents = [];
+  var answerCount = 1;
+  var sectionsQuizTitles = [];
 
-  return $.post('/question/find', {quiz: quizId })
-  .then(function(questions){
-    console.log("Before Promise, questions ", questions);
-    Promise.each(questions, function(question) {
-      if (question.type != "freeResponse") {
-        me.createLabelsAndCounts(sectionId, question.id)
-        .then(function(questionMetric){
-            questionsMetric.questionTitles.push(questionMetric.title);
-            questionsMetric.barCounts.push(questionMetric.counts);
-            questionsMetric.barLabels.push(questionMetric.labels);
-            questionsMetric.totalResponses += parseInt(questionMetric.numResponses);
-            questionsMetric.correctResponses += parseInt(questionMetric.numCorrect);
-            questionsMetric.quizTitle = questionMetric.quizTitle;
-            console.log("%%%%%%%%%%%%%%%%%%% questionsMetric", questionsMetric);
-        });
-      }
-    })
-    return questionsMetric;
-  });
-}
-
-
-createLabelsAndCounts(sectionId, questionId) {
-  var data = {};
-  data.question = questionId;
-  if(sectionId != -1) {
-    data.section = sectionId;
-  }
-  return $.post('/studentanswer/find', data)
-  .then(function(studentAnswers) {
-    console.log("studentAnswers: ", studentAnswers);
-    var labels = [];
-    var counts = [];
-    var barMetrics = {};
-    var totalResponses = 0;
-    var correctAnswer;
-    var numCorrectResponses = 0;
-
-    studentAnswers.map(function(studentAnswer) {
-      if (isNaN(barMetrics[studentAnswer.answer.option])) {
-        barMetrics[studentAnswer.answer.option] = parseInt(barMetrics[studentAnswer.answer.option]);
-        barMetrics[studentAnswer.answer.option] = 1;
-      } else {
-        barMetrics[studentAnswer.answer.option] += 1;
-      }
-      if (studentAnswer.answer.correct == true) {
-        correctAnswer = studentAnswer.answer.option;
-      }
-    });
-
-    barMetrics = orderKeys(barMetrics);
-
-    for (var label in barMetrics){
-      labels.push(label);
-      counts.push(barMetrics[label]);
-      totalResponses += parseInt(barMetrics[label]);
+  for (var i = 0; i < quizTitlesArrays.length; i++) {
+    if (quizTitlesArrays[i].length > answerCount) {
+      answerCount = quizTitlesArrays[i].length;
+      sectionsQuizTitles = quizTitlesArrays[i];
     }
+  }
+  console.log("MAX Quiz Titles: ", sectionsQuizTitles);
 
-    numCorrectResponses = parseInt(barMetrics[correctAnswer]);
+  //add Dummy Data to barCounts
+  for (var i = 0; i < quizPercentsArrays.length; i++){
+    while (quizPercentsArrays[i].length < answerCount) { // if less than answer Count
+      quizPercentsArrays[i].push(0);
+    }
+  }
+  console.log("PERCENTS ARRAY: ", quizPercentsArrays);
 
-    var questionMetric  = {
-      title: studentAnswers[0].question.text,
-      labels: labels,
-      counts: counts,
-      numResponses: totalResponses,
-      numCorrect: numCorrectResponses,
-      quizTitle: studentAnswers[0].quiz.title,
-    };
-    console.log("++++++++++++++++++++++ question Metric: ", questionMetric);
-    return questionMetric;
-  });
+  var sectionMetric = {
+    sectionTitles: [],
+    quizTitles: [],
+    quizPercents: [],
+  };
+  sectionMetric.sectionTitles = secTitles;
+  sectionMetric.quizTitles = sectionsQuizTitles;
+  sectionMetric.quizPercents = quizPercentsArrays;
+  console.log("************* SECTION METRIC", sectionMetric);
+  return sectionMetric;
 }
 
 
