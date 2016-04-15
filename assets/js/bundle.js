@@ -1260,6 +1260,7 @@ var Layout = function (_React$Component) {
         } else {
           course = user.courses[0];
         }
+        me.getTermsFromCourses(user.courses);
         me.setState({
           course: course,
           user: user
