@@ -748,6 +748,7 @@ export default class Metrics extends React.Component {
         isPercentGlobal = false; // Values
 
         //Get labels (answers for question)
+        if (selected_question.type == "multipleChoice") {
         
         var answer_store = [];
         this.getAnswers(selected_question,function(answers){
@@ -779,6 +780,32 @@ export default class Metrics extends React.Component {
             return res(data);
           });
       });
+} else {
+  //view free response question
+  $.post('/studentanswer/find/', {question: selected_question.id})
+    .then(function(student_answers){
+      console.log("student_answer: ", student_answers);
+      // console.log("student_answer.text: ", student_answers[0].text);
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var text = "text";
+      var student = "student";
+      var email = "email";
+      for (var l = 0; l < student_answers.length; l++) {
+        complete_text += student_answers[l][student][email] + ": " + student_answers[l][text] + "<br/><br/>";
+      }
+
+      
+      return complete_text;
+      
+    }).then(function(text){
+      
+      $("#DivChartContainer").html(text);
+
+    });
+
+}
+      
+
     }
   } else {
     //Fill the section

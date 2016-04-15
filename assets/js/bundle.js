@@ -2181,35 +2181,55 @@ var Metrics = function (_React$Component) {
           isPercentGlobal = false; // Values
 
           //Get labels (answers for question)
+          if (selected_question.type == "multipleChoice") {
 
-          var answer_store = [];
-          this.getAnswers(selected_question, function (answers) {
-            console.log("answers-outside: ", answers);
-            answer_store = answers;
-            var counts = [];
-            var data = {};
-            Promise.each(answers, function (answer) {
-              return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
-                counts.push(count);
+            var answer_store = [];
+            this.getAnswers(selected_question, function (answers) {
+              console.log("answers-outside: ", answers);
+              answer_store = answers;
+              var counts = [];
+              var data = {};
+              Promise.each(answers, function (answer) {
+                return $.post('/studentanswer/getStudentCountByAnswerId/', { id: answer.id, section: section_id }).then(function (count) {
+                  counts.push(count);
+                });
+              }).then(function () {
+                console.log("counts3: ", counts);
+                console.log("answers_beforedata: ", answers);
+
+                var labelArray = [];
+                for (var i in answers) {
+                  labelArray.push(answers[i].option);
+                }
+
+                var questionName = selected_question.text; /* GET NAME OF QUESTION */
+                data = getSingleItemBarChartData(questionName, labelArray, counts);
+
+                console.log("data: ", data);
+                return data;
+              }).then(function (data) {
+                return res(data);
               });
-            }).then(function () {
-              console.log("counts3: ", counts);
-              console.log("answers_beforedata: ", answers);
-
-              var labelArray = [];
-              for (var i in answers) {
-                labelArray.push(answers[i].option);
+            });
+          } else {
+            //view free response question
+            $.post('/studentanswer/find/', { question: selected_question.id }).then(function (student_answers) {
+              console.log("student_answer: ", student_answers);
+              // console.log("student_answer.text: ", student_answers[0].text);
+              var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+              var text = "text";
+              var student = "student";
+              var email = "email";
+              for (var l = 0; l < student_answers.length; l++) {
+                complete_text += student_answers[l][student][email] + ": " + student_answers[l][text] + "<br/><br/>";
               }
 
-              var questionName = selected_question.text; /* GET NAME OF QUESTION */
-              data = getSingleItemBarChartData(questionName, labelArray, counts);
+              return complete_text;
+            }).then(function (text) {
 
-              console.log("data: ", data);
-              return data;
-            }).then(function (data) {
-              return res(data);
+              $("#DivChartContainer").html(text);
             });
-          });
+          }
         }
       } else {
         //Fill the section
