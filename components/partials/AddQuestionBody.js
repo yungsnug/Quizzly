@@ -7,7 +7,7 @@ export default class AddQuestionBody extends React.Component {
     super(props);
     var question = {
       type: "multipleChoice",
-      duration: 1,
+      duration: 30,
       text: "",
       answers: [
         {option: "A", text: "", correct: false},
@@ -98,12 +98,16 @@ export default class AddQuestionBody extends React.Component {
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
     if(question.text.trim().length == 0) return;
-    if(!this.correctAnswerIsSet(question) && this.state.isFreeResponse) {
+    console.log("is free response", this.state.isFreeResponse);
+    if(this.state.isFreeResponse) {
+      this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
+    } else if(!this.correctAnswerIsSet(question)) {
       this.setState({showHelperMessage: true});
       return;
+    } else {
+      this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
     }
 
-    this.props.addQuestionToQuiz(question, quizIndex, questionIndex)
   }
 
   correctAnswerIsSet(question) {

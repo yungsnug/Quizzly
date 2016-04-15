@@ -38,6 +38,7 @@ export default class extends React.Component {
                   studentQuizIndex={this.props.studentQuizIndex}
                   studentAnswerIndex={studentAnswerIndex}
                   studentAnswer={studentAnswer}
+                  showModal={this.props.showModal.bind(this)}
                 />
               );
             }, this)}

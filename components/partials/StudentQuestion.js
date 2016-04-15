@@ -6,7 +6,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hover: false
+      hover: false,
     };
   }
 
@@ -25,7 +25,7 @@ export default class extends React.Component {
     }
 
     return (
-      <div className={"item relative" + status} onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)}>
+      <div className={"item relative" + status} onMouseEnter={this.mouseEnter.bind(this)} onMouseLeave={this.mouseLeave.bind(this)} onClick={this.props.showModal.bind(this, this.props.studentAnswer.question)}>
         <span className="pointer">{this.props.studentAnswer.question.text}</span>
       </div>
     );
