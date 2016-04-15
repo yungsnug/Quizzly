@@ -376,6 +376,21 @@ module.exports = {
     });
   },
 
+  getJsonQuestionAndUserAnswers: function(req, res) {
+    var data = req.params.all();
+    Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
+      Student.findOne({email: data.student}).exec(function(err, s) {
+        StudentAnswer.findOne({student: s.id, question: data.question}).populate('answer').exec(function(err, sa) {
+          return res.json({
+            question: q.text,
+            answers: q.answers,
+            user_answer: sa
+          });
+        });
+      });
+    });
+  },
+
   //Used by iOS and Android to answer free response questions
   answerFreeResponse: function(req, res) {
     console.log("Question ID: " + req.param('quest_id'));
