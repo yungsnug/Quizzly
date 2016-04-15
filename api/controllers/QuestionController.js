@@ -147,6 +147,9 @@ module.exports = {
     var question_id = data.question;
     var section_id = data.section;
 
+    console.log("question id " + question_id);
+    console.log("section id " + section_id);
+
     var pusher = new Pusher({
       appId: '198096',
       key: '638c5913fb91435e1b42',
