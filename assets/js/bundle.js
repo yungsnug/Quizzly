@@ -8873,6 +8873,9 @@ var Metrics = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       console.log("in componentDidMount");
+      $.post("/studentanswer/find").then(function (ans) {
+        console.log("<><><><><><><><><ANSWERS:", ans);
+      });
       this.populateDropdowns(this.props.course);
     }
   }, {
