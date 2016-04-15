@@ -1346,6 +1346,7 @@ var Promise = require('bluebird');
 
 // Global Variable used to determine whether to use a bar or Line Chart
 var isBarChartGlobal = true;
+var isPercentGlobal = false;
 
 /*
   Create Array of Colors to Shuffle Through
@@ -1654,11 +1655,17 @@ var Metrics = function (_React$Component) {
               /*Show percent correct of each section*/
               //Labels will be sections
               console.log("section if statement!");
+              isBarChartGlobal = true; // Bar Chart
+              isPercentGlobal = true; // Percents
               //console.log("SELECTED COURSE", selected_course);
-              isBarChartGlobal = true;
+
+              var sectionsQuizNames = [];
+              var sectionsPercentArray = [];
+              var sectionsNames = [];
               console.log("selected_section", selected_section);
               var section_count = 0;
               Promise.each(selected_section, function (section) {
+                var sectionTitle = section.title;
 
                 //TOP
 
@@ -1765,16 +1772,24 @@ var Metrics = function (_React$Component) {
                               //Calculate percentage
                               var quizPercent = [];
                               for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
+                                //more logic
                                 quizPercent.push(quizAnswerCorrectArray[k] / (totalQuestionsPerQuiz[k] * totalStudents) * 100);
                               }
 
                               //Percent
                               console.log("quizPercent: ", quizPercent);
-                              console.log("studentName: ", studentName);
+                              console.log("sectionTitle: ", sectionTitle);
                               //Quiz Name
                               console.log("quizTitleArray: ", quizTitleArray);
                               //if last one
                               section_count++;
+                              sectionsPercentArray.push(quizPercent);
+                              sectionsQuizNames.push(quizTitleArray);
+                              sectionsNames.push(sectionTitle);
+                              console.log("sectionsPercentArray: ", sectionsPercentArray);
+                              console.log("sectionsQuizNames: ", sectionsQuizNames);
+                              console.log("sectionsNames: ", sectionsNames);
+
                               if (section_count == selected_section.length) {
                                 data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
                                 console.log("data: ", data);
@@ -1809,9 +1824,13 @@ var Metrics = function (_React$Component) {
                 //Labels will be ALL quizzes
                 console.log("section else statement!");
                 isBarChartGlobal = true; // Bar Chart
+                isPercentGlobal = true; // Percents
 
                 //TOP
-                var studentName = selected_student.firstName;
+
+                console.log("SELECTED_SECTION:", selected_section);
+                var sectionTitle = "Section " + selected_section.title;
+
                 var quiz = [];
                 var quizTitleArray = [];
                 var quizAnswerCorrectArray = [];
@@ -1915,16 +1934,17 @@ var Metrics = function (_React$Component) {
                               //Calculate percentage
                               var quizPercent = [];
                               for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
-                                quizPercent.push(quizAnswerCorrectArray[k] / (totalQuestionsPerQuiz[k] * totalStudents) * 100);
+                                var num = quizAnswerCorrectArray[k] / (totalQuestionsPerQuiz[k] * totalStudents) * 100;
+                                quizPercent.push(num.toFixed(2));
                               }
 
                               //Percent
                               console.log("quizPercent: ", quizPercent);
-                              console.log("studentName: ", studentName);
+                              console.log("sectionTitle: ", sectionTitle);
                               //Quiz Name
                               console.log("quizTitleArray: ", quizTitleArray);
 
-                              data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
+                              data = getSingleItemBarChartData(sectionTitle, quizTitleArray, quizPercent);
                               console.log("data: ", data);
                               return res(data);
                             });
@@ -1956,6 +1976,7 @@ var Metrics = function (_React$Component) {
               //Labels will be questions
               console.log("quiz else statement!");
               isBarChartGlobal = true; // Bar Chart
+              isPercentGlobal = false; // Values
 
               var countsTotal = [];
               var labelsTotal = [];
@@ -2026,6 +2047,7 @@ var Metrics = function (_React$Component) {
           /*Show all answers and number of students who answered question*/
           console.log("question else statement!");
           isBarChartGlobal = true; // Bar Chart
+          isPercentGlobal = false; // Values
 
           //Get labels (answers for question)
 
@@ -2067,6 +2089,8 @@ var Metrics = function (_React$Component) {
         // selected_student.
         console.log("Single Student Metrics");
         isBarChartGlobal = false; // Line Chart
+        isPercentGlobal = true; // Values
+
         console.log("selected_student: ", selected_student);
         //Need students answers
         var studentName = selected_student.firstName;
@@ -2508,7 +2532,14 @@ var Metrics = function (_React$Component) {
       this.doMath(1, function (data) {
         if (isBarChartGlobal) {
           console.log('IS BAR CHART');
-          var options = getBarChartValueOptions();
+          var options;
+          if (isPercentGlobal) {
+            console.log("Percent");
+            options = getBarChartPercentOptions();
+          } else {
+            console.log("Values");
+            options = getBarChartValueOptions();
+          }
           var myNewChart = new Chart(ctx).Bar(data, options);
         } else {
           console.log('IS LINE CHART');
