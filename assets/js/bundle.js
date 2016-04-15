@@ -2330,7 +2330,7 @@ var Metrics = function (_React$Component) {
               this.state.quizzes.map(function (quiz, quizIndex) {
                 return _react2.default.createElement(
                   'option',
-                  { key: quizIndex, value: quizIndex + 1 },
+                  { key: quizIndex, value: quiz.id },
                   quiz.title
                 );
               })

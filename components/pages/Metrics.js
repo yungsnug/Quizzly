@@ -976,7 +976,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.quiz.id} className="dropdown mr10" onChange={this.changeQuiz.bind(this)}>
               {this.state.isAllQuizzesOptionAvailable ? <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option> : null }
               {this.state.quizzes.map(function(quiz, quizIndex) {
-                return <option key={quizIndex} value={quizIndex+1}>{quiz.title}</option>
+                return <option key={quizIndex} value={quiz.id}>{quiz.title}</option>
               })}
             </select>
           </div>
