@@ -42,9 +42,12 @@ module.exports = {
       } else if(student.length > 0) {
         user = student[0];
         if(data.channelID) {
-          Student.update({email: data.email}, {channelID: data.channelID, deviceType: data.deviceType}).exec(function(err, updated) {
-            console.log("Updated " + updated[0]);
+          Student.update({channelID: data.channelID}, {channelID: null, deviceType: null}).exec(function(err, updated) {
+            Student.update({email: data.email}, {channelID: data.channelID, deviceType: data.deviceType}).exec(function(err, updated) {
+              console.log("Updated " + updated[0]);
+            });
           });
+
         }
 
       } else {
