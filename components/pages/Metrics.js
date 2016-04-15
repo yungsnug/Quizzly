@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 
 // Global Variable used to determine whether to use a bar or Line Chart
 var isBarChartGlobal = true;
+var isPercentGlobal = false;
 
 /*
   Create Array of Colors to Shuffle Through
@@ -313,6 +314,8 @@ export default class Metrics extends React.Component {
                 //Labels will be sections
                 console.log("section if statement!");
                 //console.log("SELECTED COURSE", selected_course);
+                isBarChartGlobal = true; // Bar Chart
+                isPercentGlobal = true; // Percents
 
 
             } else {
@@ -321,12 +324,164 @@ export default class Metrics extends React.Component {
               //Labels will be ALL quizzes
               console.log("section else statement!");
               isBarChartGlobal = true; // Bar Chart
+              isPercentGlobal = true; // Percents
 
-              console.log("SELECTED_QUIZ", selected_quiz);
-              // this.createAllQuizzesMetric(selected_quiz)
-              // .then(function(quizzesMet){
-              //   console.log("quizzes met HEREE:", quizzesMetric);
-              // });
+              console.log("SELECTED_SECTION:", selected_section);
+              var sectionTitle = "Section "+ selected_section.title;
+              var quiz = [];
+              var quizTitleArray = [];
+              var quizAnswerCorrectArray = [];
+              var quizIDArray = [];
+              $.post('/studentanswer/find', {section: selected_section.id})
+              .then(function(student_answer){
+                console.log("student_answer: ", student_answer);
+
+                student_answer.sort(function(a,b){
+                  return parseInt(a.quiz.id) - parseInt(b.quiz.id);
+                });
+
+
+
+                return student_answer;
+
+              }).then(function(student_answer_sorted){
+
+                console.log("student_answer_sorted: ", student_answer_sorted);
+                //For each quiz (calculate percent)
+                if (student_answer_sorted.length > 0) {
+                  var currentQuizId;
+                  currentQuizId = student_answer_sorted[0].quiz.id;
+                // quizIDArray.push(student_answer_sorted[0].quiz.id);
+                // quizTitleArray.push(student_answer_sorted[0].quiz.title);
+                
+
+                // $.post('/answers/find', {student: selected_student.id})
+                //  .then(function(student_answer){
+
+
+                //  });
+
+        var correctCountPerQuiz = 0; 
+                // var totalPerQuiz = 0;
+                // var percent;
+                //iterate
+          
+        console.log("student_answer_sorted.length: ", student_answer_sorted.length);
+        for(var i = 0; i < student_answer_sorted.length; i++) {
+          //if answer == null then don't do anything
+          if (student_answer_sorted[i].question.type == "multipleChoice") {
+
+          
+          if (currentQuizId != student_answer_sorted[i].quiz.id) {
+            currentQuizId = student_answer_sorted[i].quiz.id;
+            // percent = correctCountPerQuiz/totalPerQuiz;
+            // console.log("percent: ",percent);
+            
+              // if (i != student_answer_sorted.length -1) {
+                quizTitleArray.push(student_answer_sorted[i-1].quiz.title);
+                quizIDArray.push(student_answer_sorted[i-1].quiz.id);
+              // }
+
+              quizAnswerCorrectArray.push(correctCountPerQuiz);
+              console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
+              console.log("1quizTitleArray: ", quizTitleArray);
+              correctCountPerQuiz = 0; 
+              
+              // totalPerQuiz = 0;
+              // if (student_answer_sorted[i].answer.correct){
+              //   correctCountPerQuiz++; 
+              // }
+
+              // totalPerQuiz++;
+
+            } 
+            if (i == student_answer_sorted.length -1){
+              if (student_answer_sorted[i].answer.correct){
+                correctCountPerQuiz++; 
+              }
+            // totalPerQuiz++;
+            // percent = correctCountPerQuiz/totalPerQuiz;
+            // console.log("percent: ",percent);
+            quizTitleArray.push(student_answer_sorted[i].quiz.title);
+            quizAnswerCorrectArray.push(correctCountPerQuiz);
+            quizIDArray.push(student_answer_sorted[i].quiz.id);
+            console.log("2quizAnswerCorrectArray: ", quizAnswerCorrectArray);
+            console.log("2quizTitleArray: ", quizTitleArray);
+            console.log("quizIDArray: ", quizIDArray);
+
+            var totalQuestionsPerQuiz = [];
+            var type = "multipleChoice";
+            Promise.each(quizIDArray, function(quiz) {
+              return $.post('/question/find', {quiz: quiz, type: type})
+              .then(function(questions){
+                totalQuestionsPerQuiz.push(questions.length);
+                console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+              });
+            }).then(function() {
+
+              console.log("quizIDArray", quizIDArray);
+            // for (var j = 0; j < quizIDArray.length; j++) {
+
+            //     $.post('/question/find', {quiz: quizIDArray[j]})
+            //       .then(function(questions){
+            //         totalQuestionsPerQuiz.push(questions.length);
+            //         console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+            //     });
+            // }
+            console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+            console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
+
+            var totalStudents;
+              //Get total number of students
+              $.post('/student/getStudentsBySectionId/', {id: selected_section.id})
+              .then(function(students){
+                  totalStudents = students.length;
+                  console.log("totalStudents: ", totalStudents);
+              
+
+            //Calculate percentage
+            var quizPercent = [];
+            for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
+              var num = (quizAnswerCorrectArray[k]/(totalQuestionsPerQuiz[k]*totalStudents))*100;
+              quizPercent.push(num.toFixed(2));
+            }
+
+            //Percent
+            console.log("quizPercent: ", quizPercent);
+            console.log("sectionTitle: ", sectionTitle);
+            //Quiz Name
+            console.log("quizTitleArray: ", quizTitleArray);
+
+            data = getSingleItemBarChartData(sectionTitle, quizTitleArray, quizPercent);
+            console.log("data: ", data);
+            return res(data);
+            });
+
+          });
+
+
+          } else {
+            console.log("I: ",i);
+            if (student_answer_sorted[i].answer.correct){
+              correctCountPerQuiz++; 
+            }
+                      // totalPerQuiz++;
+          }
+          console.log("correctCountPerQuiz",correctCountPerQuiz);
+        }
+              // quizTitleArray.push(student_answer_sorted[i].quiz.title);
+              // quizAnswerArray.push(student_answer_sorted[i]);
+              // currentQuizId = 
+        }
+          } else {
+        //if no answers at all
+
+
+      }
+              
+});
+
+
             }
         } else {
             //Quiz else
@@ -334,6 +489,8 @@ export default class Metrics extends React.Component {
             //Labels will be questions
             console.log("quiz else statement!");
             isBarChartGlobal = true; // Bar Chart
+            isPercentGlobal = false; // Values
+
 
             var countsTotal = [];
             var labelsTotal = [];
@@ -407,6 +564,7 @@ export default class Metrics extends React.Component {
         /*Show all answers and number of students who answered question*/
         console.log("question else statement!");
         isBarChartGlobal = true; // Bar Chart
+        isPercentGlobal = false; // Values
 
         //Get labels (answers for question)
         
@@ -450,6 +608,8 @@ export default class Metrics extends React.Component {
     // selected_student.
     console.log("Single Student Metrics");
     isBarChartGlobal = false; // Line Chart
+    isPercentGlobal = true; // Values
+
     console.log("selected_student: ", selected_student);
     //Need students answers
     var studentName = selected_student.firstName;
@@ -492,6 +652,8 @@ export default class Metrics extends React.Component {
         //iterate
         console.log("student_answer_sorted.length: ", student_answer_sorted.length);
         for(var i = 0; i < student_answer_sorted.length; i++) {
+          if (student_answer_sorted[i].question.type == "multipleChoice") {
+
           if (currentQuizId != student_answer_sorted[i].quiz.id) {
             currentQuizId = student_answer_sorted[i].quiz.id;
             // percent = correctCountPerQuiz/totalPerQuiz;
@@ -583,6 +745,7 @@ export default class Metrics extends React.Component {
               // quizTitleArray.push(student_answer_sorted[i].quiz.title);
               // quizAnswerArray.push(student_answer_sorted[i]);
               // currentQuizId = 
+            }
             }
             } else {
         //if no answers at all
@@ -916,7 +1079,14 @@ createLabelsAndCounts(sectionId, questionId) {
     this.doMath(1, function(data){
       if (isBarChartGlobal) {
         console.log('IS BAR CHART');
-        var options = getBarChartValueOptions();
+        var options;
+        if (isPercentGlobal) {
+          console.log("Percent");
+          options = getBarChartPercentOptions();
+        } else {
+          console.log("Values");
+          options = getBarChartValueOptions();
+        }
         var myNewChart = new Chart(ctx).Bar(data,options);
       } else {
         console.log('IS LINE CHART');
@@ -958,7 +1128,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.section.id} className="dropdown mr10" onChange={this.changeSection.bind(this)}>
               {this.state.isAllSectionsOptionAvailable ? <option value={this.state.allSections.id}>{this.state.allSections.title}</option> : null }
               {this.state.sections.map(function(section, sectionIndex) {
-                return <option key={sectionIndex} value={section.id}>{section.title}</option>
+                return <option key={sectionIndex} value={sectionIndex+1}>{section.title}</option>
               })}
             </select>
           </div>
@@ -967,7 +1137,7 @@ createLabelsAndCounts(sectionId, questionId) {
             <select value={this.state.student.id} className="dropdown mr10" onChange={this.changeStudent.bind(this)}>
               {this.state.isAllStudentsOptionAvailable ? <option value={this.state.allStudents.id}>{this.state.allStudents.title}</option> : null }
               {this.state.students.map(function(student, studentIndex) {
-                return <option key={studentIndex} value={student.id}>{student.firstName}</option>
+                return <option key={studentIndex} value={studentIndex+1}>{student.firstName}</option>
               })}
             </select>
           </div>
