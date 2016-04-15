@@ -144,8 +144,11 @@ module.exports = {
   //Asks users in the specified section the question
   askWithSection: function(req, res) {
     var data = req.params.all();
-    var question_id = req.query.question;
-    var section_id = req.query.section;
+    var question_id = data.question;
+    var section_id = data.section;
+
+    console.log("question id " + question_id);
+    console.log("section id " + section_id);
 
     var pusher = new Pusher({
       appId: '198096',
@@ -216,15 +219,14 @@ module.exports = {
           },
           "device_types": "all"
         };
-        //Do this a better way. Try this:
-        /*
-        pushInfo.notifcation.android.extra.answers = [];
-        question.answers.forEach(function(answer) {
-          pushInfo.notification.android.extra.answers.push(answer);
-        });
 
-        would be nice, but you can't put an array in "extra"
-        */
+        for(var i = 0; i < question.answers.length; i++) {
+          pushInfo.notification.android.extra["answer" + i] = question.answers[i].text;
+          pushInfo.notification.ios.extra["answer" + i] = question.answers[i].text;
+          pushInfo.notification.android.extra["answerId" + i] = question.answers[i].id;
+          pushInfo.notification.ios.extra["answerId" + i] = question.answers[i].id;
+        }
+        /*
         if(question.answers.length != 0) {
           pushInfo.notification.android.extra.answer0 = question.answers[0].text;
           pushInfo.notification.android.extra.answer1 = question.answers[1].text;
@@ -256,7 +258,7 @@ module.exports = {
             pushInfo.notification.android.extra.answerId4 = question.answers[4].id;
             pushInfo.notification.ios.extra.answerId4 = question.answers[4].id;
           }
-        }
+        }*/
 
         if(ios_channels.length == 0 && android_channels.length == 0) {
           return res.json({error: "There are no devices for that section"});
