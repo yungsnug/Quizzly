@@ -236,7 +236,12 @@ export default class Metrics extends React.Component {
 
   componentDidMount() {
     console.log("in componentDidMount");
+    $.post("/studentanswer/find")
+    .then(function(ans){
+      console.log("<><><><><><><><><ANSWERS:", ans);
+    });
     this.populateDropdowns(this.props.course);
+
   }
 
   componentWillReceiveProps(newProps) {
