@@ -28,7 +28,15 @@ module.exports = {
   getJsonCourseQuizzes: function(req,res) {
     var data = req.params.all();
     Course.findOne({id: data.id}).populate('quizzes').exec(function(err, course) {
-      return res.json({quizzes: course.quizzes});      
+      var all_quizzes = [];
+      course.quizzes.forEach(function(quiz) {
+        var obj = {
+          "title": quiz.title,
+          "id": quiz.id
+        };
+        all_quizzes.push(obj);
+      });
+      return res.json({quizzes: all_quizzes});
     });
   }
 };
