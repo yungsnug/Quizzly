@@ -507,13 +507,13 @@ var Courses = function (_React$Component) {
       var quizzes = this.state.course.quizzes;
       $.post('/quiz/find/' + quizzes[quizIndex].id).then(function (quiz) {
         return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
-      }).then(function (quiz) {
-        if (quiz.questions.length == 0) return $.when(null);
-        var questionIds = quiz.questions.map(function (question) {
-          return question.id;
-        });
-        return $.post('/question/multidestroy', { ids: questionIds });
-      }).then(function () {
+      })
+      // .then(function(quiz) {
+      //   if(quiz.questions.length == 0) return $.when(null);
+      //   var questionIds = quiz.questions.map(function(question){return question.id;});
+      //   return $.post('/question/multidestroy', {ids: questionIds});
+      // })
+      .then(function () {
         quizzes.splice(quizIndex, 1);
         var course = me.state.course;
         course.quizzes = quizzes;
@@ -2698,9 +2698,6 @@ var Quizzes = function (_React$Component) {
   }, {
     key: 'addQuestionToQuiz',
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
-      if (question.text.trim().length == 0) return;
-      if (!this.correctAnswerIsSet(question)) return; // if correct answer is not set
-
       if (questionIndex > -1) {
         this.updateQuestion(question, quizIndex, questionIndex);
       } else {
@@ -2771,18 +2768,6 @@ var Quizzes = function (_React$Component) {
         option: answer.option,
         question: question.id
       });
-    }
-  }, {
-    key: 'correctAnswerIsSet',
-    value: function correctAnswerIsSet(question) {
-      var correctAnswerIsSet = false;
-      question.answers.map(function (answer) {
-        if (answer.correct) {
-          correctAnswerIsSet = true;
-        }
-      });
-
-      return correctAnswerIsSet;
     }
   }, {
     key: 'deleteQuizFromCourse',
@@ -3466,7 +3451,8 @@ var AddQuestionBody = function (_React$Component) {
 
     _this.state = {
       isFreeResponse: false,
-      question: question
+      question: question,
+      showHelperMessage: false
     };
     return _this;
   }
@@ -3539,6 +3525,7 @@ var AddQuestionBody = function (_React$Component) {
   }, {
     key: "setAsCorrectAnswer",
     value: function setAsCorrectAnswer(answerIndex) {
+      this.setState({ showHelperMessage: false });
       var question = this.state.question;
       question.answers.map(function (answer) {
         return answer.correct = false;
@@ -3549,8 +3536,25 @@ var AddQuestionBody = function (_React$Component) {
   }, {
     key: "addQuestionToQuiz",
     value: function addQuestionToQuiz(question, quizIndex, questionIndex) {
+      if (question.text.trim().length == 0) return;
+      if (!this.correctAnswerIsSet(question)) {
+        this.setState({ showHelperMessage: true });
+        return;
+      }
 
       this.props.addQuestionToQuiz(question, quizIndex, questionIndex);
+    }
+  }, {
+    key: "correctAnswerIsSet",
+    value: function correctAnswerIsSet(question) {
+      var correctAnswerIsSet = false;
+      question.answers.map(function (answer) {
+        if (answer.correct) {
+          correctAnswerIsSet = true;
+        }
+      });
+
+      return correctAnswerIsSet;
     }
   }, {
     key: "render",
@@ -3640,6 +3644,11 @@ var AddQuestionBody = function (_React$Component) {
           questionAnswer,
           answers
         ),
+        this.state.showHelperMessage ? _react2.default.createElement(
+          "div",
+          { className: "small alignC pb20 red" },
+          "Please indicate a correct answer"
+        ) : null,
         _react2.default.createElement(
           "div",
           { className: "pb20 pl20 pr20" },

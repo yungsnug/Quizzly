@@ -189,11 +189,11 @@ export default class Courses extends React.Component {
     .then(function(quiz) {
       return $.post('/quiz/destroy/' + quizzes[quizIndex].id);
     })
-    .then(function(quiz) {
-      if(quiz.questions.length == 0) return $.when(null);
-      var questionIds = quiz.questions.map(function(question){return question.id;});
-      return $.post('/question/multidestroy', {ids: questionIds});
-    })
+    // .then(function(quiz) {
+    //   if(quiz.questions.length == 0) return $.when(null);
+    //   var questionIds = quiz.questions.map(function(question){return question.id;});
+    //   return $.post('/question/multidestroy', {ids: questionIds});
+    // })
     .then(function() {
       quizzes.splice(quizIndex, 1);
       var course = me.state.course;

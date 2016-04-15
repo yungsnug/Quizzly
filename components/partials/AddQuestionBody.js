@@ -18,7 +18,8 @@ export default class AddQuestionBody extends React.Component {
 
     this.state = {
       isFreeResponse: false,
-      question: question
+      question: question,
+      showHelperMessage: false
     };
   }
 
@@ -88,6 +89,7 @@ export default class AddQuestionBody extends React.Component {
   }
 
   setAsCorrectAnswer(answerIndex) {
+    this.setState({showHelperMessage: false});
     var question = this.state.question;
     question.answers.map(function(answer) { return answer.correct = false });
     question.answers[answerIndex].correct = true;
@@ -95,8 +97,24 @@ export default class AddQuestionBody extends React.Component {
   }
 
   addQuestionToQuiz(question, quizIndex, questionIndex) {
+    if(question.text.trim().length == 0) return;
+    if(!this.correctAnswerIsSet(question)) {
+      this.setState({showHelperMessage: true});
+      return;
+    }
 
     this.props.addQuestionToQuiz(question, quizIndex, questionIndex)
+  }
+
+  correctAnswerIsSet(question) {
+    var correctAnswerIsSet = false;
+    question.answers.map(function(answer) {
+      if(answer.correct) {
+        correctAnswerIsSet = true;
+      }
+    });
+
+    return correctAnswerIsSet;
   }
 
   render() {
@@ -155,6 +173,7 @@ export default class AddQuestionBody extends React.Component {
           {questionAnswer}
           {answers}
         </div>
+        {this.state.showHelperMessage ? <div className="small alignC pb20 red">Please indicate a correct answer</div> : null}
         <div className="pb20 pl20 pr20">
           <div className="modalButton" onClick={this.addQuestionToQuiz.bind(this, this.state.question, this.props.quizIndex, this.props.questionIndex)}>SAVE QUESTION</div>
         </div>
