@@ -16,8 +16,7 @@ export default class extends React.Component {
       },
       selectedAnswer: {},
       freeResponseAnswer: "",
-      user: {},
-      counter: {}
+      user: {}
     };
   }
 
@@ -33,7 +32,8 @@ export default class extends React.Component {
 
   startTimer(duration) {
     var me = this;
-    var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+    counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+
     function timer() {
       duration--;
       var question = me.state.question;
@@ -175,7 +175,7 @@ export default class extends React.Component {
     })
     .then(function(studentAnswer) {
       console.log("studentAnswer saved", studentAnswer);
-      // clearInterval(me.state.counter);
+      clearInterval(counter);
       browserHistory.push('/s/quizzes');
     });
   }
@@ -228,3 +228,5 @@ export default class extends React.Component {
     );
   }
 }
+
+var counter;

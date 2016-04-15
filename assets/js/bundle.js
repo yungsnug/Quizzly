@@ -109,8 +109,7 @@ var _class = function (_React$Component) {
       },
       selectedAnswer: {},
       freeResponseAnswer: "",
-      user: {},
-      counter: {}
+      user: {}
     };
     return _this;
   }
@@ -129,7 +128,8 @@ var _class = function (_React$Component) {
     key: 'startTimer',
     value: function startTimer(duration) {
       var me = this;
-      var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+      counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+
       function timer() {
         duration--;
         var question = me.state.question;
@@ -275,7 +275,7 @@ var _class = function (_React$Component) {
         });
       }).then(function (studentAnswer) {
         console.log("studentAnswer saved", studentAnswer);
-        // clearInterval(me.state.counter);
+        clearInterval(counter);
         _reactRouter.browserHistory.push('/s/quizzes');
       });
     }
@@ -368,6 +368,9 @@ var _class = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = _class;
+
+
+var counter;
 
 },{"react":240,"react-router":55}],3:[function(require,module,exports){
 "use strict";
