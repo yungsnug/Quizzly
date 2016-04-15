@@ -151,11 +151,11 @@ export default class Courses extends React.Component {
     });
   }
 
-  addCourseToProfessor(course) {
+  addCourseToProfessor(course, term) {
     var me = this;
-    this.props.addCourseToProfessor(course)
-    .then(function() {
-      me.setState({course: course});
+    this.props.addCourseToProfessor(course, term)
+    .then(function(newCourse) {
+      me.setState({course: newCourse});
       me.closeModal();
     });
   }

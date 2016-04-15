@@ -98,8 +98,6 @@ export default class Layout extends React.Component {
     });
 
     termIds = Utility.removeDuplicates(termIds);
-    console.log(">>>>>>>>>>courses", courses);
-    console.log(">>>>>>>>>>termIds", termIds);
     return $.post('/term/multifind', {termIds: termIds})
     .then(function(terms) {
       console.log("terms", terms);
@@ -172,7 +170,7 @@ export default class Layout extends React.Component {
     });
   }
 
-  addCourseToProfessor(course) {
+  addCourseToProfessor(course, term) {
     var me = this;
     //TODO: add student array to section
     for(var i = 0; i < course.sections.length; ++i) { // this removes empty answers from the array
@@ -182,17 +180,35 @@ export default class Layout extends React.Component {
       }
     }
     console.log("user", this.state.user);
-    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id})
+    return $.post('/course/create/', {title: course.title, professor: this.state.user.id, sections: course.sections, term: term.id})
     .then(function(course) {
       console.log("created course", course);
       var user = me.state.user;
-      course.sections = [];
       course.quizzes = [];
+      course.sections = [];
+
       user.courses.push(course);
+
+      var isNewTerm = true;
+      var terms = me.state.terms;
+      for(var i = 0; i < terms.length; ++i) {
+        if(terms[i].id == term.id) {
+          isNewTerm = false;
+          break;
+        }
+      }
+
+      if(isNewTerm) {
+        terms.push(term);
+      }
+
       me.setState({
         user: user,
-        course: course
+        course: course,
+        term: term,
+        terms: terms
       });
+      return course;
     });
   }
 
@@ -285,6 +301,7 @@ export default class Layout extends React.Component {
         />
         <Header
           course={this.state.course}
+          courses={this.state.user.courses}
           term={this.state.term}
           terms={this.state.terms}
           user={this.state.user}

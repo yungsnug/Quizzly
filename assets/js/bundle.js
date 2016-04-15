@@ -476,10 +476,10 @@ var Courses = function (_React$Component) {
     }
   }, {
     key: 'addCourseToProfessor',
-    value: function addCourseToProfessor(course) {
+    value: function addCourseToProfessor(course, term) {
       var me = this;
-      this.props.addCourseToProfessor(course).then(function () {
-        me.setState({ course: course });
+      this.props.addCourseToProfessor(course, term).then(function (newCourse) {
+        me.setState({ course: newCourse });
         me.closeModal();
       });
     }
@@ -1096,8 +1096,6 @@ var Layout = function (_React$Component) {
       });
 
       termIds = Utility.removeDuplicates(termIds);
-      console.log(">>>>>>>>>>courses", courses);
-      console.log(">>>>>>>>>>termIds", termIds);
       return $.post('/term/multifind', { termIds: termIds }).then(function (terms) {
         console.log("terms", terms);
         me.setState({
@@ -1174,7 +1172,7 @@ var Layout = function (_React$Component) {
     }
   }, {
     key: 'addCourseToProfessor',
-    value: function addCourseToProfessor(course) {
+    value: function addCourseToProfessor(course, term) {
       var me = this;
       //TODO: add student array to section
       for (var i = 0; i < course.sections.length; ++i) {
@@ -1185,16 +1183,34 @@ var Layout = function (_React$Component) {
         }
       }
       console.log("user", this.state.user);
-      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections, term: this.state.term.id }).then(function (course) {
+      return $.post('/course/create/', { title: course.title, professor: this.state.user.id, sections: course.sections, term: term.id }).then(function (course) {
         console.log("created course", course);
         var user = me.state.user;
-        course.sections = [];
         course.quizzes = [];
+        course.sections = [];
+
         user.courses.push(course);
+
+        var isNewTerm = true;
+        var terms = me.state.terms;
+        for (var i = 0; i < terms.length; ++i) {
+          if (terms[i].id == term.id) {
+            isNewTerm = false;
+            break;
+          }
+        }
+
+        if (isNewTerm) {
+          terms.push(term);
+        }
+
         me.setState({
           user: user,
-          course: course
+          course: course,
+          term: term,
+          terms: terms
         });
+        return course;
       });
     }
   }, {
@@ -1292,6 +1308,7 @@ var Layout = function (_React$Component) {
         }),
         _react2.default.createElement(_Header.Header, {
           course: this.state.course,
+          courses: this.state.user.courses,
           term: this.state.term,
           terms: this.state.terms,
           user: this.state.user,
@@ -3068,12 +3085,33 @@ var AddCourseBody = function (_React$Component) {
         title: "",
         placeholder: "Course...",
         sections: [{ title: "", placeholder: "Section..." }]
-      }
+      },
+      terms: [],
+      term: {}
     };
     return _this;
   }
 
   _createClass(AddCourseBody, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var me = this;
+      $.post('/term/find').then(function (terms) {
+        me.setState({
+          term: terms[0],
+          terms: terms
+        });
+      });
+    }
+  }, {
+    key: "changeTerm",
+    value: function changeTerm(event, termIndex) {
+      var me = this;
+      $.post('/term/find/' + event.target.value).then(function (term) {
+        me.setState({ term: term });
+      });
+    }
+  }, {
     key: "handleChange",
     value: function handleChange(i, event) {
       var me = this;
@@ -3142,11 +3180,22 @@ var AddCourseBody = function (_React$Component) {
             placeholder: this.state.course.placeholder,
             value: this.state.course.title,
             onChange: this.handleChange.bind(this, 'course')
-          })
+          }),
+          _react2.default.createElement(
+            "select",
+            { value: this.state.term.id, className: "dropdown ml10", onChange: this.changeTerm.bind(this) },
+            this.state.terms.map(function (term, termIndex) {
+              return _react2.default.createElement(
+                "option",
+                { key: termIndex, value: term.id },
+                term.season.season + " " + term.year.year
+              );
+            })
+          )
         );
         addButton = _react2.default.createElement(
           "div",
-          { className: "modalButton", onClick: this.props.addCourseToProfessor.bind(this, this.state.course) },
+          { className: "modalButton", onClick: this.props.addCourseToProfessor.bind(this, this.state.course, this.state.term) },
           "ADD COURSE"
         );
         footerButton = _react2.default.createElement(
@@ -3663,14 +3712,28 @@ var _class = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, props));
 
     _this.state = {
-      title: "Course Title"
+      title: "Course Title",
+      course: props.course
     };
     return _this;
   }
 
   _createClass(_class, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // console.log("Course: componentDidMount", this.props.course);
+      this.setState({ course: this.props.course });
+    }
+  }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      // console.log("Course: componentWillReceiveProps", nextProps.course);
+      this.setState({ course: nextProps.course });
+    }
+  }, {
     key: "render",
     value: function render() {
+      // console.log("Course: render:this.state.course", this.state.course);
       return _react2.default.createElement(
         "div",
         { className: "mainPanel" },
@@ -3680,17 +3743,17 @@ var _class = function (_React$Component) {
           _react2.default.createElement(
             "div",
             { className: "header" },
-            this.props.isCourse ? this.props.course.title : this.props.section.title,
+            this.props.isCourse ? this.state.course.title : this.props.section.title,
             _react2.default.createElement(
               "span",
-              { className: "floatR pointer", onClick: this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.props.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
+              { className: "floatR pointer", onClick: this.props.isCourse ? this.props.deleteCourseFromProfessor.bind(this, this.state.course) : this.props.deleteSectionFromCourse.bind(this, this.props.sectionIndex) },
               _react2.default.createElement("img", { src: CLOSE_IMAGE_PATH, style: { "width": "12px" } })
             )
           ),
           _react2.default.createElement(
             "div",
             { className: "body" },
-            this.props.course.quizzes.map(function (quiz, quizIndex) {
+            this.state.course.quizzes.map(function (quiz, quizIndex) {
               return _react2.default.createElement(
                 "div",
                 { /*onClick={this.props.showMetricModal.bind(this, quiz)}*/key: quizIndex, title: quiz, className: "item" },
@@ -3759,10 +3822,11 @@ var Header = exports.Header = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Header).call(this, props));
 
     _this.state = {
-      course: props.course,
       term: props.term,
-      sections: props.course.sections,
-      terms: props.terms
+      terms: props.terms,
+      course: props.course,
+      courses: props.courses,
+      sections: props.course.sections
     };
     return _this;
   }
@@ -3821,7 +3885,7 @@ var Header = exports.Header = function (_React$Component) {
           _react2.default.createElement(
             'select',
             { value: this.state.term.id, className: 'dropdown ml10', onChange: this.changeTerm.bind(this) },
-            this.props.terms.map(function (term, termIndex) {
+            this.state.terms.map(function (term, termIndex) {
               return _react2.default.createElement(
                 'option',
                 { key: termIndex, value: term.id },
@@ -3832,7 +3896,7 @@ var Header = exports.Header = function (_React$Component) {
           _react2.default.createElement(
             'select',
             { value: this.state.course.id, className: 'dropdown ml10', onChange: this.changeCourse.bind(this) },
-            this.props.user.courses.map(function (course, courseIndex) {
+            this.state.courses.map(function (course, courseIndex) {
               if (course.term == this.state.term.id) {
                 return _react2.default.createElement(
                   'option',
