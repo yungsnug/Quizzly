@@ -714,6 +714,10 @@ export default class Metrics extends React.Component {
                   labelsTotal=[];
                   countsTotal=[];
 
+                  // student_answer.sort(function(a,b){
+                  //     return parseInt(a.quiz.id) - parseInt(b.quiz.id);
+                  // });
+
                   for(var i in answers) {
                  
                     labelsTotal.push(answers[i].option);
@@ -1289,11 +1293,39 @@ export default class Metrics extends React.Component {
                 //       }
                 //     } 
                 // }
-                var answers_from_student = [];
+                var temp_answers_from_student = [];
                 for (var l = 0; l < studentanswers.length;l++){
                     if (studentanswers[l].question.type == "multipleChoice"){
-                    answers_from_student.push(studentanswers[l].answer);
+                    temp_answers_from_student.push(studentanswers[l].answer);
                   }
+                }
+                console.log("temp_answers_from_student: ",temp_answers_from_student);
+
+
+                temp_answers_from_student.sort(function(a,b){
+                  return parseInt(a.question) - parseInt(b.question);
+                });
+
+                var answers_from_student = [];
+                // var answers_from_student = [];
+                var k = 0;
+                answers_from_student.push(temp_answers_from_student[0]);
+                for (var p = 1; p <temp_answers_from_student.length; p++){
+                    console.log("answers_from_student[k].question.id",answers_from_student[k].question);
+                    console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
+                    if (answers_from_student[k].question == temp_answers_from_student[p].question){
+                    console.log("howdy");
+                    // } else if (p == temp_answers_from_student.length-1 && answers_from_student[k].question.id != temp_answers_from_student[p].question.id) {
+                    //   answers_from_student.push(prevAnswerFromStudent);
+                    //   answers_from_student.push(temp_answers_from_student[p]);
+                    // } 
+                    }else {
+                      console.log("hallelujah");
+                      answers_from_student.push(temp_answers_from_student[p]);
+                      k++;
+                      // prevAnswerFromStudent = temp_answers_from_student[p];
+                    }
+                    // answers_from_student.push(temp_answers_from_student[p]);
                 }
                 
                 
