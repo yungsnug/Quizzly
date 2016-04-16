@@ -8,6 +8,12 @@
 module.exports = {
   attributes: {
     // Primitives
+    id: {
+   type: 'integer',
+   autoIncrement: true,
+   primaryKey: true,
+   unique: true
+    },
     type: {
       type: 'string',
       defaultsTo: 'STUDENT'
