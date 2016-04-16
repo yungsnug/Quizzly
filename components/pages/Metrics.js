@@ -956,7 +956,8 @@ export default class Metrics extends React.Component {
             //Calculate percentage
             var quizSectionPercent = [];
             for (var f = 0; f < totalQuestionsPerQuizSection.length; f++) {
-                quizSectionPercent.push((quizSectionAnswerCorrectArray[f]/(totalQuestionsPerQuizSection[f]*totalStudents))*100);
+              var num = (quizSectionAnswerCorrectArray[f]/(totalQuestionsPerQuizSection[f]*totalStudents))*100;
+              quizSectionPercent.push(num.toFixed(2));
             }
 
             //Percent

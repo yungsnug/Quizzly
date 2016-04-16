@@ -175,14 +175,18 @@ module.exports = {
       var android_channels = [];
 
       section.students.forEach(function(student) {
-        if(student.deviceType == "ios") {
-          ios_channels.push(student.channelID);
-        }
-        else if(student.deviceType == "android"){
-          android_channels.push(student.channelID);
+        if(student.deviceType != null && student.channelID != null) {
+          if(student.deviceType == "ios") {
+            ios_channels.push(student.channelID);
+          }
+          else if(student.deviceType == "android"){
+            android_channels.push(student.channelID);
+          }
         }
       });
 
+      console.log("android: " + android_channels);
+      console.log("ios: " + ios_channels);
 
       Question.findOne({id:question_id}).populate('answers').exec(function (err, question) {
         if(err) {

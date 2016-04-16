@@ -2,6 +2,7 @@
 
 import React from 'react'
 import StudentQuiz from '../partials/StudentQuiz.js'
+import StudentQuestionModal from '../partials/StudentQuestionModal.js'
 
 export default class extends React.Component {
   constructor(props) {
@@ -9,6 +10,7 @@ export default class extends React.Component {
     this.state = {
       studentQuizzes: [{title: "", studentAnswers: [], course: 0, id: 0}],
       showModal: false,
+      modalQuestion: {answers: [], text: "", duration: 0},
       modalInfo: {
         modalType: "ADD_QUIZ",
         title: "Add Quiz",
@@ -71,6 +73,17 @@ export default class extends React.Component {
     });
   }
 
+  showModal(question) {
+    this.setState({
+      showModal: true,
+      modalQuestion: question
+    });
+  }
+
+  closeModal() {
+    this.setState({showModal: false});
+  }
+
   render() {
     return (
       <div>
@@ -81,10 +94,21 @@ export default class extends React.Component {
                 studentQuiz={studentQuiz}
                 key={studentQuizIndex}
                 studentQuizIndex={studentQuizIndex}
+                showModal={this.showModal.bind(this)}
               />
             );
           }, this)}
         </div>
+        {(() => {
+          if(this.state.showModal) {
+            return(
+              <StudentQuestionModal
+                question={this.state.modalQuestion}
+                closeModal={this.closeModal.bind(this)}
+              />
+            );
+          }
+        })()}
       </div>
     );
   }

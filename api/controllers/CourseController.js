@@ -31,8 +31,8 @@ module.exports = {
       var all_quizzes = [];
       course.quizzes.forEach(function(quiz) {
         var obj = {
-          title: quiz.title,
-          id: quiz.id
+          "title": quiz.title,
+          "id": quiz.id
         };
         all_quizzes.push(obj);
       });
