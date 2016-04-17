@@ -714,6 +714,10 @@ export default class Metrics extends React.Component {
                   labelsTotal=[];
                   countsTotal=[];
 
+                  // student_answer.sort(function(a,b){
+                  //     return parseInt(a.quiz.id) - parseInt(b.quiz.id);
+                  // });
+
                   for(var i in answers) {
                  
                     labelsTotal.push(answers[i].option);
@@ -824,6 +828,12 @@ export default class Metrics extends React.Component {
     // e.options[]
     //Need student id
     // selected_student.
+    if (this.state.question.id == -1) {
+      //all questions
+      if (this.state.quiz.id == -1) {
+
+      
+
     console.log("Single Student Metrics");
     isBarChartGlobal = false; // Line Chart
     isPercentGlobal = true; // Values
@@ -918,10 +928,11 @@ export default class Metrics extends React.Component {
             // console.log("quizIDArray")
             var totalQuestionsPerQuizSection = [];
             var type_section = "multipleChoice";
+            var questions_later = [];
           Promise.each(quizSectionIDArray, function(quiz_section) {
             return $.post('/question/find', {quiz: quiz_section, type: type_section})
               .then(function(questions_section){
-
+                questions_later.push(questions_section);
                 totalQuestionsPerQuizSection.push(questions_section.length);
                 console.log("totalQuestionsPerQuizSection", totalQuestionsPerQuizSection);
             });
@@ -986,7 +997,7 @@ export default class Metrics extends React.Component {
 
       }).then(function(student_answer_sorted){
 
-        console.log("student_answer_sorted: ", student_answer_sorted);
+        // console.log("student_answer_sorted: ", student_answer_sorted);
         //For each quiz (calculate percent)
         if (student_answer_sorted.length > 0) {
         var currentQuizId;
@@ -1005,37 +1016,85 @@ export default class Metrics extends React.Component {
         // var totalPerQuiz = 0;
         // var percent;
         //iterate
-        console.log("student_answer_sorted.length: ", student_answer_sorted.length);
+        // console.log("student_answer_sorted.length: ", student_answer_sorted.length);
+        var quizFound = 0;
+        // var prevQuestionSectionID = questions_section[0];
+        // console.log("quizSectionIDArray: ", quizSectionIDArray);
+        var previousId = 0;
+        for (var d = 0; d < quizSectionIDArray.length; d++) {
+        for (var o = 0; o < questions_later[d].length; o++) {
+
+
         for(var i = 0; i < student_answer_sorted.length; i++) {
-          if (student_answer_sorted[i].question.type == "multipleChoice") {
+          // console.log("student_answer_sorted[i].question.id: ", student_answer_sorted[i].question.id);
+          // console.log("questions_section[o]: ", questions_later[o].id);
+          // if ((student_answer_sorted[i].question.id==questions_later[o].id) && (student_answer_sorted[i].question.type == "multipleChoice")){
+          //   console.log("quizFound");
+          //     quizFound = 1;
+          // }
+          // if ((i == student_answer_sorted.length-1) && quizFound ==0) {
+          //   console.log("hello");
+          //     quizTitleArray.push(quizSectionTitleArray[o]);
+          //     quizIDArray.push(quizSectionIDArray[o]);
+          //     quizAnswerCorrectArray.push(0);
+          //     // correctCountPerQuiz = 0;
+          // }
+          // if ((i == student_answer_sorted.length-1) && quizFound ==1) {
+          //   quizFound = 0;
+          //   // correctCountPerQuiz = 0;
+          // }
+          // if (currentQuizId == student_answer_sorted[0].quiz.id) {
+          //   correctCountPerQuiz = 0;
+          // }
 
-          if (currentQuizId != student_answer_sorted[i].quiz.id) {
-            currentQuizId = student_answer_sorted[i].quiz.id;
-            // percent = correctCountPerQuiz/totalPerQuiz;
-            // console.log("percent: ",percent);
+           
+          // // if (student_answer_sorted[i].question.type == "multipleChoice"){
+          // if ((currentQuizId != student_answer_sorted[i].quiz.id) && currentQuizId != student_answer_sorted[0].quiz.id) {
+          //   console.log("here");
             
-              // if (i != student_answer_sorted.length -1) {
-                quizTitleArray.push(student_answer_sorted[i-1].quiz.title);
-                quizIDArray.push(student_answer_sorted[i-1].quiz.id);
-              // }
+          //   currentQuizId = student_answer_sorted[i].quiz.id;
+          //   // percent = correctCountPerQuiz/totalPerQuiz;
+          //   // console.log("percent: ",percent);
+            
+          //     // if (i != student_answer_sorted.length -1) {
+          //       quizTitleArray.push(student_answer_sorted[i-1].quiz.title);
+          //       quizIDArray.push(student_answer_sorted[i-1].quiz.id);
+          //     // }
 
-              quizAnswerCorrectArray.push(correctCountPerQuiz);
-              console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
-               console.log("1quizTitleArray: ", quizTitleArray);
-              correctCountPerQuiz = 0; 
+          //     quizAnswerCorrectArray.push(correctCountPerQuiz);
+          //     console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
+          //      console.log("1quizTitleArray: ", quizTitleArray);
+          //     correctCountPerQuiz = 0;
+          //     // quizFound = 0; 
               
-              // totalPerQuiz = 0;
-              // if (student_answer_sorted[i].answer.correct){
-              //   correctCountPerQuiz++; 
-              // }
+              
+          //   // }
+              
+          //     // totalPerQuiz = 0;
+          //     // if (student_answer_sorted[i].answer.correct){
+          //     //   correctCountPerQuiz++; 
+          //     // }
 
-              // totalPerQuiz++;
+          //     // totalPerQuiz++;
             
-          } 
-          if (i == student_answer_sorted.length -1){
+          // } 
+
+          if (previousId != d) {
+            console.log("push");
+              previousId = d;
+              quizTitleArray.push(questions_later[d-1][0].quiz.title);
+              quizIDArray.push(questions_later[d-1][0].quiz.id);
+              quizAnswerCorrectArray.push(correctCountPerQuiz);
+              correctCountPerQuiz = 0;
+          }
+          console.log("student_answer_sorted[i].question.id: ", student_answer_sorted[i].question.id);
+          console.log("questions_section[o].id: ", questions_later[d][o].id);
+            if ((i == student_answer_sorted.length -1) && (o == questions_later[quizSectionIDArray.length-1].length-1) && (d==quizSectionIDArray.length-1)){
+           if ((student_answer_sorted[i].question.type == "multipleChoice") && (student_answer_sorted[i].question.id==questions_later[d][o].id)){
             if (student_answer_sorted[i].answer.correct){
               correctCountPerQuiz++; 
             }
+            console.log("correctCountPerQuizININNerSIDE: ", correctCountPerQuiz);
             // totalPerQuiz++;
             // percent = correctCountPerQuiz/totalPerQuiz;
             // console.log("percent: ",percent);
@@ -1044,19 +1103,19 @@ export default class Metrics extends React.Component {
             quizIDArray.push(student_answer_sorted[i].quiz.id);
             console.log("2quizAnswerCorrectArray: ", quizAnswerCorrectArray);
             console.log("2quizTitleArray: ", quizTitleArray);
-            console.log("quizIDArray: ", quizIDArray);
-
+            // console.log("quizIDArray: ", quizIDArray);
+          }
             var totalQuestionsPerQuiz = [];
             var type = "multipleChoice";
           Promise.each(quizIDArray, function(quiz) {
             return $.post('/question/find', {quiz: quiz, type: type})
               .then(function(questions){
                 totalQuestionsPerQuiz.push(questions.length);
-                console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+                // console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
             });
           }).then(function() {
 
-            console.log("quizIDArray", quizIDArray);
+            // console.log("quizIDArray", quizIDArray);
             // for (var j = 0; j < quizIDArray.length; j++) {
 
             //     $.post('/question/find', {quiz: quizIDArray[j]})
@@ -1065,8 +1124,8 @@ export default class Metrics extends React.Component {
             //         console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
             //     });
             // }
-            console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-            console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
+            // console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
+            // console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
 
 
             //Calculate percentage
@@ -1077,18 +1136,18 @@ export default class Metrics extends React.Component {
 
             //Student
             //Percent
-            console.log("quizPercent: ", quizPercent);
-            console.log("studentName: ", studentName);
+            // console.log("quizPercent: ", quizPercent);
+            // console.log("studentName: ", studentName);
             //Quiz Name
-            console.log("quizTitleArray: ", quizTitleArray);
+            // console.log("quizTitleArray: ", quizTitleArray);
 
             //AVERAGE DATA!!!!!!!! 
             //Percent           
-            console.log("quizSectionPercent: ", quizSectionPercent);
+            // console.log("quizSectionPercent: ", quizSectionPercent);
             // console.log("studentName: ", studentName);
             var studentNameSection = "Average";
             //Quiz Name
-            console.log("quizSectionTitleArray: ", quizSectionTitleArray);
+            // console.log("quizSectionTitleArray: ", quizSectionTitleArray);
 
             var finalQuizTitles = [];
             var finalStudentNames = [];
@@ -1119,61 +1178,27 @@ export default class Metrics extends React.Component {
         });
 
 
-          } else {
-
+          } else if ((student_answer_sorted[i].question.id==questions_later[d][o].id)){
+            console.log("increment");
             if (student_answer_sorted[i].answer.correct){
-              correctCountPerQuiz++; 
+               correctCountPerQuiz++;
             }
-            // totalPerQuiz++;
           }
           console.log("correctCountPerQuiz",correctCountPerQuiz);
-              // quizTitleArray.push(student_answer_sorted[i].quiz.title);
-              // quizAnswerArray.push(student_answer_sorted[i]);
-              // currentQuizId = 
+              
+            
             }
-            }
+          }
+        }
             } else {
-        //if no answers at all
+        
 
 
       }
 
       });
 
-    //For each quiz
-      //Need to check each answer for correctness
-      //Total number of questions
-
-
-      // var totalQuestionsPerQuiz = [];
-      // // Promise.each(quizIDArray, function(quiz) {
-      // //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      // //       .then(function(questions){
-      // //         totalQuestionsPerQuiz.push(questions.length);
-      // //     });
-      // //   });
-      // console.log("quizIDArray", quizIDArray);
-      // for (var i = 0; i < quizIDArray.length; i++) {
-
-      //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      //       .then(function(questions){
-      //         totalQuestionsPerQuiz.push(questions.length);
-      //     });
-      // }
-      // console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-      // console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
-
-
-      // //Calculate percentage
-      // var quizPercent = [];
-      // for (var i = 0; i < totalQuestionsPerQuiz.length; i++) {
-      //     quizPercent.push(quizAnswerCorrectArray[i]/totalQuestionsPerQuiz[i]);
-      // }
-
-      // //Percent
-      // console.log("quizPercent: ", quizPercent);
-      // //Quiz Name
-      // console.log("quizTitleArray: ", quizTitleArray);
+    
 
               
           });
@@ -1184,6 +1209,7 @@ export default class Metrics extends React.Component {
 
             if (section_sorted_student_answers[g].answer.correct){
               correctCountPerQuizSection++; 
+
             }
             // totalPerQuiz++;
           }
@@ -1201,243 +1227,261 @@ export default class Metrics extends React.Component {
 
       });
 
-    //For each quiz
-      //Need to check each answer for correctness
-      //Total number of questions
+    
+} else {
+  //else student quizzes
+  console.log("selected_student", selected_student);
+  var prevQuizID;
+  var quizCount = 0;
+  var questionCount = 0;
+  // console.log("me.state.course: ", me.state.course);
+  // $.post('/quiz/find/',{course: me.state.course})
+  //   .then(function(quizzes){
+      // console.log("quizzes: ",quizzes);
+      // prevQuizID = quizzes[0].id;
+      // quizCount++;
+      var questionsForQuiz = [];
+      // Promise.each(quizzes, function(quiz){ 
+
+        $.post('/question/find/',{quiz: selected_quiz.id})
+        .then(function(questions){
+          console.log("question: ", questions);
+          Promise.each(questions, function(question){
+          //Get Question Names
+          if(question.type == "multipleChoice") {
+            //Whatever data you want pushed
+            questionsForQuiz.push(question);
+          }
+          // if (prevQuizID != quiz.id){
+          //   quizCount++;
+          //   quizQuestionNamesArray.push(questionsForQuiz); 
+          //   questionsForQuiz = [];
+          // }
+          if(questionCount == questions.length - 1) {
+            questionCount++;
+            console.log("questionCount: ", questionCount);
+            console.log("questions.length: ", questions.length);
+            console.log("questionsForQuiz: ", questionsForQuiz);
+
+            //here we are done with getting all question names
+            //now we want to get what student answered for each of these questions/fill in dummy zeros
+            var resultsCorrect = [];
+            var found = 0;
+            $.post('/studentanswer/find/',{student: selected_student.id, quiz: selected_quiz.id})
+              .then(function(studentanswers){
+              // console.log("student: ", student);
+              console.log("studentanswers: ", studentanswers);
+                // var k = 0;
+                // for(var i in questionsForQuiz) {
+                //     for (var k in studentanswers){
+                      
+                //       if (studentanswers[k].question.id = questionsForQuiz[i].id){
+                //         var correct = k.answer.correct;
+                //         resultsCorrect.push(correct);
+                //           found = 1;
+                        
+                //       } else if (k == studentanswers.length -1 && !found) {
+                //         resultsCorrect.push(0);
+                //         console.log("resultsCorrectInside1: ", resultsCorrect);
+                //       }
+                     
+                //       if (k == studentanswers.length-1) {
+                //         found = 0;
+                //         console.log("resultsCorrectInside2: ", resultsCorrect);
+                //       } else {
+                //         k++;
+                //       }
+                //     } 
+                // }
+                var temp_answers_from_student = [];
+                for (var l = 0; l < studentanswers.length;l++){
+                    if (studentanswers[l].question.type == "multipleChoice"){
+                    temp_answers_from_student.push(studentanswers[l].answer);
+                  }
+                }
+                console.log("temp_answers_from_student: ",temp_answers_from_student);
 
 
-      // var totalQuestionsPerQuiz = [];
-      // // Promise.each(quizIDArray, function(quiz) {
-      // //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      // //       .then(function(questions){
-      // //         totalQuestionsPerQuiz.push(questions.length);
-      // //     });
-      // //   });
-      // console.log("quizIDArray", quizIDArray);
-      // for (var i = 0; i < quizIDArray.length; i++) {
+                temp_answers_from_student.sort(function(a,b){
+                  return parseInt(a.question) - parseInt(b.question);
+                });
 
-      //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      //       .then(function(questions){
-      //         totalQuestionsPerQuiz.push(questions.length);
-      //     });
-      // }
-      // console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-      // console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
+                var answers_from_student = [];
+                // var answers_from_student = [];
+                var k = 0;
+                answers_from_student.push(temp_answers_from_student[0]);
+                for (var p = 1; p <temp_answers_from_student.length; p++){
+                    console.log("answers_from_student[k].question.id",answers_from_student[k].question);
+                    console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
+                    if (answers_from_student[k].question == temp_answers_from_student[p].question){
+                    console.log("howdy");
+                    // } else if (p == temp_answers_from_student.length-1 && answers_from_student[k].question.id != temp_answers_from_student[p].question.id) {
+                    //   answers_from_student.push(prevAnswerFromStudent);
+                    //   answers_from_student.push(temp_answers_from_student[p]);
+                    // } 
+                    }else {
+                      console.log("hallelujah");
+                      answers_from_student.push(temp_answers_from_student[p]);
+                      k++;
+                      // prevAnswerFromStudent = temp_answers_from_student[p];
+                    }
+                    // answers_from_student.push(temp_answers_from_student[p]);
+                }
+                
+                
+                console.log("answers_from_student ", answers_from_student);
 
+                return answers_from_student;
 
-      // //Calculate percentage
-      // var quizPercent = [];
-      // for (var i = 0; i < totalQuestionsPerQuiz.length; i++) {
-      //     quizPercent.push(quizAnswerCorrectArray[i]/totalQuestionsPerQuiz[i]);
-      // }
+            }).then(function(answers_return) {
+                console.log("answers_return",answers_return);
+                for(var i = 0; i < questionsForQuiz.length; i++) {
+                    for (var k = 0; k<answers_return.length; k++){
+                      // console.log("questionsForQuiz[i]",questionsForQuiz[i].id);
+                      // console.log("answers_return[k]",answers_return[k]);
+                      // console.log("answers_return[k].question",answers_return[k].question);
+                      console.log("k: ", k);
+                      console.log("answers_return.length", answers_return.length);
+                      // console.log("answers_return[k].question.id",answers_return[k].question.id);
+                      if (answers_return[k].question == questionsForQuiz[i].id){
+                        var correct = answers_return[k].correct;
+                        if (correct) {
+                          resultsCorrect.push(1);
+                         } else {
+                          resultsCorrect.push(0);
+                         }
+                        found = 1;
+                        console.log("resultsCorrectInside0: ", resultsCorrect);
+                      }
+                      if (k == answers_return.length -1 && !found) {
+                        resultsCorrect.push(0);
+                        console.log("resultsCorrectInside1: ", resultsCorrect);
+                      } else if (k == answers_return.length-1) {
+                        found = 0;
+                        console.log("resultsCorrectInside2: ", resultsCorrect);
+                      } else {
+                        
+                      }
+                    } 
+                }
 
-      // //Percent
-      // console.log("quizPercent: ", quizPercent);
-      // //Quiz Name
-      // console.log("quizTitleArray: ", quizTitleArray);
-
-
-
-
-
-//Bottom
-      // });
-
-    // $.post('/student/getStudentsBySectionId/', {section: selectedSection})
-    //   .then(function(students_from_section){
-
-
-    //     Promise.each(students_from_section, function(student_from_section){
-    //       //per student need to find
-
-    //     });
-    //   });
-
-    //
-    /*
-    console.log("selected_student: ", selected_student);
-    //Need students answers
-    var studentName = selected_student.firstName;
-    var quiz = [];
-    var quizTitleArray = [];
-    var quizAnswerCorrectArray = [];
-    var quizIDArray = [];
-    $.post('/studentanswer/find', {student: selected_student.id})
-      .then(function(student_answer){
-        console.log("student_answer: ", student_answer);
-        
-        student_answer.sort(function(a,b){
-          return parseInt(a.quiz.id) - parseInt(b.quiz.id);
-        })
-        
-        
-
-       return student_answer;
-
-      }).then(function(student_answer_sorted){
-
-        console.log("student_answer_sorted: ", student_answer_sorted);
-        //For each quiz (calculate percent)
-        if (student_answer_sorted.length > 0) {
-        var currentQuizId;
-        currentQuizId = student_answer_sorted[0].quiz.id;
-        // quizIDArray.push(student_answer_sorted[0].quiz.id);
-        // quizTitleArray.push(student_answer_sorted[0].quiz.title);
-        
-
-        // $.post('/answers/find', {student: selected_student.id})
-        //  .then(function(student_answer){
+//SPENCER!!!!! BAR GRAPH HERE
+                console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
+                 console.log("resultsCorrectOutside: ", resultsCorrect);
 
 
-        //  });
 
-        var correctCountPerQuiz = 0; 
-        // var totalPerQuiz = 0;
-        // var percent;
-        //iterate
-        console.log("student_answer_sorted.length: ", student_answer_sorted.length);
-        for(var i = 0; i < student_answer_sorted.length; i++) {
-          if (student_answer_sorted[i].question.type == "multipleChoice") {
 
-          if (currentQuizId != student_answer_sorted[i].quiz.id) {
-            currentQuizId = student_answer_sorted[i].quiz.id;
-            // percent = correctCountPerQuiz/totalPerQuiz;
-            // console.log("percent: ",percent);
-            
-              // if (i != student_answer_sorted.length -1) {
-                quizTitleArray.push(student_answer_sorted[i-1].quiz.title);
-                quizIDArray.push(student_answer_sorted[i-1].quiz.id);
-              // }
-
-              quizAnswerCorrectArray.push(correctCountPerQuiz);
-              console.log("1quizAnswerCorrectArray: ", quizAnswerCorrectArray);
-               console.log("1quizTitleArray: ", quizTitleArray);
-              correctCountPerQuiz = 0; 
-              
-              // totalPerQuiz = 0;
-              // if (student_answer_sorted[i].answer.correct){
-              //   correctCountPerQuiz++; 
-              // }
-
-              // totalPerQuiz++;
-            
-          } 
-          if (i == student_answer_sorted.length -1){
-            if (student_answer_sorted[i].answer.correct){
-              correctCountPerQuiz++; 
-            }
-            // totalPerQuiz++;
-            // percent = correctCountPerQuiz/totalPerQuiz;
-            // console.log("percent: ",percent);
-            quizTitleArray.push(student_answer_sorted[i].quiz.title);
-            quizAnswerCorrectArray.push(correctCountPerQuiz);
-            quizIDArray.push(student_answer_sorted[i].quiz.id);
-            console.log("2quizAnswerCorrectArray: ", quizAnswerCorrectArray);
-            console.log("2quizTitleArray: ", quizTitleArray);
-            console.log("quizIDArray: ", quizIDArray);
-
-            var totalQuestionsPerQuiz = [];
-            var type = "multipleChoice";
-          Promise.each(quizIDArray, function(quiz) {
-            return $.post('/question/find', {quiz: quiz, type: type})
-              .then(function(questions){
-                totalQuestionsPerQuiz.push(questions.length);
-                console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
             });
-          }).then(function() {
-
-            console.log("quizIDArray", quizIDArray);
-            // for (var j = 0; j < quizIDArray.length; j++) {
-
-            //     $.post('/question/find', {quiz: quizIDArray[j]})
-            //       .then(function(questions){
-            //         totalQuestionsPerQuiz.push(questions.length);
-            //         console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-            //     });
-            // }
-            console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-            console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
 
 
-            //Calculate percentage
-            var quizPercent = [];
-            for (var k = 0; k < totalQuestionsPerQuiz.length; k++) {
-                quizPercent.push((quizAnswerCorrectArray[k]/totalQuestionsPerQuiz[k])*100);
-            }
+        
+          } else {
+            questionCount++;
+          }
 
-            //Percent
-            console.log("quizPercent: ", quizPercent);
-            console.log("studentName: ", studentName);
-            //Quiz Name
-            console.log("quizTitleArray: ", quizTitleArray);
-
-            data = getSingleItemLineChartData(quizTitleArray, studentName, quizPercent);
-            console.log("data: ", data);
-            return res(data);
-              
+          // console.log("questionNames: ",questionNames);
+          });
 
         });
 
 
-          } else {
-
-            if (student_answer_sorted[i].answer.correct){
-              correctCountPerQuiz++; 
-            }
-            // totalPerQuiz++;
-          }
-          console.log("correctCountPerQuiz",correctCountPerQuiz);
-              // quizTitleArray.push(student_answer_sorted[i].quiz.title);
-              // quizAnswerArray.push(student_answer_sorted[i]);
-              // currentQuizId = 
-            }
-            }
-            } else {
-        //if no answers at all
-
-
-      }
-
-      });
-
-    //For each quiz
-      //Need to check each answer for correctness
-      //Total number of questions
-
-
-      // var totalQuestionsPerQuiz = [];
-      // // Promise.each(quizIDArray, function(quiz) {
-      // //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      // //       .then(function(questions){
-      // //         totalQuestionsPerQuiz.push(questions.length);
-      // //     });
-      // //   });
-      // console.log("quizIDArray", quizIDArray);
-      // for (var i = 0; i < quizIDArray.length; i++) {
-
-      //     $.post('/questions/find', {quiz: quizIDArray[i]})
-      //       .then(function(questions){
-      //         totalQuestionsPerQuiz.push(questions.length);
-      //     });
-      // }
-      // console.log("totalQuestionsPerQuiz", totalQuestionsPerQuiz);
-      // console.log("LastquizAnswerCorrectArray: ", quizAnswerCorrectArray);
-
-
-      // //Calculate percentage
-      // var quizPercent = [];
-      // for (var i = 0; i < totalQuestionsPerQuiz.length; i++) {
-      //     quizPercent.push(quizAnswerCorrectArray[i]/totalQuestionsPerQuiz[i]);
-      // }
-
-      // //Percent
-      // console.log("quizPercent: ", quizPercent);
-      // //Quiz Name
-      // console.log("quizTitleArray: ", quizTitleArray);
-
-  */
+      // });
       
 
+    // });
+
+  // $.post('/question/find/',{quiz: })
+  //   .then(function(){
+
+  //   });
+
+  // $.post('/studentanswer/find/',{student: selected_student.id, quiz: selected_quiz.id})
+  //   .then(function(student){
+        
+  //       console.log("student: ", student);
+  //       for(var i = 0; i < student.length; i++) {
+  //         if (student.question.type = "multipleChoice"){
+
+
+  //         }
+
+  //       }
+  //   });
+
+
+
+
+}
+}else {
+  //student question
+  console.log("student question");
+  if (selected_question.type == "multipleChoice"){
+  $.post('/studentanswer/find/', {student: selected_student.id, quiz: selected_quiz.id, question: selected_question.id})
+    .then(function(answer){
+      console.log("answer: ", answer);
+      // console.log("answer: ")
+      // var answer1 = "answer";
+      // console.log("answer[answer]", answer[answer1]);
+        return answer[0];
+
+
+
+        }).then(function(answer_return){
+            var studentAnswered = answer_return.answer.id;
+            console.log("studentAnswered: ", studentAnswered);
+                //find other answers
+            var answerValues = [];
+            $.post('/answer/find/', {question: answer_return.question.id})
+              .then(function(answers){
+                  for(var i = 0; i < answers.length; i++) {
+                    if (studentAnswered == answers[i].id) {
+                        answerValues.push(1);
+                    } else {
+                        answerValues.push(0);
+                    }
+                  }
+
+                  console.log("answerValues", answerValues);
+                  console.log("answers", answers); //get .option and/or .text
+
+
+//SPENCER!!!! BAR CHART HERE
+
+
+        });
+
+        
+
+    });
+
+} else {
+  //if free response 
+  //display free response
+
+  $.post('/studentanswer/find/', {question: selected_question.id, student: selected_student.id})
+    .then(function(student_answers){
+      console.log("student_answer: ", student_answers);
+      // console.log("student_answer.text: ", student_answers[0].text);
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var text = "text";
+      var student = "student";
+      var email = "email";
+      for (var l = 0; l < student_answers.length; l++) {
+        complete_text += student_answers[l][student][email] + ": " + student_answers[l][text] + "<br/><br/>";
+      }
+
+      
+      return complete_text;
+      
+    }).then(function(text){
+      
+      $("#DivChartContainer").html(text);
+
+    });
+
+}
+}
 
   }
 
