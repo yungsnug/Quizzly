@@ -281,12 +281,14 @@ module.exports = {
                 // Handle error
                 console.log(err);
                 return res.json({
-                  error: "Push not sent"
+                  error: "Push not sent",
+                  pushInfo: pushInfo
                 });
             }
             console.log(data);
             return res.json({
-              success: "Push sent"
+              success: "Push sent",
+              pushInfo: pushInfo
             });
         });
       });
