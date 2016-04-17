@@ -280,7 +280,9 @@ module.exports = {
             if (err) {
                 // Handle error
                 console.log(err);
-                return;
+                return res.json({
+                  error: "Push not sent"
+                });
             }
             console.log(data);
             return res.json({
