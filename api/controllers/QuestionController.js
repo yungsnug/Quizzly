@@ -236,46 +236,68 @@ module.exports = {
         for(var i = 0; i < question.answers.length; i++) {
           android_push.notification.android.extra["answer" + i] = question.answers[i].text;
           ios_push.notification.ios.extra["answer" + i] = question.answers[i].text;
-      //    android_push.notification.android.extra["answerId" + i] = question.answers[i].id;
-      //    ios_push.notification.ios.extra["answerId" + i] = question.answers[i].id;
         }
 
         if(ios_channels.length == 0 && android_channels.length == 0) {
           return res.json({error: "There are no devices for that section"});
         }
 
-        if(android_channels.length != 0) {
-          //send push
-          urbanAirshipPush.push.send(android_push, function(android_err, android_data) {
+        ios_fail = false;
+        android_fail = false;
+        async.series([
+          function(callback) {
+            if(android_channels.length != 0) {
+              urbanAirshipPush.push.send(android_push, function(android_err, android_data) {
+                if(android_err) {
+                  console.log("android error!");
+                  android_fail = true
+                }
+                else {
+                  console.log("android success!");
+                }
+              });
+            }
+
+            callback();
+          },
+
+          function(callback) {
             if(ios_channels.length != 0) {
               urbanAirshipPush.push.send(ios_push, function(ios_err, ios_data) {
-                if(ios_err && android_err) {
-                  return res.json({error: "Pushes to ios and android devices failed"});
-                } else  if(ios_err) {
-                  return res.json({error: "Android pushes success. iOS push failed"});
-                } else if(android_err) {
-                  return res.json({error: "iOS pushes success. Android pushes failed"});
+                if(ios_err) {
+                  console.log("ios error!");
+                  ios_fail = true;
                 } else {
-                  return res.json({success: "Pushes sent"});
+                  console.log("ios success!");
                 }
-              })
-            } else {
-              if(android_err) {
-                return res.json({error: "Android push failed"});
-              }
+              });
             }
-          });
-        }
 
-        if(ios_channels.length != 0) {
-          urbanAirshipPush.push.send(ios_push, function(ios_err, ios_data) {
-            if(ios_err) {
-              return res.json({error: "iOS push failed"});
-            } else {
-              return res.json({success: "Pushes sent"});
-            }
-          });
-        }
+            callback();
+          }
+        ], function(err) {
+          if(!ios_fail && !android_fail) {
+            return res.json({
+              ios: "success",
+              android: "success"
+            });
+          } else if(ios_fail && !android_fail) {
+            return res.json({
+              ios: "fail",
+              android: "success"
+            });
+          } else if(!ios_fail && android_fail) {
+            return res.json({
+              ios: "success",
+              android: "fail"
+            });
+          } else {
+            return res.json({
+              ios: "fail",
+              android: "fail"
+            });
+          }
+        });
       });
     });
   },
