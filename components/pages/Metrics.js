@@ -1830,8 +1830,33 @@ export default class Metrics extends React.Component {
 
 //SPENCER!!!!! BAR GRAPH HERE
                 console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
-                 console.log("resultsCorrectOutside: ", resultsCorrect);
+                var labelsArray = [];
+                for (var i in questionsForQuiz){
+                  labelsArray.push(questionsForQuiz[i].text);
+                }
+                console.log("labelsArray: ",labelsArray); //Just iterate and get .text
+                console.log("resultsCorrectOutside: ", resultsCorrect);
 
+
+
+                var complete_text = "";
+                        for(var r = 0; r < labelsArray.length;r++){
+                          if (resultsCorrect[r] == 1){
+                             complete_text+="<font color='green'>";
+                          } else {
+                              complete_text+="<font color='red'>";
+                          }
+                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                          
+                          complete_text+="</font>";
+                          
+                         
+                       }
+            // }
+
+
+
+                        $("#AnswersContainer").html(complete_text);
 
 
 
