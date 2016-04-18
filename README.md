@@ -25,6 +25,7 @@ To change react files (located in components/*) run once `sudo npm install -g br
 
 You must run this command every time you change a React file: `browserify -t [ babelify --presets [ react ] ] components/app.js -o assets/js/bundle.js`
 
+If changing component files (running react code above^), have two tabs.  One tab with sails lift (only run once), and then one where you run browserify (run any times you want to test changes in component file).  This allows you to stay logged in.
 
 Sails Blueprints docs: http://sailsjs.org/documentation/reference/blueprint-api
 
