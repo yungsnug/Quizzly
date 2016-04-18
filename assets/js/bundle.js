@@ -2210,8 +2210,16 @@ var Metrics = function (_React$Component) {
                         console.log("end");
                         //SortArrays by question
                         tempCountsArrays.sort(function (a, b) {
+                          // for (var i in a)
                           return parseInt(a[0][0].question.id) - parseInt(b[0][0].question.id);
                         });
+
+                        for (var d in tempCountsArrays) {
+                          tempCountsArrays[d].sort(function (a, b) {
+                            // for (var i in a)
+                            return parseInt(a[0].question.id) - parseInt(b[0].question.id);
+                          });
+                        }
 
                         tempTitlesArray.sort(function (a, b) {
                           return parseInt(a.id) - parseInt(b.id);
