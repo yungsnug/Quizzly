@@ -1828,7 +1828,6 @@ export default class Metrics extends React.Component {
                     } 
                 }
 
-//SPENCER!!!!! BAR GRAPH HERE
                 console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
                 var labelsArray = [];
                 for (var i in questionsForQuiz){
@@ -1846,17 +1845,16 @@ export default class Metrics extends React.Component {
                           } else {
                               complete_text+="<font color='red'>";
                           }
-                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='grey' SIZE='2'>";
+                          var index = r+1;
+                          complete_text += "<h2>" + index + ". " + labelsArray[r] + "</h2> <hr COLOR='grey' SIZE='2'>";
                           
                           complete_text+="</font>";
-                          
-                         
                        }
             // }
 
 
 
-                        $("#AnswersContainer").html(complete_text);
+                        $("#DivChartContainer").html(complete_text);
 
 
 
@@ -1934,10 +1932,6 @@ export default class Metrics extends React.Component {
                   console.log("answers", answers); //get .option and/or .text
 
 
-//SPENCER!!!! BAR CHART HERE
-
-
-
               var complete_text = "";
             // for (var l = 0; l < questionName.length; l++) {
                 complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='grey' SIZE='2'>";
@@ -1960,7 +1954,7 @@ export default class Metrics extends React.Component {
 
 
 
-            $("#AnswersContainer").html(complete_text);
+            $("#DivChartContainer").html(complete_text);
 
 
         });
@@ -2317,7 +2311,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
         </div>
 
         {<div>
-          <div id="DivChartContainer" className="graphText"></div>
+          <div id="DivChartContainer" className="metricsText"></div>
           <div id="AnswersContainer" className="metricsText"></div>
           </div>
         }
