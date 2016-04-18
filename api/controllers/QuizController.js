@@ -173,7 +173,7 @@ module.exports = {
         bar.setAutoScaling();
         var imageUrl = bar.getUrl(true);
         res.send(200, {
-          graphUrl: imageUrl
+          graphUrl: imageUrl.split('%2B').join('+')
         });
       });
       //end new
