@@ -951,6 +951,7 @@ export default class Metrics extends React.Component {
                                 // var countsp = 0;
                                 var countAnswered = 0;
                                 for (var p in tempTempC) {
+                                  for (var w in tempTempC[p]) {
                                 // if (b < tempCountsArrays.length){
                                 // if(v < tempCountsArrays[b].length){
                                   // var countp = 0;
@@ -960,22 +961,33 @@ export default class Metrics extends React.Component {
                                 // console.log("tempLabelsArrays[b][v].id",tempLabelsArrays[b][v].id);
                                 // console.log("tempLabelsArrays[b][v]",tempCountsArrays[b][v]);
                                 // countsp++;
-                                if (tempTempC[p][0][0].answer.id == tempTemp[b][v].id){
+                                // console.log("tempTemp[b]: ", tempTemp[b]);
+                                console.log("tempTemp[b]: ", tempTemp[b][v].id);
+
+                                console.log("tempTempC[p]: ",tempTempC[p]);
+                                // console.log("tempTempC[p][0]: ",tempTempC[p][0]);
+                                console.log("tempTempC[p][0][0]: ",tempTempC[p][w][0].answer.id);
+                                if (tempTempC[p][w][0].answer.id == tempTemp[b][v].id){
                                     // console.log("tempCountsArrays[b][0].length",tempCountsArrays[b][0].length);
-                                    temp1.push(tempTempC[p][0].length);
+                                    console.log("tempTempC INSIDE");
+                                    console.log("tempTempC[p].length", tempTempC[p].length);
+                                    temp1.push(tempTempC[p][w].length);
                                     found = 1;
                                 } 
                                 // else if (found == 0 && countsp == tempCountsArrays.length) {
                                 //     // temp1.push(0);
                                 //   } 
+
                                 }
-                                  if (found == 1) {
+                              }
+                                if (found == 1) {
                                     // temp1.push(countAnswered);
 
-                                    found = 0;
+                                    // found = 0;
                                   } else {
                                     temp1.push(0);
                                   }
+                                  
                                 // }
                                 
                                     // temp1.push(tempCountsArrays[b][v].length); //get length
