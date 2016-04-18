@@ -8886,9 +8886,6 @@ var Metrics = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       console.log("in componentDidMount");
-      $.post("/studentanswer/find").then(function (ans) {
-        console.log("<><><><><><><><><ANSWERS:", ans);
-      });
       this.populateDropdowns(this.props.course);
     }
   }, {
@@ -8942,6 +8939,7 @@ var Metrics = function (_React$Component) {
       console.log("this.state.student.id: ", this.state.student.id);
       var selected_student = get_selected(this.state.students, this.state.student.id);
       console.log("selected_quiz: ", selected_quiz);
+      console.log("this.state.quiz: ", this.state.quiz);
 
       var quizzes_id = this.state.quiz.id;
       var section_id = this.state.section.id;
@@ -9310,6 +9308,10 @@ var Metrics = function (_React$Component) {
               //           return parseInt(b) - parseInt(a);
               // });
               var count_q = 0;
+              console.log("QUESTIONS BEFORE***", questions);
+              questions = selected_quiz.questions;
+              console.log("QUESTIONS HERE***", questions);
+
               Promise.each(questions, function (question) {
                 console.log("count_q_inside: ", count_q);
                 if (question.type == "multipleChoice") {} else {
@@ -10322,59 +10324,98 @@ var Metrics = function (_React$Component) {
                       }
 
                       console.log("answers_from_student ", answers_from_student);
+                      console.log("HEREEEEE questionsForQuiz: ", questionsForQuiz);
 
                       return answers_from_student;
                     }).then(function (answers_return) {
                       console.log("answers_return", answers_return);
-                      for (var i = 0; i < questionsForQuiz.length; i++) {
-                        for (var k = 0; k < answers_return.length; k++) {
-                          // console.log("questionsForQuiz[i]",questionsForQuiz[i].id);
-                          // console.log("answers_return[k]",answers_return[k]);
-                          // console.log("answers_return[k].question",answers_return[k].question);
-                          console.log("k: ", k);
-                          console.log("answers_return.length", answers_return.length);
-                          // console.log("answers_return[k].question.id",answers_return[k].question.id);
-                          if (answers_return[k].question == questionsForQuiz[i].id) {
-                            var correct = answers_return[k].correct;
-                            if (correct) {
-                              resultsCorrect.push(1);
-                            } else {
-                              resultsCorrect.push(0);
-                            }
-                            found = 1;
-                            console.log("resultsCorrectInside0: ", resultsCorrect);
-                          }
-                          if (k == answers_return.length - 1 && !found) {
-                            resultsCorrect.push(0);
-                            console.log("resultsCorrectInside1: ", resultsCorrect);
-                          } else if (k == answers_return.length - 1) {
-                            found = 0;
-                            console.log("resultsCorrectInside2: ", resultsCorrect);
-                          } else {}
-                        }
-                      }
-
-                      console.log("questionsForQuiz", questionsForQuiz); //Just iterate and get .text
-                      var labelsArray = [];
-                      for (var i in questionsForQuiz) {
-                        labelsArray.push(questionsForQuiz[i].text);
-                      }
-                      console.log("labelsArray: ", labelsArray); //Just iterate and get .text
-                      console.log("resultsCorrectOutside: ", resultsCorrect);
 
                       var complete_text = "";
-                      for (var r = 0; r < labelsArray.length; r++) {
-                        if (resultsCorrect[r] == 1) {
-                          complete_text += "<font color='green'>";
-                        } else {
-                          complete_text += "<font color='red'>";
-                        }
-                        var index = r + 1;
-                        complete_text += "<h2>" + index + ". " + labelsArray[r] + "</h2> <hr COLOR='grey' SIZE='2'>";
+                      // for (var l = 0; l < questionName.length; l++) {
+                      console.log("questionsForQuiz", questionsForQuiz); //Just iterate and get .text
+                      for (var i = 0; i < questionsForQuiz.length; i++) {
+                        // iterate over each questions
+                        complete_text += "<h2>" + questionsForQuiz[i].text + ":</h2> <hr COLOR='grey' SIZE='2'>";
+                        console.log("LOOPING OVER questionsForQuiz: ", questionsForQuiz);
+                        for (var k = 0; k < questionsForQuiz[i].answers.length; k++) {
+                          // iterate over each answer
+                          console.log("LOOPING OVER questionsForQuiz[i].answers: ", questionsForQuiz[i].answers);
+                          // for (var j = 0; j < answers_return.length; j ++) { // iterate over THIS students answers
+                          //console.log("LOOPING OVER answers_return[j]", questionsForQuiz[i].answers);
 
-                        complete_text += "</font>";
+                          if (answers_return[i].id == questionsForQuiz[i].answers[k].id) {
+                            // Student's Answer
+                            complete_text += "<strong>";
+                          }
+
+                          if (questionsForQuiz[i].answers[k].correct) {
+                            complete_text += "<font color='green'>";
+                          }
+
+                          complete_text += questionsForQuiz[i].answers[k].option + ": " + questionsForQuiz[i].answers[k].text + "<br/><br/>";
+
+                          if (questionsForQuiz[i].answers[k].correct) {
+                            complete_text += "</font>";
+                          }
+
+                          if (answers_return[i].id == questionsForQuiz[i].answers[k].id) {
+                            // Student's Answer
+                            complete_text += "</strong>";
+                          }
+                          // }
+                        }
                       }
+
+                      // for(var i = 0; i < questionsForQuiz.length; i++) {
+                      //     for (var k = 0; k<answers_return.length; k++){
+                      //       // console.log("questionsForQuiz[i]",questionsForQuiz[i].id);
+                      //       // console.log("answers_return[k]",answers_return[k]);
+                      //       // console.log("answers_return[k].question",answers_return[k].question);
+                      //       console.log("k: ", k);
+                      //       console.log("answers_return.length", answers_return.length);
+                      //       // console.log("answers_return[k].question.id",answers_return[k].question.id);
+                      //       if (answers_return[k].question == questionsForQuiz[i].id){
+                      //         var correct = answers_return[k].correct;
+                      //         if (correct) {
+                      //           resultsCorrect.push(1);
+                      //          } else {
+                      //           resultsCorrect.push(0);
+                      //          }
+                      //         found = 1;
+                      //         console.log("resultsCorrectInside0: ", resultsCorrect);
+                      //       }
+                      //       if (k == answers_return.length -1 && !found) {
+                      //         resultsCorrect.push(0);
+                      //         console.log("resultsCorrectInside1: ", resultsCorrect);
+                      //       } else if (k == answers_return.length-1) {
+                      //         found = 0;
+                      //         console.log("resultsCorrectInside2: ", resultsCorrect);
+                      //       } else {
+
+                      //       }
+                      //     }
                       // }
+
+                      // console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
+                      // var labelsArray = [];
+                      // for (var i in questionsForQuiz){
+                      //   labelsArray.push(questionsForQuiz[i].text);
+                      // }
+                      // console.log("labelsArray: ",labelsArray); //Just iterate and get .text
+                      // console.log("resultsCorrectOutside: ", resultsCorrect);
+
+                      // var complete_text = "";
+                      //         for(var r = 0; r < labelsArray.length;r++){
+                      //           if (resultsCorrect[r] == 1){
+                      //              complete_text+="<font color='green'>";
+                      //           } else {
+                      //               complete_text+="<font color='red'>";
+                      //           }
+                      //           var index = r+1;
+                      //           complete_text += "<h2>" + index + ". " + labelsArray[r] + "</h2> <hr COLOR='grey' SIZE='2'>";
+
+                      //           complete_text+="</font>";
+                      //        }
 
                       $("#DivChartContainer").html(complete_text);
                     });
@@ -10729,26 +10770,6 @@ var Metrics = function (_React$Component) {
           var myNewChart = new Chart(ctx).Line(data, options);
         }
       });
-
-      // if (isBarChartGlobal) {
-      //   console.log('IS BAR CHART');
-      //   var options = getBarChartValueOptions();
-      //   this.doMath(1, function(data){
-      //     var myNewChart = new Chart(ctx).Bar(data,options);
-      //   });
-      // } else {
-      //   console.log('IS LINE CHART');
-      //   var options = getLineChartPercentOptions();
-      //   this.doMath(1, function(data){
-      //     var myNewChart = new Chart(ctx).Line(data,options);
-      //   });
-      // }
-
-      // $("#myChart").click(function(evt){
-      //   var activeBars = myNewChart.getBarsAtEvent(evt);
-      //   console.log(activeBars[0]);
-      //   alert(activeBars[0].label);
-      // });
     }
   }, {
     key: 'render',
@@ -10828,7 +10849,7 @@ var Metrics = function (_React$Component) {
               this.state.quizzes.map(function (quiz, quizIndex) {
                 return _react2.default.createElement(
                   'option',
-                  { key: quizIndex, value: quiz.id },
+                  { key: quizIndex, value: quizIndex + 1 },
                   quiz.title
                 );
               })
