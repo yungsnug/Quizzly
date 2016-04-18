@@ -275,7 +275,7 @@ export default class Metrics extends React.Component {
   doMath(metricsData, res) {
     console.log("metricsData:", metricsData);
     var data;
-
+    $("#AnswersContainer").html("");
     function get_selected(selection_array, selection_id) {
         var selection = [];
         if (selection_id == -1) {
@@ -1016,6 +1016,25 @@ export default class Metrics extends React.Component {
                         console.log("QUIZ METRIC IN DO MATH: ", quizMet);
                         data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
 
+                        var complete_text = "";
+                        for(var r = 0; r < titlesArray.length;r++){
+                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                        for (var k = 0; k < tempTemp[r].length; k++){
+                          if (tempTemp[r][k].correct){
+                             complete_text+="<font color='green'>";
+                          }
+                          complete_text += tempTemp[r][k].option + ": " + tempTemp[r][k].text + "<br/><br/>";
+                          if (tempTemp[r][k].correct){
+                             complete_text+="</font>";
+                          }
+                         }
+                       }
+            // }
+
+
+
+                        $("#AnswersContainer").html(complete_text);
+
                         console.log("data: ", data);
                         return res(data);
 
@@ -1212,6 +1231,28 @@ export default class Metrics extends React.Component {
             var questionName = selected_question.text; /* GET NAME OF QUESTION */
             data = getSingleItemBarChartData(questionName, labelArray, counts);
 
+            // var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+            // var text = "text";
+            // var student = "student";
+            // var email = "email";
+            // $("#AnswersContainer").
+            var complete_text = "";
+            // for (var l = 0; l < questionName.length; l++) {
+                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='black' SIZE='2'>";
+                for (var k = 0; k < labelArray.length; k++){
+                  if (answers[k].correct){
+                    complete_text+="<font color='green'>";
+                  }
+                  complete_text += labelArray[k] + ": " + answers[k].text + "<br/><br/>";
+                  if (answers[k].correct){
+                    complete_text+="</font>";
+                  }
+                }
+            // }
+
+
+
+            $("#AnswersContainer").html(complete_text);
             console.log("data: ", data);
             return data;
           }).then(function(data){
@@ -1223,6 +1264,7 @@ export default class Metrics extends React.Component {
   $.post('/studentanswer/find/', {question: selected_question.id})
     .then(function(student_answers){
       console.log("student_answer: ", student_answers);
+
       // console.log("student_answer.text: ", student_answers[0].text);
       var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
       var text = "text";
@@ -1236,7 +1278,7 @@ export default class Metrics extends React.Component {
       return complete_text;
       
     }).then(function(text){
-      
+      $("#AnswersContainer").html("");
       $("#DivChartContainer").html(text);
 
     });
@@ -1870,6 +1912,32 @@ export default class Metrics extends React.Component {
 //SPENCER!!!! BAR CHART HERE
 
 
+
+              var complete_text = "";
+            // for (var l = 0; l < questionName.length; l++) {
+                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='black' SIZE='2'>";
+                for (var k = 0; k < answers.length; k++){
+                  if (answerValues[k] > 0){
+                    complete_text+= "<strong>";
+                  }
+                  if (answers[k].correct){
+                    complete_text+="<font color='green'>";
+                  }
+                  complete_text += answers[k].option + ": " + answers[k].text + "<br/><br/>";
+                  if (answers[k].correct){
+                    complete_text+="</font>";
+                  }
+                  if (answerValues[k] > 0){
+                    complete_text+= "</strong>";
+                  }
+                }
+            // }
+
+
+
+            $("#AnswersContainer").html(complete_text);
+
+
         });
 
         
@@ -2225,7 +2293,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
 
         {<div>
           <div id="DivChartContainer"></div>
-
+          <div id="AnswersContainer"></div>
           </div>
         }
       </div>
