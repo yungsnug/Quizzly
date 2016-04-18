@@ -275,7 +275,7 @@ export default class Metrics extends React.Component {
   doMath(metricsData, res) {
     console.log("metricsData:", metricsData);
     var data;
-
+    $("#AnswersContainer").html("");
     function get_selected(selection_array, selection_id) {
         var selection = [];
         if (selection_id == -1) {
@@ -692,23 +692,380 @@ export default class Metrics extends React.Component {
             var counter = 0;
             var questions_length = questions.length;
             var data = [];
+
+            //Temp variables:
+            var tempCountsArrays = [];
+            var tempTitlesArray = [];
+            var tempLabelsArrays = [];
+
+            // questions.sort(function(a,b){
+            //           return parseInt(b) - parseInt(a);
+            // });
+            var count_q = 0;
             Promise.each(questions, function(question) {
-              count_i++;
+              console.log("count_q_inside: ",count_q);
+              if(question.type == "multipleChoice"){
+
+              }else {
+                count_q++;
+                return;
+              }
 
               me.getAnswers(question,function(answers){
                 console.log("answers-outside: ", answers);
-                var counts = [];
+                var counts_r = [];
                 var data = {};
                 var counts_i=0;
+                var lengthOfCounts = 0;
+                // answers.sort(function(a,b){
+                //       return parseInt(b.question) - parseInt(a.question);
+                // });
                 Promise.each(answers, function(answer) {
-                  return $.post('/studentanswer/getStudentCountByAnswerId/', {id: answer.id,section: section_id})
-                  .then(function(count){
-                    counts.push(count);
-                    counts_i++;
+                  console.log("answer.id",answer.id);
+                  console.log("section_id",section_id);
+                  var holder;
+                  if (section_id >0){
+                    holder = {answer: answer.id,section: section_id};
+                  } else {
+                    holder = {answer: answer.id};
+                  }
+                  return $.post('/studentanswer/find/', holder)
+                  .then(function(students_who_answered){
+                    console.log("students_who_answered: ",students_who_answered);
+                    if(students_who_answered.length > 0){
+                      counts_r.push(students_who_answered);
+                      return;
+                    }
+                    // counts_i++;
+                    
+                  }).then(function(){
+                    console.log("counts_rINSIDE: ",counts_r);
+                    console.log("answers: ", answers);
+                    if (lengthOfCounts==counts_r.length){
+                      // return;
+                    } else {
+                      tempCountsArrays.push(counts_r);
+                      tempTitlesArray.push(question);
+                      tempLabelsArrays.push(answers);
+                      lengthOfCounts=counts_r.length;
+                      console.log("tempCountsArrays1: ", tempCountsArrays);
+                      console.log("tempTitlesArray1: ", tempTitlesArray);
+                      console.log("tempLabelsArrays1: ", tempLabelsArrays);
+                      // return;
+                    }
+                    // }).then(function(){
+                      counts_i++;
+                      console.log("counts_i: ",counts_i);
+                      return counts_i;
+                    }).then(function(counts_a){
+                      console.log("counts_i_inside: ",counts_i);
+                      console.log("counts_a_inside: ",counts_a);
+                      console.log("count_q_inside: ",count_q);
+                      console.log("answers.length", answers.length);
+                      console.log("questions.length", questions.length);
+                    if (counts_a == answers.length && count_q == questions.length-1) {
+                        console.log("end");
+                        //SortArrays by question
+                        tempCountsArrays.sort(function(a,b){
+                            return parseInt(a[0][0].question.id) - parseInt(b[0][0].question.id);
+                        });
+
+                        tempTitlesArray.sort(function(a,b){
+                            return parseInt(a.id) - parseInt(b.id);
+                        });
+
+                        tempLabelsArrays.sort(function(a,b){
+                            return parseInt(a[0].question.id) - parseInt(b[0].question.id); 
+                        });
+                      
+                      console.log("tempCountsArrays2: ", tempCountsArrays);
+                      console.log("tempTitlesArray2: ", tempTitlesArray);
+                      console.log("tempLabelsArrays2: ", tempLabelsArrays);
+
+                      console.log("tempTitlesArray2.length: ",tempTitlesArray.length);
+                      // var k = 0;
+                      // var tempCountsArrays1 = [];
+                      // for (var p = 1; p <tempCountsArrays.length; p++){
+                      //     // console.log("answers_from_student[k].question.id",answers_from_student[k].question);
+                      //     // console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
+                      //     if (tempCountsArrays1[k].question == tempCountsArrays[p].question){
+                      //         // console.log("howdy");
+                    
+                      //     }else {
+                      //         // console.log("hallelujah");
+                      //         tempCountsArrays1.push(tempCountsArrays[p]);
+                      //         k++;
+                     
+                      //     }
+                      //   }
+                      //   var k = 0;
+                      // var tempTitlesArray1 = [];
+                      // var tempTitlesArray2 = [];
+                      // var tempTemp = [];
+                      // tempTitlesArray1.push(tempTitlesArray[0]);
+                      // for (var p = 0; p <tempTitlesArray.length; p++){
+                      //     // console.log("answers_from_student[k].question.id",answers_from_student[k].question);
+                      //     // console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
+                      //     if (tempTitlesArray1[k].id == tempTitlesArray[p].id){
+                      //         // console.log("howdy");
+                      //         tempTemp.push(tempTitlesArray[p]);
+                    
+                      //     }else {
+                      //         // console.log("hallelujah");
+                      //         tempTitlesArray1.push(tempTitlesArray[p]);
+                      //         tempTitlesArray2.push(tempTemp);
+                      //         tempTemp = [];
+                      //         k++;
+                     
+                      //     }
+                      //   }
+                      //   console.log("tempCountsArrays3: ", tempCountsArrays);
+                      // console.log("tempTitlesArray3: ", tempTitlesArray);
+                      // console.log("tempLabelsArrays3: ", tempLabelsArrays);
+
+                        // var k = 0;
+                        // var tempCountsArrays1 = [];
+                        // for (var p = 1; p <tempCountsArrays.length; p++){
+                        //   // console.log("answers_from_student[k].question.id",answers_from_student[k].question);
+                        //   // console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
+                        //     if (tempCountsArrays1[k].question == tempCountsArrays[p].question){
+                        //       // console.log("howdy");
+                    
+                        //    }else {
+                        //       // console.log("hallelujah");
+                        //        tempCountsArrays1.push(tempCountsArrays[p]);
+                        //         k++;
+                     
+                        //    }
+                        // }
+
+
+                        //Get values into submission form
+                        // for (var v in tempTitlesArray){
+                        var k =0;
+                        var tempTemp = [];
+                        tempTemp.push(tempTitlesArray[0]);
+                        for(var v in tempTitlesArray) {
+                          // console.log("titlesArray[k]",titlesArray[k]);
+                          // console.log("tempTitlesArray[v]",tempTitlesArray[v]);
+                            if (tempTemp[k].id == tempTitlesArray[v].id) {
+
+                            } else {
+                              tempTemp.push(tempTitlesArray[v]); //still need to get .text
+                              k++;
+                          }
+                        }
+
+                        for(var v in tempTemp) {
+                          titlesArray.push(tempTemp[v].text);
+                        }
+
+                        console.log("titlesArray: ", titlesArray);
+                        // Promise.each(tempTitlesArray,function(title){
+                        //   titlesArray.push(title);
+                        // });
+                      // }
+
+                        var k =0;
+                        var tempTemp = [];
+                        tempTemp.push(tempLabelsArrays[0]);
+                        for(var v in tempLabelsArrays) {
+                          // console.log("titlesArray[k]",titlesArray[k]);
+                          // console.log("tempTitlesArray[v]",tempTitlesArray[v]);
+                            if (tempTemp[k][0].question == tempLabelsArrays[v][0].question) {
+
+                            } else {
+                              tempTemp.push(tempLabelsArrays[v]); //still need to get .text
+                              k++;
+                          }
+                        }
+
+
+                        var temp2= [];
+                        var s2 = 0;
+                        for (var b in tempTemp) {
+                            // console.log("tempLabelsArrays[b]",tempLabelsArrays[b]);
+                            // console.log("tempLabelsArrays[b].length",tempLabelsArrays[b].length);
+                            for (var v in tempTemp[b]) {
+                                // console.log("tempLabelsArrays[b][v]",tempLabelsArrays[b][v]);
+                                temp2.push(tempTemp[b][v].option); //still need to get .option
+                                // console.log("temp2: ", temp2);
+                                 s2++;
+                                if (s2 == tempTemp[b].length) {
+                                    // console.log("temp2: ", temp2);
+                                    labelsArrays.push(temp2);
+                                    temp2 = [];
+                                    s2=0
+                                }
+                            }
+                        }
+
+                        console.log("labelsArrays: ", labelsArrays);
+                        // for (var b = 0; b < tempLabelsArrays.length; b++) {
+                        //     // console.log("tempLabelsArrays[b]",tempLabelsArrays[b]);
+                        //     // console.log("tempLabelsArrays[b].length",tempLabelsArrays[b].length);
+                        //     for (var v = 0; v< tempLabelsArrays[b].length;v++) {
+                        //         // console.log("tempLabelsArrays[b][v]",tempLabelsArrays[b][v]);
+                        //         temp2.push(tempLabelsArrays[b][v].option); //still need to get .option
+                        //         // console.log("temp2: ", temp2);
+                        //          // s2++;
+                        //         if (b == tempLabelsArrays[b].length-1) {
+                        //             // console.log("temp2: ", temp2);
+                        //             labelsArrays.push(temp2);
+                        //             temp2 = [];
+                        //             // s2=0
+                        //         }
+                        //     }
+                        // }
+
+                        // var tempCountsArraysCount = 0;
+                        // for(var b in tempCountsArrays) {
+                        //   tempCountsArraysCount++;
+                        // }
+
+                        var k =0;
+                        var tempTempC = [];
+                        tempTempC.push(tempCountsArrays[0]);
+                        for(var v in tempCountsArrays) {
+                          // console.log("titlesArray[k]",titlesArray[k]);
+                          // console.log("tempTitlesArray[v]",tempTitlesArray[v]);
+                            if (tempTempC[k][0][0].question == tempCountsArrays[v][0][0].question) {
+
+                            } else {
+                              tempTempC.push(tempCountsArrays[v]); //still need to get .text
+                              k++;
+                          }
+                        }
+                        console.log("tempTempC: ", tempTempC);
+
+                        var temp1 = [];
+                        var s1 = 0;
+                        for (var b in tempTemp) {
+                            // console.log("tempCountsArrays[b]",tempCountsArrays[0]);
+                            // console.log("tempCountsArrays[b].length",tempCountsArrays[0].length);
+                            // console.log("tempCountsArrays[b]",tempCountsArrays[0]);
+                            // console.log("tempCountsArrays[b].length",tempCountsArrays[0].length);
+                            for (var v in tempTemp[b]) {
+                                // console.log()
+                                var found = 0;
+                                // var countsp = 0;
+                                var countAnswered = 0;
+                                for (var p in tempTempC) {
+                                // if (b < tempCountsArrays.length){
+                                // if(v < tempCountsArrays[b].length){
+                                  // var countp = 0;
+                                  // for (var p in tempCountsArrays[b]){
+                                // console.log("tempCountsArrays[b][0][0].answer.id",tempCountsArrays[p][0][0].answer.id);
+                                // console.log("tempLabelsArrays[b][v]",tempLabelsArrays[b][v]);
+                                // console.log("tempLabelsArrays[b][v].id",tempLabelsArrays[b][v].id);
+                                // console.log("tempLabelsArrays[b][v]",tempCountsArrays[b][v]);
+                                // countsp++;
+                                if (tempTempC[p][0][0].answer.id == tempTemp[b][v].id){
+                                    // console.log("tempCountsArrays[b][0].length",tempCountsArrays[b][0].length);
+                                    temp1.push(tempTempC[p][0].length);
+                                    found = 1;
+                                } 
+                                // else if (found == 0 && countsp == tempCountsArrays.length) {
+                                //     // temp1.push(0);
+                                //   } 
+                                }
+                                  if (found == 1) {
+                                    // temp1.push(countAnswered);
+
+                                    found = 0;
+                                  } else {
+                                    temp1.push(0);
+                                  }
+                                // }
+                                
+                                    // temp1.push(tempCountsArrays[b][v].length); //get length
+
+                                    // console.log("temp1: ", temp1);
+                                    s1++;
+                                    // console.log("tempLabelsArrays[b].length", tempLabelsArrays[b].length);
+                                    // console.log("s1", s1);
+                                    if (s1 == tempTemp[b].length) {
+                                        console.log("temp1: ", temp1);
+                                        countsArrays.push(temp1);
+                                        temp1 = [];
+                                        s1=0;
+                                    }
+                                  }
+
+                            // }
+                          // }
+                        }
+
+
+                        console.log("COUNTS ARRAY - ALL: ", countsArrays);
+                        console.log("TITLES ARRAY - ALL: ", titlesArray);
+                        console.log("LABELS ARRAY - ALL: ", labelsArrays);
+
+
+                        
+
+                        
+
+
+
+
+
+                        var quizMet = {};
+
+                        quizMet = me.createQuizMetric(titlesArray, labelsArrays, countsArrays);
+                        console.log("QUIZ METRIC IN DO MATH: ", quizMet);
+                        data = getBarChartData(quizMet.questionTitles, quizMet.barLabels, quizMet.barCounts);
+
+                        var complete_text = "";
+                        for(var r = 0; r < titlesArray.length;r++){
+                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                        for (var k = 0; k < tempTemp[r].length; k++){
+                          if (tempTemp[r][k].correct){
+                             complete_text+="<font color='green'>";
+                          }
+                          complete_text += tempTemp[r][k].option + ": " + tempTemp[r][k].text + "<br/><br/>";
+                          if (tempTemp[r][k].correct){
+                             complete_text+="</font>";
+                          }
+                         }
+                       }
+            // }
+
+
+
+                        $("#AnswersContainer").html(complete_text);
+
+                        console.log("data: ", data);
+                        return res(data);
+
+
+                        // return counts_i;
+                    } else if (counts_a == answers.length) {
+                      console.log("counts_i_MAXAMILLION IS PISSED AT SPENCER: ", counts_i);
+                      counts_i = 0;
+                      count_q++;
+                      console.log("here");
+                      // return counts_i;
+                    } 
+                    
+
+
+                    return;
+                  }).then(function(){
+                    
+                    
                   });
 
-                }).then(function() {
-                  console.log("counts3: ",counts);
+                });
+                /*.then(function(counts1) {
+                  if (counts1.length > 0) {
+                  } else {
+                    // return;
+                    // counts = 0;
+                  }
+
+                  console.log("counts1: ",counts1);
+                  console.log("counts_r: ",counts_r);
                   console.log("answers_beforedata: ", answers);
 
                   labelsTotal=[];
@@ -717,19 +1074,105 @@ export default class Metrics extends React.Component {
                   // student_answer.sort(function(a,b){
                   //     return parseInt(a.quiz.id) - parseInt(b.quiz.id);
                   // });
+                  
+                  var tempLabelsTotal = [];
+                  var tempCountsTotal = [];
+                  
+                  for(var i in answers){
 
-                  for(var i in answers) {
-                 
-                    labelsTotal.push(answers[i].option);
-                    countsTotal.push(counts[i]);
+                    tempLabelsTotal.push(answers[i]);
+                    // if (i == 0){
+                     // tempCountsTotal.push(counts[i]);
+                    // }
+                    
                   }
-                  if (countsTotal.length > 0) {
-                    countsArrays.push(countsTotal);
-                    titlesArray.push(question.text);
+                  tempCountsTotal.push(counts1);
+                  
+                  if (tempLabelsTotal.length > 0) {
+                    tempCountsArrays.push(tempCountsTotal);
+                    tempTitlesArray.push(question);
                   }
-                  if (labelsTotal.length > 0) {
-                    labelsArrays.push(labelsTotal);
+                  if (tempLabelsTotal.length > 0) {
+                    
+                    tempLabelsArrays.push(tempLabelsTotal);
                   }
+
+                  // for(var i in answers) {
+                  //   labelsTotal.push(answers[i].option);
+                  //   countsTotal.push(counts[i]);
+                  // }
+                  // if (countsTotal.length > 0) {
+                  //   countsArrays.push(countsTotal);
+                  //   titlesArray.push(question.text);
+                  // }
+                  // if (labelsTotal.length > 0) {
+                  //   labelsArrays.push(labelsTotal);
+                  // }
+                  console.log("1TEMP LABELS TOTAL - ALL: ", tempLabelsTotal);
+                  console.log("1TEMP COUNTS ARRAY - ALL: ", tempCountsArrays);
+                  tempCountsArrays.sort(function(a,b){
+                      return parseInt(a[0].question) - parseInt(b[0].question);
+                  });
+
+                  tempTitlesArray.sort(function(a,b){
+                      return parseInt(a.id) - parseInt(b.id);
+                  });
+
+                  tempLabelsArrays.sort(function(a,b){
+                      return parseInt(a[0].question) - parseInt(b[0].question); 
+                  });
+
+                  console.log("2TEMP COUNTS ARRAY - ALL: ", tempCountsArrays);
+                  console.log("2TEMP TITLES ARRAY - ALL: ", tempTitlesArray);
+                  console.log("2TEMP LABELS ARRAY - ALL: ", tempLabelsArrays);
+
+
+
+                  if (counter == questions_length-1){
+                  var temp1 = [];
+                  var s1 = 0;
+                  for (var b = 0; b < tempLabelsArrays.length; b++) {
+                    // console.log("tempCountsArrays[b]",tempCountsArrays[b]);
+                    // console.log("tempCountsArrays[b].length",tempCountsArrays[b].length);
+                      for (var v in tempLabelsArrays[b]) {
+                        console.log("tempCountsArrays[b]",tempCountsArrays[b]);
+                        if (tempCountsArrays[b])
+                        temp1.push(0);
+                        // temp1.push(tempCountsArrays[b][v].length); //get length
+
+                        console.log("temp1: ", temp1);
+                        s1++;
+                        if (s1 = tempLabelsArrays[b].length-1) {
+                          console.log("temp1: ", temp1);
+                          countsArrays.push(temp1);
+                          temp1 = [];
+                          s1=0;
+                        }
+                      }
+                  }
+                  // var temp2 = [];
+                  for (var b = 0; b < tempTitlesArray.length; b++) {
+                      titlesArray.push(tempTitlesArray[b].text); //still need to get .text
+                  }
+                  var temp2= [];
+                  var s2 = 0;
+                  for (var b = 0; b < tempLabelsArrays.length; b++) {
+                    // console.log("tempLabelsArrays[b]",tempLabelsArrays[b]);
+                    // console.log("tempLabelsArrays[b].length",tempLabelsArrays[b].length);
+                      for (var v in tempLabelsArrays[b]) {
+                        // console.log("tempLabelsArrays[b][v]",tempLabelsArrays[b][v]);
+                        temp2.push(tempLabelsArrays[b][v].option); //still need to get .option
+                        // console.log("temp2: ", temp2);
+                        s2++;
+                        if (s2 = tempLabelsArrays[b].length-1) {
+                          // console.log("temp2: ", temp2);
+                          labelsArrays.push(temp2);
+                          temp2 = [];
+                          s2=0
+                        }
+                    }
+                  }
+                }
 
                   console.log("COUNTS ARRAY - ALL: ", countsArrays);
                   console.log("TITLES ARRAY - ALL: ", titlesArray);
@@ -750,7 +1193,7 @@ export default class Metrics extends React.Component {
                     console.log("data: ", data);
                     return res(data);
                   }
-              });
+              });*/
           }); 
         });
       }
@@ -788,6 +1231,28 @@ export default class Metrics extends React.Component {
             var questionName = selected_question.text; /* GET NAME OF QUESTION */
             data = getSingleItemBarChartData(questionName, labelArray, counts);
 
+            // var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+            // var text = "text";
+            // var student = "student";
+            // var email = "email";
+            // $("#AnswersContainer").
+            var complete_text = "";
+            // for (var l = 0; l < questionName.length; l++) {
+                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='black' SIZE='2'>";
+                for (var k = 0; k < labelArray.length; k++){
+                  if (answers[k].correct){
+                    complete_text+="<font color='green'>";
+                  }
+                  complete_text += labelArray[k] + ": " + answers[k].text + "<br/><br/>";
+                  if (answers[k].correct){
+                    complete_text+="</font>";
+                  }
+                }
+            // }
+
+
+
+            $("#AnswersContainer").html(complete_text);
             console.log("data: ", data);
             return data;
           }).then(function(data){
@@ -799,6 +1264,7 @@ export default class Metrics extends React.Component {
   $.post('/studentanswer/find/', {question: selected_question.id})
     .then(function(student_answers){
       console.log("student_answer: ", student_answers);
+
       // console.log("student_answer.text: ", student_answers[0].text);
       var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
       var text = "text";
@@ -812,7 +1278,7 @@ export default class Metrics extends React.Component {
       return complete_text;
       
     }).then(function(text){
-      
+      $("#AnswersContainer").html("");
       $("#DivChartContainer").html(text);
 
     });
@@ -1315,17 +1781,14 @@ export default class Metrics extends React.Component {
                     console.log("temp_answers_from_student[p].question.id", temp_answers_from_student[p].question);
                     if (answers_from_student[k].question == temp_answers_from_student[p].question){
                     console.log("howdy");
-                    // } else if (p == temp_answers_from_student.length-1 && answers_from_student[k].question.id != temp_answers_from_student[p].question.id) {
-                    //   answers_from_student.push(prevAnswerFromStudent);
-                    //   answers_from_student.push(temp_answers_from_student[p]);
-                    // } 
+                    
                     }else {
                       console.log("hallelujah");
                       answers_from_student.push(temp_answers_from_student[p]);
                       k++;
-                      // prevAnswerFromStudent = temp_answers_from_student[p];
+                     
                     }
-                    // answers_from_student.push(temp_answers_from_student[p]);
+                
                 }
                 
                 
@@ -1367,8 +1830,33 @@ export default class Metrics extends React.Component {
 
 //SPENCER!!!!! BAR GRAPH HERE
                 console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
-                 console.log("resultsCorrectOutside: ", resultsCorrect);
+                var labelsArray = [];
+                for (var i in questionsForQuiz){
+                  labelsArray.push(questionsForQuiz[i].text);
+                }
+                console.log("labelsArray: ",labelsArray); //Just iterate and get .text
+                console.log("resultsCorrectOutside: ", resultsCorrect);
 
+
+
+                var complete_text = "";
+                        for(var r = 0; r < labelsArray.length;r++){
+                          if (resultsCorrect[r] == 1){
+                             complete_text+="<font color='green'>";
+                          } else {
+                              complete_text+="<font color='red'>";
+                          }
+                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                          
+                          complete_text+="</font>";
+                          
+                         
+                       }
+            // }
+
+
+
+                        $("#AnswersContainer").html(complete_text);
 
 
 
@@ -1447,6 +1935,32 @@ export default class Metrics extends React.Component {
 
 
 //SPENCER!!!! BAR CHART HERE
+
+
+
+              var complete_text = "";
+            // for (var l = 0; l < questionName.length; l++) {
+                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='black' SIZE='2'>";
+                for (var k = 0; k < answers.length; k++){
+                  if (answerValues[k] > 0){
+                    complete_text+= "<strong>";
+                  }
+                  if (answers[k].correct){
+                    complete_text+="<font color='green'>";
+                  }
+                  complete_text += answers[k].option + ": " + answers[k].text + "<br/><br/>";
+                  if (answers[k].correct){
+                    complete_text+="</font>";
+                  }
+                  if (answerValues[k] > 0){
+                    complete_text+= "</strong>";
+                  }
+                }
+            // }
+
+
+
+            $("#AnswersContainer").html(complete_text);
 
 
         });
@@ -1804,7 +2318,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
 
         {<div>
           <div id="DivChartContainer"></div>
-
+          <div id="AnswersContainer"></div>
           </div>
         }
       </div>
