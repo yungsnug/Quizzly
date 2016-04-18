@@ -1018,7 +1018,7 @@ export default class Metrics extends React.Component {
 
                         var complete_text = "";
                         for(var r = 0; r < titlesArray.length;r++){
-                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='grey' SIZE='2'>";
                         for (var k = 0; k < tempTemp[r].length; k++){
                           if (tempTemp[r][k].correct){
                              complete_text+="<font color='green'>";
@@ -1030,7 +1030,7 @@ export default class Metrics extends React.Component {
                          }
                        }
             // }
-
+                        
 
 
                         $("#AnswersContainer").html(complete_text);
@@ -1238,7 +1238,7 @@ export default class Metrics extends React.Component {
             // $("#AnswersContainer").
             var complete_text = "";
             // for (var l = 0; l < questionName.length; l++) {
-                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='black' SIZE='2'>";
+                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='grey' SIZE='2'>";
                 for (var k = 0; k < labelArray.length; k++){
                   if (answers[k].correct){
                     complete_text+="<font color='green'>";
@@ -1266,7 +1266,7 @@ export default class Metrics extends React.Component {
       console.log("student_answer: ", student_answers);
 
       // console.log("student_answer.text: ", student_answers[0].text);
-      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='grey' SIZE='2'>";
       var text = "text";
       var student = "student";
       var email = "email";
@@ -1846,7 +1846,7 @@ export default class Metrics extends React.Component {
                           } else {
                               complete_text+="<font color='red'>";
                           }
-                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='grey' SIZE='2'>";
                           
                           complete_text+="</font>";
                           
@@ -1940,7 +1940,7 @@ export default class Metrics extends React.Component {
 
               var complete_text = "";
             // for (var l = 0; l < questionName.length; l++) {
-                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='black' SIZE='2'>";
+                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='grey' SIZE='2'>";
                 for (var k = 0; k < answers.length; k++){
                   if (answerValues[k] > 0){
                     complete_text+= "<strong>";
@@ -1977,7 +1977,7 @@ export default class Metrics extends React.Component {
     .then(function(student_answers){
       console.log("student_answer: ", student_answers);
       // console.log("student_answer.text: ", student_answers[0].text);
-      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='grey' SIZE='2'>";
       var text = "text";
       var student = "student";
       var email = "email";
@@ -2318,7 +2318,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
 
         {<div>
           <div id="DivChartContainer"></div>
-          <div id="AnswersContainer"></div>
+          <div id="AnswersContainer" className="metricsText"></div>
           </div>
         }
       </div>
