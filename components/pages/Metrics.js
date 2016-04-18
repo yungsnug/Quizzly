@@ -2317,7 +2317,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
         </div>
 
         {<div>
-          <div id="DivChartContainer"></div>
+          <div id="DivChartContainer" className="graphText"></div>
           <div id="AnswersContainer" className="metricsText"></div>
           </div>
         }

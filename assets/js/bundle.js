@@ -3680,7 +3680,7 @@ var Metrics = function (_React$Component) {
         _react2.default.createElement(
           'div',
           null,
-          _react2.default.createElement('div', { id: 'DivChartContainer' }),
+          _react2.default.createElement('div', { id: 'DivChartContainer', className: 'graphText' }),
           _react2.default.createElement('div', { id: 'AnswersContainer', className: 'metricsText' })
         )
       );
