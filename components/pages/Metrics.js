@@ -744,7 +744,16 @@ export default class Metrics extends React.Component {
                     if (lengthOfCounts==counts_r.length){
                       // return;
                     } else {
-                      tempCountsArrays.push(counts_r);
+                      var hash = {};
+                      for (var n = 0; n < tempCountsArrays.length; n++) {
+                        hash[tempCountsArrays[n]] = n;
+                      }
+                      if(hash.hasOwnProperty(counts_r)) {
+                        console.log("COUNTS R EXISTS");
+                      } else {
+                        tempCountsArrays.push(counts_r);
+
+                      }
                       tempTitlesArray.push(question);
                       tempLabelsArrays.push(answers);
                       lengthOfCounts=counts_r.length;
@@ -766,9 +775,21 @@ export default class Metrics extends React.Component {
                     if (counts_a == answers.length && count_q == questions.length-1) {
                         console.log("end");
                         //SortArrays by question
+                        console.log("<<<<<<< tempCountsArrays", tempCountsArrays);
                         tempCountsArrays.sort(function(a,b){
+                            // for (var i in a)
+                            console.log("<><><><><>A[0][0]:", a[0][0]);
                             return parseInt(a[0][0].question.id) - parseInt(b[0][0].question.id);
                         });
+
+                        for (var d in tempCountsArrays){
+                            tempCountsArrays[d].sort(function(a,b){
+                            // for (var i in a)
+                              return parseInt(a[0].question.id) - parseInt(b[0].question.id);
+                            });
+                        }
+                        
+                        
 
                         tempTitlesArray.sort(function(a,b){
                             return parseInt(a.id) - parseInt(b.id);
