@@ -185,9 +185,6 @@ module.exports = {
         }
       });
 
-      console.log("android: " + android_channels);
-      console.log("ios: " + ios_channels);
-
       Question.findOne({id:question_id}).populate('answers').exec(function (err, question) {
         if(err) {
           return res.json({error: res.negotiate(err)})
@@ -196,8 +193,10 @@ module.exports = {
           return res.json({error: 'Question not found'});
         }
 
-        var pushInfo = {
-          "audience": {},
+        var android_push = {
+          "audience": {
+            android_channel: android_channels
+          },
           "notification": {
              "alert": "Question Available",
              "android": {
@@ -209,7 +208,17 @@ module.exports = {
                  "time_limit": question.duration,
                  "num_answers": question.answers.length
                }
-             },
+             }
+          },
+          "device_types": "all"
+        };
+
+        var ios_push = {
+          "audience": {
+            "ios_channel": ios_channels
+          },
+          "notification": {
+             "alert": "Question Available",
              "ios": {
                "extra": {
                  "question": question.text,
@@ -225,67 +234,69 @@ module.exports = {
         };
 
         for(var i = 0; i < question.answers.length; i++) {
-          pushInfo.notification.android.extra["answer" + i] = question.answers[i].text;
-          pushInfo.notification.ios.extra["answer" + i] = question.answers[i].text;
-          pushInfo.notification.android.extra["answerId" + i] = question.answers[i].id;
-          pushInfo.notification.ios.extra["answerId" + i] = question.answers[i].id;
+          android_push.notification.android.extra["answer" + i] = question.answers[i].text;
+          ios_push.notification.ios.extra["answer" + i] = question.answers[i].text;
         }
-        /*
-        if(question.answers.length != 0) {
-          pushInfo.notification.android.extra.answer0 = question.answers[0].text;
-          pushInfo.notification.android.extra.answer1 = question.answers[1].text;
-          pushInfo.notification.ios.extra.answer0 = question.answers[0].text;
-          pushInfo.notification.ios.extra.answer1 = question.answers[1].text;
-
-          pushInfo.notification.android.extra.answerId0 = question.answers[0].id;
-          pushInfo.notification.android.extra.answerId1 = question.answers[1].id;
-          pushInfo.notification.ios.extra.answerId0 = question.answers[0].id;
-          pushInfo.notification.ios.extra.answerId1 = question.answers[1].id;
-          if(question.answers.length > 2) {
-            pushInfo.notification.android.extra.answer2 = question.answers[2].text;
-            pushInfo.notification.ios.extra.answer2 = question.answers[2].text;
-
-            pushInfo.notification.android.extra.answerId2 = question.answers[2].id;
-            pushInfo.notification.ios.extra.answerId02 = question.answers[2].id;
-          }
-          if(question.answers.length > 3) {
-            pushInfo.notification.android.extra.answer3 = question.answers[3].text;
-            pushInfo.notification.ios.extra.answer3 = question.answers[3].text;
-
-            pushInfo.notification.android.extra.answerId3 = question.answers[3].id;
-            pushInfo.notification.ios.extra.answerId3 = question.answers[3].id;
-          }
-          if(question.answers.length > 4) {
-            pushInfo.notification.android.extra.answer3 = question.answers[4].text;
-            pushInfo.notification.ios.extra.answer3 = question.answers[4].text;
-
-            pushInfo.notification.android.extra.answerId4 = question.answers[4].id;
-            pushInfo.notification.ios.extra.answerId4 = question.answers[4].id;
-          }
-        }*/
 
         if(ios_channels.length == 0 && android_channels.length == 0) {
           return res.json({error: "There are no devices for that section"});
         }
 
-        if(ios_channels.length != 0) {
-          pushInfo.audience.ios_channel = ios_channels;
-        }
-
-        if(android_channels.length != 0) {
-          pushInfo.audience.android_channel = android_channels;
-        }
-
-        urbanAirshipPush.push.send(pushInfo, function (err, data) {
-            if (err) {
-                // Handle error
-                console.log(err);
-                return;
+        ios_fail = false;
+        android_fail = false;
+        async.series([
+          function(callback) {
+            if(android_channels.length != 0) {
+              urbanAirshipPush.push.send(android_push, function(android_err, android_data) {
+                if(android_err) {
+                  console.log("android error!");
+                  android_fail = true
+                }
+                else {
+                  console.log("android success!");
+                }
+              });
             }
-            console.log(data);
+
+            callback();
+          },
+
+          function(callback) {
+            if(ios_channels.length != 0) {
+              urbanAirshipPush.push.send(ios_push, function(ios_err, ios_data) {
+                if(ios_err) {
+                  console.log("ios error!");
+                  ios_fail = true;
+                } else {
+                  console.log("ios success!");
+                }
+              });
+            }
+
+            callback();
+          }
+        ], function(err) {
+          if(!ios_fail && !android_fail) {
             return res.json({
-              success: "Push sent"
+              ios: "success",
+              android: "success"
             });
+          } else if(ios_fail && !android_fail) {
+            return res.json({
+              ios: "fail",
+              android: "success"
+            });
+          } else if(!ios_fail && android_fail) {
+            return res.json({
+              ios: "success",
+              android: "fail"
+            });
+          } else {
+            return res.json({
+              ios: "fail",
+              android: "fail"
+            });
+          }
         });
       });
     });
