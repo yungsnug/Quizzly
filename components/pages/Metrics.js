@@ -236,12 +236,7 @@ export default class Metrics extends React.Component {
 
   componentDidMount() {
     console.log("in componentDidMount");
-    $.post("/studentanswer/find")
-    .then(function(ans){
-      console.log("<><><><><><><><><ANSWERS:", ans);
-    });
     this.populateDropdowns(this.props.course);
-
   }
 
   componentWillReceiveProps(newProps) {
@@ -296,6 +291,7 @@ export default class Metrics extends React.Component {
     console.log("this.state.student.id: ", this.state.student.id);
     var selected_student = get_selected(this.state.students, this.state.student.id);
     console.log("selected_quiz: ", selected_quiz);
+    console.log("this.state.quiz: ",this.state.quiz);
 
     var quizzes_id = this.state.quiz.id;
     var section_id = this.state.section.id;
@@ -702,6 +698,10 @@ export default class Metrics extends React.Component {
             //           return parseInt(b) - parseInt(a);
             // });
             var count_q = 0;
+            console.log("QUESTIONS BEFORE***", questions);
+            questions = selected_quiz.questions;
+            console.log("QUESTIONS HERE***", questions);
+
             Promise.each(questions, function(question) {
               console.log("count_q_inside: ",count_q);
               if(question.type == "multipleChoice"){
@@ -744,7 +744,16 @@ export default class Metrics extends React.Component {
                     if (lengthOfCounts==counts_r.length){
                       // return;
                     } else {
-                      tempCountsArrays.push(counts_r);
+                      var hash = {};
+                      for (var n = 0; n < tempCountsArrays.length; n++) {
+                        hash[tempCountsArrays[n]] = n;
+                      }
+                      if(hash.hasOwnProperty(counts_r)) {
+                        console.log("COUNTS R EXISTS");
+                      } else {
+                        tempCountsArrays.push(counts_r);
+
+                      }
                       tempTitlesArray.push(question);
                       tempLabelsArrays.push(answers);
                       lengthOfCounts=counts_r.length;
@@ -766,9 +775,21 @@ export default class Metrics extends React.Component {
                     if (counts_a == answers.length && count_q == questions.length-1) {
                         console.log("end");
                         //SortArrays by question
+                        console.log("<<<<<<< tempCountsArrays", tempCountsArrays);
                         tempCountsArrays.sort(function(a,b){
+                            // for (var i in a)
+                            console.log("<><><><><>A[0][0]:", a[0][0]);
                             return parseInt(a[0][0].question.id) - parseInt(b[0][0].question.id);
                         });
+
+                        for (var d in tempCountsArrays){
+                            tempCountsArrays[d].sort(function(a,b){
+                            // for (var i in a)
+                              return parseInt(a[0].question.id) - parseInt(b[0].question.id);
+                            });
+                        }
+                        
+                        
 
                         tempTitlesArray.sort(function(a,b){
                             return parseInt(a.id) - parseInt(b.id);
@@ -951,6 +972,7 @@ export default class Metrics extends React.Component {
                                 // var countsp = 0;
                                 var countAnswered = 0;
                                 for (var p in tempTempC) {
+                                  for (var w in tempTempC[p]) {
                                 // if (b < tempCountsArrays.length){
                                 // if(v < tempCountsArrays[b].length){
                                   // var countp = 0;
@@ -960,22 +982,33 @@ export default class Metrics extends React.Component {
                                 // console.log("tempLabelsArrays[b][v].id",tempLabelsArrays[b][v].id);
                                 // console.log("tempLabelsArrays[b][v]",tempCountsArrays[b][v]);
                                 // countsp++;
-                                if (tempTempC[p][0][0].answer.id == tempTemp[b][v].id){
+                                // console.log("tempTemp[b]: ", tempTemp[b]);
+                                console.log("tempTemp[b]: ", tempTemp[b][v].id);
+
+                                console.log("tempTempC[p]: ",tempTempC[p]);
+                                // console.log("tempTempC[p][0]: ",tempTempC[p][0]);
+                                console.log("tempTempC[p][0][0]: ",tempTempC[p][w][0].answer.id);
+                                if (tempTempC[p][w][0].answer.id == tempTemp[b][v].id){
                                     // console.log("tempCountsArrays[b][0].length",tempCountsArrays[b][0].length);
-                                    temp1.push(tempTempC[p][0].length);
+                                    console.log("tempTempC INSIDE");
+                                    console.log("tempTempC[p].length", tempTempC[p].length);
+                                    temp1.push(tempTempC[p][w].length);
                                     found = 1;
                                 } 
                                 // else if (found == 0 && countsp == tempCountsArrays.length) {
                                 //     // temp1.push(0);
                                 //   } 
+
                                 }
-                                  if (found == 1) {
+                              }
+                                if (found == 1) {
                                     // temp1.push(countAnswered);
 
-                                    found = 0;
+                                    // found = 0;
                                   } else {
                                     temp1.push(0);
                                   }
+                                  
                                 // }
                                 
                                     // temp1.push(tempCountsArrays[b][v].length); //get length
@@ -1018,7 +1051,7 @@ export default class Metrics extends React.Component {
 
                         var complete_text = "";
                         for(var r = 0; r < titlesArray.length;r++){
-                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                        complete_text += "<h2>" + titlesArray[r] + ":</h2> <hr COLOR='grey' SIZE='2'>";
                         for (var k = 0; k < tempTemp[r].length; k++){
                           if (tempTemp[r][k].correct){
                              complete_text+="<font color='green'>";
@@ -1030,7 +1063,7 @@ export default class Metrics extends React.Component {
                          }
                        }
             // }
-
+                        
 
 
                         $("#AnswersContainer").html(complete_text);
@@ -1238,7 +1271,7 @@ export default class Metrics extends React.Component {
             // $("#AnswersContainer").
             var complete_text = "";
             // for (var l = 0; l < questionName.length; l++) {
-                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='black' SIZE='2'>";
+                complete_text += "<h2>" + questionName + ":</h2> <hr COLOR='grey' SIZE='2'>";
                 for (var k = 0; k < labelArray.length; k++){
                   if (answers[k].correct){
                     complete_text+="<font color='green'>";
@@ -1266,7 +1299,7 @@ export default class Metrics extends React.Component {
       console.log("student_answer: ", student_answers);
 
       // console.log("student_answer.text: ", student_answers[0].text);
-      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='grey' SIZE='2'>";
       var text = "text";
       var student = "student";
       var email = "email";
@@ -1793,70 +1826,101 @@ export default class Metrics extends React.Component {
                 
                 
                 console.log("answers_from_student ", answers_from_student);
+                console.log("HEREEEEE questionsForQuiz: ", questionsForQuiz);
 
                 return answers_from_student;
 
             }).then(function(answers_return) {
                 console.log("answers_return",answers_return);
-                for(var i = 0; i < questionsForQuiz.length; i++) {
-                    for (var k = 0; k<answers_return.length; k++){
-                      // console.log("questionsForQuiz[i]",questionsForQuiz[i].id);
-                      // console.log("answers_return[k]",answers_return[k]);
-                      // console.log("answers_return[k].question",answers_return[k].question);
-                      console.log("k: ", k);
-                      console.log("answers_return.length", answers_return.length);
-                      // console.log("answers_return[k].question.id",answers_return[k].question.id);
-                      if (answers_return[k].question == questionsForQuiz[i].id){
-                        var correct = answers_return[k].correct;
-                        if (correct) {
-                          resultsCorrect.push(1);
-                         } else {
-                          resultsCorrect.push(0);
-                         }
-                        found = 1;
-                        console.log("resultsCorrectInside0: ", resultsCorrect);
-                      }
-                      if (k == answers_return.length -1 && !found) {
-                        resultsCorrect.push(0);
-                        console.log("resultsCorrectInside1: ", resultsCorrect);
-                      } else if (k == answers_return.length-1) {
-                        found = 0;
-                        console.log("resultsCorrectInside2: ", resultsCorrect);
-                      } else {
-                        
-                      }
+
+              var complete_text = "";
+            // for (var l = 0; l < questionName.length; l++) {
+              console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
+              for(var i = 0; i < questionsForQuiz.length; i++) { // iterate over each questions
+                complete_text += "<h2>" + questionsForQuiz[i].text + ":</h2> <hr COLOR='grey' SIZE='2'>";
+                console.log("LOOPING OVER questionsForQuiz: ", questionsForQuiz);
+                for (var k = 0; k < questionsForQuiz[i].answers.length; k++){ // iterate over each answer
+                  console.log("LOOPING OVER questionsForQuiz[i].answers: ", questionsForQuiz[i].answers);
+                 // for (var j = 0; j < answers_return.length; j ++) { // iterate over THIS students answers
+                  //console.log("LOOPING OVER answers_return[j]", questionsForQuiz[i].answers);
+
+                    if (answers_return[i].id == questionsForQuiz[i].answers[k].id) { // Student's Answer
+                      complete_text+= "<strong>";
                     } 
+
+                    if (questionsForQuiz[i].answers[k].correct) {
+                      complete_text+="<font color='green'>";
+                    }
+
+                    complete_text += questionsForQuiz[i].answers[k].option + ": " + questionsForQuiz[i].answers[k].text + "<br/><br/>";
+
+                    if (questionsForQuiz[i].answers[k].correct) {
+                      complete_text+="</font>";
+                    }
+
+                    if (answers_return[i].id == questionsForQuiz[i].answers[k].id) { // Student's Answer
+                      complete_text+= "</strong>";
+                    }
+                 // } 
                 }
+              }
 
-//SPENCER!!!!! BAR GRAPH HERE
-                console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
-                var labelsArray = [];
-                for (var i in questionsForQuiz){
-                  labelsArray.push(questionsForQuiz[i].text);
-                }
-                console.log("labelsArray: ",labelsArray); //Just iterate and get .text
-                console.log("resultsCorrectOutside: ", resultsCorrect);
+                // for(var i = 0; i < questionsForQuiz.length; i++) {
+                //     for (var k = 0; k<answers_return.length; k++){
+                //       // console.log("questionsForQuiz[i]",questionsForQuiz[i].id);
+                //       // console.log("answers_return[k]",answers_return[k]);
+                //       // console.log("answers_return[k].question",answers_return[k].question);
+                //       console.log("k: ", k);
+                //       console.log("answers_return.length", answers_return.length);
+                //       // console.log("answers_return[k].question.id",answers_return[k].question.id);
+                //       if (answers_return[k].question == questionsForQuiz[i].id){
+                //         var correct = answers_return[k].correct;
+                //         if (correct) {
+                //           resultsCorrect.push(1);
+                //          } else {
+                //           resultsCorrect.push(0);
+                //          }
+                //         found = 1;
+                //         console.log("resultsCorrectInside0: ", resultsCorrect);
+                //       }
+                //       if (k == answers_return.length -1 && !found) {
+                //         resultsCorrect.push(0);
+                //         console.log("resultsCorrectInside1: ", resultsCorrect);
+                //       } else if (k == answers_return.length-1) {
+                //         found = 0;
+                //         console.log("resultsCorrectInside2: ", resultsCorrect);
+                //       } else {
+                        
+                //       }
+                //     } 
+                // }
+
+                // console.log("questionsForQuiz",questionsForQuiz); //Just iterate and get .text
+                // var labelsArray = [];
+                // for (var i in questionsForQuiz){
+                //   labelsArray.push(questionsForQuiz[i].text);
+                // }
+                // console.log("labelsArray: ",labelsArray); //Just iterate and get .text
+                // console.log("resultsCorrectOutside: ", resultsCorrect);
 
 
 
-                var complete_text = "";
-                        for(var r = 0; r < labelsArray.length;r++){
-                          if (resultsCorrect[r] == 1){
-                             complete_text+="<font color='green'>";
-                          } else {
-                              complete_text+="<font color='red'>";
-                          }
-                          complete_text += "<h2>" + labelsArray[r] + ":</h2> <hr COLOR='black' SIZE='2'>";
+                // var complete_text = "";
+                //         for(var r = 0; r < labelsArray.length;r++){
+                //           if (resultsCorrect[r] == 1){
+                //              complete_text+="<font color='green'>";
+                //           } else {
+                //               complete_text+="<font color='red'>";
+                //           }
+                //           var index = r+1;
+                //           complete_text += "<h2>" + index + ". " + labelsArray[r] + "</h2> <hr COLOR='grey' SIZE='2'>";
                           
-                          complete_text+="</font>";
-                          
-                         
-                       }
-            // }
+                //           complete_text+="</font>";
+                //        }
 
 
 
-                        $("#AnswersContainer").html(complete_text);
+                        $("#DivChartContainer").html(complete_text);
 
 
 
@@ -1934,13 +1998,9 @@ export default class Metrics extends React.Component {
                   console.log("answers", answers); //get .option and/or .text
 
 
-//SPENCER!!!! BAR CHART HERE
-
-
-
               var complete_text = "";
             // for (var l = 0; l < questionName.length; l++) {
-                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='black' SIZE='2'>";
+                complete_text += "<h2>" + answer_return.question.text + ":</h2> <hr COLOR='grey' SIZE='2'>";
                 for (var k = 0; k < answers.length; k++){
                   if (answerValues[k] > 0){
                     complete_text+= "<strong>";
@@ -1960,7 +2020,7 @@ export default class Metrics extends React.Component {
 
 
 
-            $("#AnswersContainer").html(complete_text);
+            $("#DivChartContainer").html(complete_text);
 
 
         });
@@ -1977,7 +2037,7 @@ export default class Metrics extends React.Component {
     .then(function(student_answers){
       console.log("student_answer: ", student_answers);
       // console.log("student_answer.text: ", student_answers[0].text);
-      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='black' SIZE='2'>";
+      var complete_text = "<h2>Student Answers:</h2> <hr COLOR='grey' SIZE='2'>";
       var text = "text";
       var student = "student";
       var email = "email";
@@ -2249,27 +2309,6 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
       }
     });
 
-    // if (isBarChartGlobal) {
-    //   console.log('IS BAR CHART');
-    //   var options = getBarChartValueOptions();
-    //   this.doMath(1, function(data){
-    //     var myNewChart = new Chart(ctx).Bar(data,options);
-    //   });
-    // } else {
-    //   console.log('IS LINE CHART');
-    //   var options = getLineChartPercentOptions();
-    //   this.doMath(1, function(data){
-    //     var myNewChart = new Chart(ctx).Line(data,options);
-    //   });
-    // }
-    
-
-
-    // $("#myChart").click(function(evt){
-    //   var activeBars = myNewChart.getBarsAtEvent(evt);
-    //   console.log(activeBars[0]);
-    //   alert(activeBars[0].label);
-    // });
   }
 
 
@@ -2300,7 +2339,7 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
             <select value={this.state.quiz.id} className="dropdown mr10" onChange={this.changeQuiz.bind(this)}>
               {this.state.isAllQuizzesOptionAvailable ? <option value={this.state.allQuizzes.id}>{this.state.allQuizzes.title}</option> : null }
               {this.state.quizzes.map(function(quiz, quizIndex) {
-                return <option key={quizIndex} value={quiz.id}>{quiz.title}</option>
+                return <option key={quizIndex} value={quizIndex+1}>{quiz.title}</option>
               })}
             </select>
           </div>
@@ -2317,8 +2356,8 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
         </div>
 
         {<div>
-          <div id="DivChartContainer"></div>
-          <div id="AnswersContainer"></div>
+          <div id="DivChartContainer" className="metricsText"></div>
+          <div id="AnswersContainer" className="metricsText"></div>
           </div>
         }
       </div>
