@@ -63,7 +63,7 @@ module.exports = {
 
   //One parameter id
   //Asks ALL students this question
-  //No longer used
+  //Only used in PowerPoint
   ask: function(req, res) {
     //console.log("ask api hit");
 
@@ -362,14 +362,14 @@ module.exports = {
 
     Question.findOne({id: data.question}).exec(function(err, q) {
       Student.findOne({email: data.student}).exec(function(err, s) {
-        StudentAnswer.findOne({student: s.id, question: data.question}).exec(function(err, studentanswer) {
+        StudentAnswer.findOne({student: s.id, question: data.question}).populate('answer').exec(function(err, studentanswer) {
           if(!studentanswer) {
             return res.send(200, []);
           }
           questionWithStudentAnswer = {};
 
           questionWithStudentAnswer.question = q.text;
-          questionWithStudentAnswer.student_answer = studentanswer.answer;
+          questionWithStudentAnswer.student_answer = studentanswer.answer.option;
 
           return res.send(200, questionWithStudentAnswer);
         });
