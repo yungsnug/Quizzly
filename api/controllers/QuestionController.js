@@ -360,7 +360,15 @@ module.exports = {
   getQuestionAndUserAnswer: function(req, res) {
     var data = req.params.all();
 
-    Question.findOne({id: data.question}).exec(function(err, q) {
+    Question.findOne({id: data.question}).populate('answers').exec(function(err, q) {
+
+      var correct_answer = "";
+      q.answers.forEach(function(a) {
+        if(a.correct == true) {
+          correct_answer = a.option;
+        }
+      });
+
       Student.findOne({email: data.student}).exec(function(err, s) {
         StudentAnswer.findOne({student: s.id, question: data.question}).populate('answer').exec(function(err, studentanswer) {
           if(!studentanswer) {
@@ -370,6 +378,7 @@ module.exports = {
 
           questionWithStudentAnswer.question = q.text;
           questionWithStudentAnswer.student_answer = studentanswer.answer.option;
+          questionWithStudentAnswer.correct_answer = correct_answer;
 
           return res.send(200, questionWithStudentAnswer);
         });
