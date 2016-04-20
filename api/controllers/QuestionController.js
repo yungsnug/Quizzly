@@ -80,11 +80,11 @@ module.exports = {
       encrypted: true
     });
 
-    console.log(">>>>>>>>>pusher is triggered", data.question);
+    console.log(">>>>>>>>>pusher is triggered", question_id);
 
     pusher.trigger('test_channel', 'my_event', {
-      "questionId": data.question,
-      "sectionId": data.section
+      "questionId": question_id,
+      "sectionId": section_id
     });
 
     Question.findOne({id:data.id}).populate('answers').exec(function (err, question) {

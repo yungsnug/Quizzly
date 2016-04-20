@@ -913,7 +913,7 @@ var _class = function (_React$Component) {
           }
           _reactRouter.browserHistory.push(route);
         }).fail(function (err) {
-          alert(err);
+          alert("Sign in failed!");
           console.log(err);
         });
       } else {
@@ -935,7 +935,7 @@ var _class = function (_React$Component) {
           }
           _reactRouter.browserHistory.push(route);
         }).fail(function (err) {
-          alert(err);
+          alert("Sign up failed!");
           console.log(err);
         });
       }
