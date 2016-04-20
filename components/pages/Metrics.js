@@ -2222,8 +2222,20 @@ createSectionMetric(secTitles, quizTitlesArrays, quizPercentsArrays){
     var quiz = this.state.quiz;
     quiz.id = event.target.value;
     var me = this;
+    function get_selected(selection_array, selection_id) {
+       var selection = [];
+       if (selection_id == -1) {
+         selection = selection_array;
+       } else {
+         //array starts at 0 position
+         selection = selection_array[selection_id-1];
+       }
+       return selection;
+   }
+
+    var selected_quiz = get_selected(this.state.quizzes, this.state.quiz.id);
     if (quiz.id != -1){
-      $.post('/question/find', {quiz: quiz.id})
+      $.post('/question/find', {quiz: selected_quiz.id})
       .then(function(questions) {
         me.setState({
           quiz: quiz,
