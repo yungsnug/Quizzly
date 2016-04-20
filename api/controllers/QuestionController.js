@@ -68,7 +68,7 @@ module.exports = {
     //console.log("ask api hit");
     var data = req.params.all();
     var question_id = data.id;
-    var section_id = 1;
+    var section_id = 3;
 
     console.log("question id " + question_id);
     console.log("section id " + section_id);
