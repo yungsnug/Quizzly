@@ -11,6 +11,7 @@ import StudentQuizzes from './pages/StudentQuizzes.js'
 import StudentMetrics from './pages/StudentMetrics.js'
 import AskStudentQuestion from './pages/AskStudentQuestion.js'
 import Download from './pages/Download.js'
+import StudentList from './pages/StudentList.js'
 
 render((
   <Router history={browserHistory}>
@@ -25,5 +26,6 @@ render((
     <Route path="/s/question/:questionId/:sectionId" component={AskStudentQuestion} />
     <Route path="/entrance" component={Entrance} />
     <Route path="/style" component={Style} />
+    <Route path="/studentlist" component={StudentList} />
   </Router>
 ), document.getElementById("quizzly"));

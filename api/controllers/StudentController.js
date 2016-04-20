@@ -140,6 +140,11 @@ module.exports = {
     .then(function() {
       return res.json(studentIds);
     });
+  },
+  findinorder: function(req, res) {
+    Student.find().sort('createdAt DESC').exec(function (err, students) {
+      return res.json(students);
+    });
   }
   // getStudentAnswer: function(req,res) {
   //   console.log("--------------getStudentAnswer");

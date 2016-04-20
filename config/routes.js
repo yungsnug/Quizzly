@@ -30,6 +30,9 @@ module.exports.routes = {
   '/style': {
     view: 'app'
   },
+  '/studentlist': {
+    view: 'app'
+  },
   '/p/courses': {
     view: 'app'
   },

@@ -66,8 +66,28 @@ module.exports = {
   //Only used in PowerPoint
   ask: function(req, res) {
     //console.log("ask api hit");
+    var data = req.params.all();
+    var question_id = data.id;
+    var section_id = 1;
 
-    Question.findOne({id:req.query.id}).populate('answers').exec(function (err, question) {
+    console.log("question id " + question_id);
+    console.log("section id " + section_id);
+
+    var pusher = new Pusher({
+      appId: '198096',
+      key: '638c5913fb91435e1b42',
+      secret: 'bb4f3412beab5121f288',
+      encrypted: true
+    });
+
+    console.log(">>>>>>>>>pusher is triggered", data.question);
+
+    pusher.trigger('test_channel', 'my_event', {
+      "questionId": data.question,
+      "sectionId": data.section
+    });
+
+    Question.findOne({id:data.id}).populate('answers').exec(function (err, question) {
       if(err) {
         return res.json({
           error: res.negotiate(err)
